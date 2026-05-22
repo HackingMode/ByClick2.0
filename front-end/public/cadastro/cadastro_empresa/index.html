@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Empresa | ByClick Marketplace</title>
+   <link rel="stylesheet" href="../../css/cadastros.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="left company-image">
+      <div class="overlay">
+        <h1>Cadastro de Empresa</h1>
+        <p>Registe o seu negocio e prepare a sua loja.</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <a class="back-link" href="../">Voltar para escolher outro cadastro</a>
+
+      <div class="top-title">
+        <h2>Empresa</h2>
+        <p>Informe os dados fiscais, comerciais e de acesso.</p>
+      </div>
+
+      <div class="form-box active">
+        <div class="step active">
+          <div class="grid">
+            <div class="input-group full">
+              <label>Nome da Empresa</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>NIF da Empresa</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Tipo de Empresa</label>
+              <select>
+                <option>Comercio</option>
+                <option>Servicos</option>
+                <option>Industria</option>
+              </select>
+            </div>
+
+            <div class="input-group full">
+              <label>Email Comercial</label>
+              <input type="email">
+            </div>
+
+            <div class="input-group">
+              <label>Telefone Comercial</label>
+              <input type="tel">
+            </div>
+
+            <div class="input-group">
+              <label>Provincia</label>
+              <select>
+                <option>Luanda</option>
+                <option>Benguela</option>
+                <option>Huambo</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Municipio</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Bairro</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group full">
+              <label>Endereco Completo</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Nome do Responsavel</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>BI do Responsavel</label>
+              <input type="text">
+            </div>
+          </div>
+
+          <div class="profile-upload">
+            <div class="profile-preview">
+              <img id="companyLogoPreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+            </div>
+
+            <label for="companyLogoInput" class="upload-label">Carregar Logotipo</label>
+            <input type="file" id="companyLogoInput" class="hidden-input" accept="image/*">
+          </div>
+
+          <div class="grid">
+            <div class="input-group full">
+              <label>Senha</label>
+              <input type="password">
+            </div>
+
+            <div class="input-group full">
+              <label>Confirmar Senha</label>
+              <input type="password">
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="btn submit-btn">Enviar Cadastro</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../jv/script.js"></script>
+</body>
+</html>

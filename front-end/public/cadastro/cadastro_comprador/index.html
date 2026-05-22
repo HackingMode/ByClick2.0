@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Comprador | ByClick Marketplace</title>
+  <link rel="stylesheet" href="../../css/cadastros.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="left buyer-image" id="leftImage">
+      <div class="overlay">
+        <h1>Cadastro de Comprador</h1>
+        <p>Crie a sua conta para comprar com praticidade.</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <a class="back-link" href="../">Voltar para escolher outro cadastro</a>
+
+      <div class="top-title">
+        <h2>Comprador</h2>
+        <p>Preencha os dados para criar a sua conta.</p>
+      </div>
+
+      <div class="form-box active">
+        <div class="steps-indicator">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <div class="step active" id="cstep1">
+          <div class="grid">
+            <div class="input-group">
+              <label>Nome Completo</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Nome de Utilizador</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group full">
+              <label>Email</label>
+              <input type="email">
+            </div>
+
+            <div class="input-group">
+              <label>Genero</label>
+              <select>
+                <option>Masculino</option>
+                <option>Feminino</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Data de Nascimento</label>
+              <input type="date">
+            </div>
+
+            <div class="input-group full">
+              <label>Numero de Telefone</label>
+              <input type="tel">
+            </div>
+
+            <div class="input-group">
+              <label>Provincia</label>
+              <select>
+                <option>Luanda</option>
+                <option>Benguela</option>
+                <option>Huambo</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Municipio</label>
+              <select>
+                <option>Talatona</option>
+                <option>Belas</option>
+                <option>Viana</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Bairro</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Rua</label>
+              <input type="text">
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="btn next-btn" onclick="nextStep('cstep1','cstep2')">Seguinte</button>
+          </div>
+        </div>
+
+        <div class="step" id="cstep2">
+          <div class="profile-upload">
+            <div class="profile-preview">
+              <img id="previewImage" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
+            </div>
+
+            <label for="profileInput" class="upload-label">Escolher Foto</label>
+            <input type="file" id="profileInput" class="hidden-input" accept="image/*">
+          </div>
+
+          <div class="buttons">
+            <button class="btn back-btn" onclick="prevStep('cstep2','cstep1')">Voltar</button>
+            <button class="btn next-btn" onclick="nextStep('cstep2','cstep3')">Seguinte</button>
+          </div>
+        </div>
+
+        <div class="step" id="cstep3">
+          <div class="grid">
+            <div class="input-group full">
+              <label>Senha</label>
+              <input type="password">
+            </div>
+
+            <div class="input-group full">
+              <label>Confirmar Senha</label>
+              <input type="password">
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="btn back-btn" onclick="prevStep('cstep3','cstep2')">Voltar</button>
+            <button class="btn submit-btn">Enviar Cadastro</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../jv/script.js"></script>
+</body>
+</html>

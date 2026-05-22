@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Vendedor | ByClick Marketplace</title>
+  <link rel="stylesheet" href="../../css/cadastros.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="left seller-image">
+      <div class="overlay">
+        <h1>Cadastro de Vendedor</h1>
+        <p>Valide a sua identidade e comece a vender.</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <a class="back-link" href="../">Voltar para escolher outro cadastro</a>
+
+      <div class="top-title">
+        <h2>Vendedor</h2>
+        <p>Preencha os dados pessoais e documentos necessários.</p>
+      </div>
+
+      <div class="form-box active">
+        <div class="steps-indicator">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <div class="step active" id="vstep1">
+          <h3 class="step-title">Dados do vendedor</h3>
+
+          <div class="grid">
+            <div class="input-group">
+              <label>Nome Completo</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Nome de Utilizador</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group full">
+              <label>Email</label>
+              <input type="email">
+            </div>
+
+            <div class="input-group">
+              <label>Genero</label>
+              <select>
+                <option>Masculino</option>
+                <option>Feminino</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Data de Nascimento</label>
+              <input type="date">
+            </div>
+
+            <div class="input-group full">
+              <label>Numero de Telefone</label>
+              <input type="tel">
+            </div>
+
+            <div class="input-group">
+              <label>Provincia</label>
+              <select>
+                <option>Luanda</option>
+                <option>Benguela</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Municipio</label>
+              <select>
+                <option>Talatona</option>
+                <option>Belas</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Bairro</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Rua</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Numero do BI</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>NIF</label>
+              <input type="text">
+            </div>
+
+            <div class="input-group">
+              <label>Data de Emissao</label>
+              <input type="date">
+            </div>
+
+            <div class="input-group">
+              <label>Data de Validade</label>
+              <input type="date">
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="btn next-btn" onclick="nextStep('vstep1','vstep2')">Seguinte</button>
+          </div>
+        </div>
+
+        <div class="step" id="vstep2">
+          <h3 class="step-title">Foto do BI</h3>
+
+          <div class="profile-upload">
+            <div class="document-preview">
+              <img id="biPreview" src="https://cdn-icons-png.flaticon.com/512/295/295128.png">
+            </div>
+
+            <label for="biInput" class="upload-label">Carregar Foto do BI</label>
+            <input type="file" id="biInput" class="hidden-input" accept="image/*">
+          </div>
+
+          <div class="buttons">
+            <button class="btn back-btn" onclick="prevStep('vstep2','vstep1')">Voltar</button>
+            <button class="btn next-btn" onclick="nextStep('vstep2','vstep3')">Seguinte</button>
+          </div>
+        </div>
+
+        <div class="step" id="vstep3">
+          <h3 class="step-title">Foto do rosto</h3>
+
+          <div class="camera-box">
+            <video id="faceCamera" class="camera-video" autoplay playsinline></video>
+            <canvas id="faceCanvas" class="hidden-input"></canvas>
+
+            <div class="profile-preview">
+              <img id="facePreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+            </div>
+
+            <input type="hidden" id="facePhotoData" name="facePhotoData">
+
+            <p class="camera-message" id="cameraMessage">
+              Clique em iniciar camera e permita o acesso para tirar a foto do rosto.
+            </p>
+
+            <div class="camera-actions">
+              <button class="btn next-btn" type="button" onclick="startFaceCamera()">Iniciar camera</button>
+              <button class="btn back-btn" type="button" onclick="captureFacePhoto()">Capturar foto</button>
+              <button class="btn back-btn" type="button" onclick="retakeFacePhoto()">Refazer foto</button>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="btn back-btn" onclick="prevStep('vstep3','vstep2')">Voltar</button>
+            <button class="btn next-btn" onclick="nextStep('vstep3','vstep4')">Seguinte</button>
+          </div>
+        </div>
+
+        <div class="step" id="vstep4">
+          <h3 class="step-title">Foto de perfil</h3>
+
+          <div class="profile-upload">
+            <div class="profile-preview">
+              <img id="sellerProfilePreview" src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
+            </div>
+
+            <label for="sellerProfileInput" class="upload-label">Foto de Perfil</label>
+            <input type="file" id="sellerProfileInput" class="hidden-input" accept="image/*">
+          </div>
+
+          <div class="buttons">
+            <button class="btn back-btn" onclick="prevStep('vstep4','vstep3')">Voltar</button>
+            <button class="btn next-btn" onclick="nextStep('vstep4','vstep5')">Seguinte</button>
+          </div>
+        </div>
+
+        <div class="step" id="vstep5">
+          <h3 class="step-title">Senha de acesso</h3>
+
+          <div class="grid">
+            <div class="input-group full">
+              <label>Senha</label>
+              <input type="password">
+            </div>
+
+            <div class="input-group full">
+              <label>Confirmar Senha</label>
+              <input type="password">
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="btn back-btn" onclick="prevStep('vstep5','vstep4')">Voltar</button>
+            <button class="btn submit-btn">Enviar Cadastro</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../jv/script.js"></script>
+</body>
+</html>
