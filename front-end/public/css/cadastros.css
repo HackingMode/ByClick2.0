@@ -247,7 +247,8 @@ label{
 }
 
 input,
-select{
+select,
+textarea{
   width:100%;
 
   padding:15px;
@@ -256,6 +257,12 @@ select{
   border:1px solid #cbd5e1;
 
   background:#f8fafc;
+}
+
+textarea{
+  min-height:220px;
+  resize:vertical;
+  line-height:1.6;
 }
 
 .buttons{
@@ -332,6 +339,20 @@ select{
 .profile-upload{
   text-align:center;
   margin-top:30px;
+}
+
+.helper-text{
+  margin-top:12px;
+  color:#64748b;
+  font-size:14px;
+  line-height:1.6;
+}
+
+.helper-error{
+  margin-top:12px;
+  color:#dc2626;
+  font-size:14px;
+  line-height:1.6;
 }
 
 .profile-preview{

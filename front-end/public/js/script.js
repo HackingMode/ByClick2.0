@@ -233,6 +233,60 @@ function loadPreview(inputId, imageId) {
   }
 }
 
+function countWords(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function validateCompanyDescription() {
+  const description = document.getElementById('companyDescription');
+  const error = document.getElementById('descriptionError');
+
+  if (!description || !error) {
+    return true;
+  }
+
+  const words = countWords(description.value);
+
+  if (words < 200) {
+    error.textContent = `A descricao precisa ter pelo menos 200 palavras. Atualmente: ${words}.`;
+    description.focus();
+    return false;
+  }
+
+  error.textContent = '';
+  return true;
+}
+
+function validateCompanyPasswords() {
+  const password = document.getElementById('companyPassword');
+  const confirmPassword = document.getElementById('companyConfirmPassword');
+
+  if (!password || !confirmPassword) {
+    return true;
+  }
+
+  if (password.value !== confirmPassword.value) {
+    confirmPassword.setCustomValidity('As senhas nao conferem.');
+    confirmPassword.reportValidity();
+    return false;
+  }
+
+  confirmPassword.setCustomValidity('');
+  return true;
+}
+
+const companySubmitBtn = document.getElementById('companySubmitBtn');
+
+if (companySubmitBtn) {
+  companySubmitBtn.addEventListener('click', function () {
+    if (!validateCompanyDescription() || !validateCompanyPasswords()) {
+      return;
+    }
+
+    alert('Cadastro da empresa preparado para envio.');
+  });
+}
+
 // Define a imagem inicial do painel lateral quando a pagina possui esse elemento.
 const leftImage = document.getElementById('leftImage');
 

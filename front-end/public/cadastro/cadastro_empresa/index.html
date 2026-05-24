@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro de Empresa | ByClick Marketplace</title>
-   <link rel="stylesheet" href="../../css/cadastros.css">
+  <link rel="stylesheet" href="../../css/cadastros.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
     <div class="left company-image">
       <div class="overlay">
         <h1>Cadastro de Empresa</h1>
-        <p>Registe o seu negocio e prepare a sua loja.</p>
+        <p>Registe o seu negocio, configure os documentos e finalize o acesso seguro.</p>
       </div>
     </div>
 
@@ -25,103 +25,271 @@
 
       <div class="top-title">
         <h2>Empresa</h2>
-        <p>Informe os dados fiscais, comerciais e de acesso.</p>
+        <p>Complete o cadastro em etapas para registrar a sua empresa com segurança.</p>
       </div>
 
-      <!-- Cadastro de empresa em tela unica: dados fiscais, responsavel, logotipo e senha. -->
+      <!-- Formulario de empresa em etapas. -->
       <div class="form-box active">
-        <div class="step active">
-          <!-- Dados fiscais, comerciais e localizacao da empresa. -->
+        <div class="steps-indicator">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <!-- Etapa 1: Dados empresariais -->
+        <div class="step active" id="estep1">
+          <h3 class="step-title">Dados Empresariais</h3>
+
           <div class="grid">
             <div class="input-group full">
-              <label>Nome da Empresa</label>
-              <input type="text">
+              <label for="companyName">Nome da empresa</label>
+              <input id="companyName" name="companyName" type="text" placeholder="Ex.: ByClick Solucoes" required>
             </div>
 
             <div class="input-group">
-              <label>NIF da Empresa</label>
-              <input type="text">
+              <label for="companyNif">NIF empresarial</label>
+              <input id="companyNif" name="companyNif" type="text" placeholder="Ex.: 123456789" required>
             </div>
 
             <div class="input-group">
-              <label>Tipo de Empresa</label>
-              <select>
+              <label for="companyType">Tipo de Empresa</label>
+              <select id="companyType" name="companyType" required>
+                <option value="">Selecione</option>
                 <option>Comercio</option>
                 <option>Servicos</option>
                 <option>Industria</option>
               </select>
             </div>
 
-            <div class="input-group full">
-              <label>Email Comercial</label>
-              <input type="email">
-            </div>
-
             <div class="input-group">
-              <label>Telefone Comercial</label>
-              <input type="tel">
-            </div>
-
-            <div class="input-group">
-              <label>Provincia</label>
-              <select>
-                <option>Luanda</option>
-                <option>Benguela</option>
-                <option>Huambo</option>
+              <label for="companyCategory">Categoria principal</label>
+              <select id="companyCategory" name="companyCategory" required>
+                <option value="">Selecione</option>
+                <option>Tecnologia</option>
+                <option>Alimentacao</option>
+                <option>Vestuario</option>
+                <option>Servicos</option>
+                <option>Casa e Construcao</option>
+                <option>Outros</option>
               </select>
             </div>
 
             <div class="input-group">
-              <label>Municipio</label>
-              <input type="text">
+              <label for="companyCreationDate">Data de criacao da empresa</label>
+              <input id="companyCreationDate" name="companyCreationDate" type="date" required>
             </div>
 
             <div class="input-group">
-              <label>Bairro</label>
-              <input type="text">
-            </div>
-
-            <div class="input-group full">
-              <label>Endereco Completo</label>
-              <input type="text">
+              <label for="companyProvince">Provincia</label>
+              <select id="companyProvince" name="companyProvince" required>
+                <option value="">Selecione</option>
+                <option>Luanda</option>
+                <option>Benguela</option>
+                <option>Huambo</option>
+                <option>Cabinda</option>
+                <option>Namibe</option>
+                <option>Huila</option>
+              </select>
             </div>
 
             <div class="input-group">
-              <label>Nome do Responsavel</label>
-              <input type="text">
+              <label for="companyMunicipality">Municipio / Cidade</label>
+              <input id="companyMunicipality" name="companyMunicipality" type="text" placeholder="Ex.: Talatona" required>
             </div>
 
             <div class="input-group">
-              <label>BI do Responsavel</label>
-              <input type="text">
-            </div>
-          </div>
-
-          <!-- Upload do logotipo exibido no perfil da empresa. -->
-          <div class="profile-upload">
-            <div class="profile-preview">
-              <img id="companyLogoPreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+              <label for="companyWebsite">Website (Opcional)</label>
+              <input id="companyWebsite" name="companyWebsite" type="url" placeholder="https://example.com">
             </div>
 
-            <label for="companyLogoInput" class="upload-label">Carregar Logotipo</label>
-            <input type="file" id="companyLogoInput" class="hidden-input" accept="image/*">
-          </div>
+            <div class="input-group">
+              <label for="companyPhone">Telefone empresarial</label>
+              <input id="companyPhone" name="companyPhone" type="tel" placeholder="Ex.: +244 923 000 000" required>
+            </div>
 
-          <!-- Credenciais de acesso da conta empresarial. -->
-          <div class="grid">
-            <div class="input-group full">
-              <label>Senha</label>
-              <input type="password">
+            <div class="input-group">
+              <label for="companyEmail">E-mail empresarial</label>
+              <input id="companyEmail" name="companyEmail" type="email" placeholder="empresa@dominio.com" required>
             </div>
 
             <div class="input-group full">
-              <label>Confirmar Senha</label>
-              <input type="password">
+              <label for="companyWhatsapp">WhatsApp Empresarial</label>
+              <input id="companyWhatsapp" name="companyWhatsapp" type="tel" placeholder="Ex.: +244 923 000 000" required>
             </div>
           </div>
 
           <div class="buttons">
-            <button class="btn submit-btn">Enviar Cadastro</button>
+            <button type="button" class="btn next-btn" onclick="nextStep('estep1','estep2')">Seguinte</button>
+          </div>
+        </div>
+
+        <!-- Etapa 2: Dados do representante -->
+        <div class="step" id="estep2">
+          <h3 class="step-title">Dados do Representante</h3>
+
+          <div class="grid">
+            <div class="input-group full">
+              <label for="representativeName">Nome completo</label>
+              <input id="representativeName" name="representativeName" type="text" placeholder="Ex.: Maria Joao" required>
+            </div>
+
+            <div class="input-group">
+              <label for="representativeRole">Cargo</label>
+              <input id="representativeRole" name="representativeRole" type="text" placeholder="Ex.: Gerente" required>
+            </div>
+
+            <div class="input-group">
+              <label for="representativeBi">BI</label>
+              <input id="representativeBi" name="representativeBi" type="text" placeholder="Ex.: 000000000LA050" required>
+            </div>
+
+            <div class="input-group">
+              <label for="representativeNif">NIF Pessoal</label>
+              <input id="representativeNif" name="representativeNif" type="text" placeholder="Ex.: 123456789" required>
+            </div>
+
+            <div class="input-group">
+              <label for="representativePhone">Numero de Telefone</label>
+              <input id="representativePhone" name="representativePhone" type="tel" placeholder="Ex.: +244 930 000 000" required>
+            </div>
+
+            <div class="input-group full">
+              <label for="representativeEmail">E-mail</label>
+              <input id="representativeEmail" name="representativeEmail" type="email" placeholder="representante@dominio.com" required>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button type="button" class="btn back-btn" onclick="prevStep('estep2','estep1')">Voltar</button>
+            <button type="button" class="btn next-btn" onclick="nextStep('estep2','estep3')">Seguinte</button>
+          </div>
+        </div>
+
+        <!-- Etapa 3: Documentos e descricao da empresa -->
+        <div class="step" id="estep3">
+          <h3 class="step-title">Documentos e Descricao</h3>
+
+          <div class="grid">
+            <div class="input-group full">
+              <label for="alvaraInput">Alvará / Licença comercial</label>
+              <div class="profile-upload">
+                <label for="alvaraInput" class="upload-label">Carregar PDF</label>
+                <input type="file" id="alvaraInput" class="hidden-input" accept=".pdf" required>
+                <p class="helper-text">Envie o documento em PDF.</p>
+              </div>
+            </div>
+
+            <div class="input-group full">
+              <label for="certidaoInput">Certidao comercial</label>
+              <div class="profile-upload">
+                <label for="certidaoInput" class="upload-label">Carregar PDF</label>
+                <input type="file" id="certidaoInput" class="hidden-input" accept=".pdf" required>
+                <p class="helper-text">Envie o documento em PDF.</p>
+              </div>
+            </div>
+
+            <div class="input-group full">
+              <label for="comprovativoInput">Comprovativo Bancario</label>
+              <div class="profile-upload">
+                <label for="comprovativoInput" class="upload-label">Carregar PDF</label>
+                <input type="file" id="comprovativoInput" class="hidden-input" accept=".pdf" required>
+                <p class="helper-text">Envie o documento em PDF.</p>
+              </div>
+            </div>
+
+            <div class="input-group full">
+              <label for="companyDescription">Descricao da empresa</label>
+              <textarea id="companyDescription" name="companyDescription" rows="8" placeholder="Descreva a sua empresa, produtos, servicos, missao e diferenciadores." required></textarea>
+              <p class="helper-text">Digite pelo menos 200 palavras para completar a descricao.</p>
+              <p id="descriptionError" class="helper-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button type="button" class="btn back-btn" onclick="prevStep('estep3','estep2')">Voltar</button>
+            <button type="button" class="btn next-btn" onclick="nextStep('estep3','estep4')">Seguinte</button>
+          </div>
+        </div>
+
+        <!-- Etapa 4: Logo da empresa -->
+        <div class="step" id="estep4">
+          <h3 class="step-title">Logo da empresa</h3>
+
+          <div class="profile-upload">
+            <div class="profile-preview">
+              <img id="companyLogoPreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Preview da logo da empresa">
+            </div>
+
+            <label for="companyLogoInput" class="upload-label">Carregar Logo</label>
+            <input type="file" id="companyLogoInput" class="hidden-input" accept="image/*" required>
+            <p class="helper-text">Envie uma imagem da logo da empresa.</p>
+          </div>
+
+          <div class="buttons">
+            <button type="button" class="btn back-btn" onclick="prevStep('estep4','estep3')">Voltar</button>
+            <button type="button" class="btn next-btn" onclick="nextStep('estep4','estep5')">Seguinte</button>
+          </div>
+        </div>
+
+        <!-- Etapa 5: Dados financeiros -->
+        <div class="step" id="estep5">
+          <h3 class="step-title">Dados Financeiros</h3>
+
+          <div class="grid">
+            <div class="input-group full">
+              <label for="iban">IBAN</label>
+              <input id="iban" name="iban" type="text" placeholder="Ex.: AO06 0000 0000 0000 0000 0000 000" required>
+            </div>
+
+            <div class="input-group">
+              <label for="accountHolder">Titual</label>
+              <input id="accountHolder" name="accountHolder" type="text" placeholder="Nome do titular da conta" required>
+            </div>
+
+            <div class="input-group">
+              <label for="expressNumber">Numero do Express</label>
+              <input id="expressNumber" name="expressNumber" type="text" placeholder="Ex.: 12345" required>
+            </div>
+
+            <div class="input-group">
+              <label for="paypalEntity">PayPay (Entidade)</label>
+              <input id="paypalEntity" name="paypalEntity" type="text" placeholder="Ex.: Paypal" required>
+            </div>
+
+            <div class="input-group full">
+              <label for="paypalReference">PayPay (Referencia)</label>
+              <input id="paypalReference" name="paypalReference" type="text" placeholder="Referencia da conta" required>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button type="button" class="btn back-btn" onclick="prevStep('estep5','estep4')">Voltar</button>
+            <button type="button" class="btn next-btn" onclick="nextStep('estep5','estep6')">Seguinte</button>
+          </div>
+        </div>
+
+        <!-- Etapa 6: Senha e seguranca -->
+        <div class="step" id="estep6">
+          <h3 class="step-title">Senha e Seguranca</h3>
+
+          <div class="grid">
+            <div class="input-group full">
+              <label for="companyPassword">Senha</label>
+              <input id="companyPassword" name="companyPassword" type="password" required>
+            </div>
+
+            <div class="input-group full">
+              <label for="companyConfirmPassword">Confirmar Senha</label>
+              <input id="companyConfirmPassword" name="companyConfirmPassword" type="password" required>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button type="button" class="btn back-btn" onclick="prevStep('estep6','estep5')">Voltar</button>
+            <button type="button" class="btn submit-btn" id="companySubmitBtn">Enviar Cadastro</button>
           </div>
         </div>
       </div>
