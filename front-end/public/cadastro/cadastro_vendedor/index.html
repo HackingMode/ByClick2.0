@@ -11,6 +11,7 @@
 </head>
 <body>
   <div class="container">
+    <!-- Painel lateral com o contexto do cadastro de vendedor. -->
     <div class="left seller-image">
       <div class="overlay">
         <h1>Cadastro de Vendedor</h1>
@@ -18,6 +19,7 @@
       </div>
     </div>
 
+    <!-- Conteudo principal do formulario de vendedor. -->
     <div class="right">
       <a class="back-link" href="../">Voltar para escolher outro cadastro</a>
 
@@ -26,6 +28,7 @@
         <p>Preencha os dados pessoais e documentos necessários.</p>
       </div>
 
+      <!-- Formulario em etapas: dados, BI, rosto, perfil e senha. -->
       <div class="form-box active">
         <div class="steps-indicator">
           <div class="dot active"></div>
@@ -35,6 +38,7 @@
           <div class="dot"></div>
         </div>
 
+        <!-- Etapa 1: dados pessoais, endereco e documentos do vendedor. -->
         <div class="step active" id="vstep1">
           <h3 class="step-title">Dados do vendedor</h3>
 
@@ -124,6 +128,7 @@
           </div>
         </div>
 
+        <!-- Etapa 2: imagem do Bilhete de Identidade para validacao. -->
         <div class="step" id="vstep2">
           <h3 class="step-title">Foto do BI</h3>
 
@@ -142,6 +147,7 @@
           </div>
         </div>
 
+        <!-- Etapa 3: captura da foto do rosto usando a camera do navegador. -->
         <div class="step" id="vstep3">
           <h3 class="step-title">Foto do rosto</h3>
 
@@ -172,6 +178,7 @@
           </div>
         </div>
 
+        <!-- Etapa 4: foto publica do perfil de vendedor. -->
         <div class="step" id="vstep4">
           <h3 class="step-title">Foto de perfil</h3>
 
@@ -190,6 +197,7 @@
           </div>
         </div>
 
+        <!-- Etapa 5: senha usada para acessar a conta. -->
         <div class="step" id="vstep5">
           <h3 class="step-title">Senha de acesso</h3>
 
@@ -214,6 +222,7 @@
     </div>
   </div>
 
-  <script src="../../jv/script.js"></script>
+  <!-- Script compartilhado pelos fluxos de cadastro. -->
+  <script src="../../js/script.js"></script>
 </body>
 </html>

@@ -11,6 +11,7 @@
 </head>
 <body>
   <div class="container">
+    <!-- Painel lateral com a mensagem de apoio para empresas. -->
     <div class="left company-image">
       <div class="overlay">
         <h1>Cadastro de Empresa</h1>
@@ -18,6 +19,7 @@
       </div>
     </div>
 
+    <!-- Conteudo principal do formulario empresarial. -->
     <div class="right">
       <a class="back-link" href="../">Voltar para escolher outro cadastro</a>
 
@@ -26,8 +28,10 @@
         <p>Informe os dados fiscais, comerciais e de acesso.</p>
       </div>
 
+      <!-- Cadastro de empresa em tela unica: dados fiscais, responsavel, logotipo e senha. -->
       <div class="form-box active">
         <div class="step active">
+          <!-- Dados fiscais, comerciais e localizacao da empresa. -->
           <div class="grid">
             <div class="input-group full">
               <label>Nome da Empresa</label>
@@ -93,6 +97,7 @@
             </div>
           </div>
 
+          <!-- Upload do logotipo exibido no perfil da empresa. -->
           <div class="profile-upload">
             <div class="profile-preview">
               <img id="companyLogoPreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
@@ -102,6 +107,7 @@
             <input type="file" id="companyLogoInput" class="hidden-input" accept="image/*">
           </div>
 
+          <!-- Credenciais de acesso da conta empresarial. -->
           <div class="grid">
             <div class="input-group full">
               <label>Senha</label>
@@ -122,6 +128,7 @@
     </div>
   </div>
 
-  <script src="../../jv/script.js"></script>
+  <!-- Script compartilhado pelos fluxos de cadastro. -->
+  <script src="../../js/script.js"></script>
 </body>
 </html>

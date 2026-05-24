@@ -11,6 +11,7 @@
 </head>
 <body>
   <div class="container">
+    <!-- Painel lateral usado para reforcar o contexto do cadastro de comprador. -->
     <div class="left buyer-image" id="leftImage">
       <div class="overlay">
         <h1>Cadastro de Comprador</h1>
@@ -18,6 +19,7 @@
       </div>
     </div>
 
+    <!-- Conteudo principal do formulario de comprador. -->
     <div class="right">
       <a class="back-link" href="../">Voltar para escolher outro cadastro</a>
 
@@ -26,6 +28,7 @@
         <p>Preencha os dados para criar a sua conta.</p>
       </div>
 
+      <!-- Formulario em etapas: dados pessoais, foto de perfil e senha. -->
       <div class="form-box active">
         <div class="steps-indicator">
           <div class="dot active"></div>
@@ -33,6 +36,7 @@
           <div class="dot"></div>
         </div>
 
+        <!-- Etapa 1: informacoes pessoais e endereco do comprador. -->
         <div class="step active" id="cstep1">
           <div class="grid">
             <div class="input-group">
@@ -102,6 +106,7 @@
           </div>
         </div>
 
+        <!-- Etapa 2: upload da foto que sera exibida no perfil do comprador. -->
         <div class="step" id="cstep2">
           <div class="profile-upload">
             <div class="profile-preview">
@@ -118,6 +123,7 @@
           </div>
         </div>
 
+        <!-- Etapa 3: criacao da senha de acesso. -->
         <div class="step" id="cstep3">
           <div class="grid">
             <div class="input-group full">
@@ -140,6 +146,7 @@
     </div>
   </div>
 
-  <script src="../../jv/script.js"></script>
+  <!-- Script compartilhado pelos fluxos de cadastro. -->
+  <script src="../../js/script.js"></script>
 </body>
 </html>
