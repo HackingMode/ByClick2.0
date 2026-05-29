@@ -5,6 +5,7 @@ Schemas Pydantic - Validação de dados de entrada e saída da API.
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from typing import Optional
 from datetime import date, datetime
+from app.core.phone import normalizar_telefone_angola
 from app.models.models import (
     GeneroEnum, TipoUtilizadorEnum, TipoVendedorEnum,
     TipoLojaEnum, StatusVerificacaoEnum
@@ -30,6 +31,16 @@ class RegistoComipradorSchema(BaseModel):
         if len(v) < 8:
             raise ValueError("A senha deve ter pelo menos 8 caracteres")
         return v
+
+    @field_validator("email")
+    @classmethod
+    def email_minusculo(cls, v):
+        return str(v).lower()
+
+    @field_validator("numero_telefone")
+    @classmethod
+    def telefone_normalizado(cls, v):
+        return normalizar_telefone_angola(v)
 
     @model_validator(mode="after")
     def senhas_iguais(self):

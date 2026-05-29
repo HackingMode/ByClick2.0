@@ -6,9 +6,11 @@ import random
 import string
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.phone import normalizar_telefone_angola, parece_telefone, variantes_telefone_angola
 from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, decode_token
 from app.models.models import Utilizador, CodigoVerificacao, TipoUtilizadorEnum
 from app.schemas.schemas import (
@@ -34,7 +36,9 @@ def registar_comprador(dados: RegistoComipradorSchema, db: Session = Depends(get
     if db.query(Utilizador).filter(Utilizador.nome_utilizador == dados.nome_utilizador).first():
         raise HTTPException(status_code=400, detail="Este nome de utilizador já existe")
 
-    if db.query(Utilizador).filter(Utilizador.numero_telefone == dados.numero_telefone).first():
+    if db.query(Utilizador).filter(
+        Utilizador.numero_telefone.in_(variantes_telefone_angola(dados.numero_telefone))
+    ).first():
         raise HTTPException(status_code=400, detail="Este número de telefone já está registado")
 
     # Criar utilizador
@@ -75,15 +79,21 @@ def registar_comprador(dados: RegistoComipradorSchema, db: Session = Depends(get
 def login(dados: LoginSchema, db: Session = Depends(get_db)):
     """Login com email/telefone e senha."""
 
-    # Procurar por email ou telefone
-    utilizador = (
-        db.query(Utilizador)
-        .filter(
-            (Utilizador.email == dados.identificador) |
-            (Utilizador.numero_telefone == dados.identificador)
-        )
-        .first()
-    )
+    identificador = dados.identificador.strip().lower()
+    telefone_normalizado = None
+
+    if parece_telefone(identificador):
+        try:
+            telefone_normalizado = normalizar_telefone_angola(identificador)
+        except ValueError:
+            telefone_normalizado = None
+
+    filtros = [Utilizador.email == identificador]
+    if telefone_normalizado:
+        filtros.append(Utilizador.numero_telefone.in_(variantes_telefone_angola(telefone_normalizado)))
+    filtros.append(Utilizador.numero_telefone == dados.identificador)
+
+    utilizador = db.query(Utilizador).filter(or_(*filtros)).first()
 
     if not utilizador or not verify_password(dados.senha, utilizador.senha_hash):
         raise HTTPException(

@@ -5,6 +5,38 @@
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
 
+function normalizarTelefone(telefone) {
+  const digitos = String(telefone || '').replace(/\D/g, '').replace(/^00/, '');
+
+  if (digitos.length === 9) {
+    return `244${digitos}`;
+  }
+
+  if (digitos.length === 12 && digitos.startsWith('244')) {
+    return digitos;
+  }
+
+  throw new Error('Numero de telefone invalido');
+}
+
+function extrairMensagemErro(error) {
+  if (Array.isArray(error.data?.detail)) {
+    return error.data.detail
+      .map(item => item.msg || item.message || JSON.stringify(item))
+      .join('\n');
+  }
+
+  if (error.data?.detail) {
+    return error.data.detail;
+  }
+
+  if (typeof error.data === 'string') {
+    return error.data;
+  }
+
+  return error.message;
+}
+
 // Função auxiliar para fazer requisições
 async function apiCall(method, endpoint, data = null) {
   const url = `${API_BASE_URL}${endpoint}`;
@@ -57,7 +89,7 @@ async function registarComprador(dados) {
       nome_completo: dados.nome_completo,
       nome_utilizador: dados.nome_utilizador,
       email: dados.email,
-      numero_telefone: dados.numero_telefone,
+      numero_telefone: normalizarTelefone(dados.numero_telefone),
       senha: dados.senha,
       confirmar_senha: dados.confirmar_senha,
       data_nascimento: dados.data_nascimento || null,
@@ -73,12 +105,7 @@ async function registarComprador(dados) {
     };
   } catch (error) {
     // Extrair mensagem de erro mais clara
-    let mensagemErro = error.message;
-    if (error.data?.detail) {
-      mensagemErro = error.data.detail;
-    } else if (typeof error.data === 'string') {
-      mensagemErro = error.data;
-    }
+    const mensagemErro = extrairMensagemErro(error);
 
     return {
       success: false,
@@ -92,8 +119,12 @@ async function registarComprador(dados) {
 // Login
 async function login(identificador, senha) {
   try {
+    const identificadorNormalizado = validarEmail(identificador)
+      ? identificador.trim().toLowerCase()
+      : normalizarTelefone(identificador);
+
     const response = await apiCall('POST', '/auth/login', {
-      identificador,
+      identificador: identificadorNormalizado,
       senha
     });
 
