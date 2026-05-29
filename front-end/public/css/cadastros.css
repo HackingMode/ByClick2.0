@@ -106,7 +106,7 @@ body{
 
 .choice-grid{
   display:grid;
-  gap:18px;
+  gap:14px;
 }
 
 .choice-card{

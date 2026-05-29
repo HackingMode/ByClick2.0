@@ -283,7 +283,7 @@ if (companySubmitBtn) {
       return;
     }
 
-    alert('Cadastro da empresa preparado para envio.');
+    mostrarToast('Cadastro da empresa preparado para envio.', 'success');
   });
 }
 
@@ -293,3 +293,135 @@ const leftImage = document.getElementById('leftImage');
 if (leftImage) {
   leftImage.style.backgroundImage = `url(${images.comprador})`;
 }
+
+// Funções de validação para cadastros
+function validarFormularioCadastro() {
+  const erros = [];
+
+  // Verificar cada input de texto obrigatório na etapa 1
+  const nomCompleto = document.querySelector('input[type="text"]')?.value?.trim();
+  const nomeUtilizador = document.querySelectorAll('input[type="text"]')[1]?.value?.trim();
+  const email = document.querySelector('input[type="email"]')?.value?.trim();
+  const numeroTelefone = document.querySelector('input[type="tel"]')?.value?.trim();
+
+  if (!nomCompleto) erros.push('Nome completo é obrigatório');
+  if (!nomeUtilizador) erros.push('Nome de utilizador é obrigatório');
+
+  if (!email) {
+    erros.push('Email é obrigatório');
+  } else if (!validarEmail(email)) {
+    erros.push('Email inválido');
+  }
+
+  if (!numeroTelefone) {
+    erros.push('Número de telefone é obrigatório');
+  } else if (!validarTelefone(numeroTelefone)) {
+    erros.push('Número de telefone inválido (deve ter 9 ou 12 dígitos)');
+  }
+
+  // Validar senhas
+  const senhas = document.querySelectorAll('input[type="password"]');
+  const senha = senhas[0]?.value;
+  const confirmarSenha = senhas[1]?.value;
+
+  if (!senha) {
+    erros.push('Senha é obrigatória');
+  } else if (senha.length < 8) {
+    erros.push('Senha deve ter pelo menos 8 caracteres');
+  }
+
+  if (!confirmarSenha) {
+    erros.push('Confirmação de senha é obrigatória');
+  } else if (senha !== confirmarSenha) {
+    erros.push('As senhas não coincidem');
+  }
+
+  return erros;
+}
+
+// Conectar formulário de cadastro comprador com a API
+document.addEventListener('DOMContentLoaded', function() {
+  const submitBtn = document.querySelector('.submit-btn');
+
+  if (submitBtn && window.location.pathname.includes('cadastro_comprador')) {
+    submitBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+
+      // Validar formulário
+      const erros = validarFormularioCadastro();
+      if (erros.length > 0) {
+        erros.forEach(erro => mostrarToast(erro, 'error'));
+        return;
+      }
+
+      // Coletar dados do formulário
+      const textInputs = document.querySelectorAll('input[type="text"]');
+      const nomCompleto = textInputs[0]?.value?.trim();
+      const nomeUtilizador = textInputs[1]?.value?.trim();
+      const email = document.querySelector('input[type="email"]')?.value?.trim();
+      const numeroTelefone = document.querySelector('input[type="tel"]')?.value?.trim();
+      const generoSelect = document.querySelector('select');
+      const dataNascimento = document.querySelector('input[type="date"]')?.value;
+      const senhas = document.querySelectorAll('input[type="password"]');
+      const senha = senhas[0]?.value;
+      const confirmarSenha = senhas[1]?.value;
+
+      // Mapear valor do género para lowercase
+      let genero = generoSelect?.value?.toLowerCase();
+      if (genero === 'masculino') genero = 'masculino';
+      if (genero === 'feminino') genero = 'feminino';
+
+      // Preparar dados
+      const dados = {
+        nome_completo: nomCompleto,
+        nome_utilizador: nomeUtilizador,
+        email: email,
+        numero_telefone: numeroTelefone,
+        genero: genero || null,
+        data_nascimento: dataNascimento || null,
+        senha: senha,
+        confirmar_senha: confirmarSenha
+      };
+
+      submitBtn.disabled = true;
+      const textoOriginal = submitBtn.textContent;
+      submitBtn.textContent = 'Registando...';
+      mostrarLoading(true);
+
+      try {
+        const resultado = await registarComprador(dados);
+
+        if (resultado.success) {
+          mostrarToast('Cadastro realizado com sucesso!', 'success');
+          mostrarLoading(false);
+          // Redirecionar para login após 2 segundos
+          setTimeout(() => {
+            window.location.href = '../../../login/';
+          }, 2000);
+        } else {
+          mostrarLoading(false);
+          const mensagem = resultado.error || 'Erro ao registar';
+          mostrarToast(mensagem, 'error');
+
+          // Tratar erros específicos da API
+          if (resultado.status === 400) {
+            if (mensagem.includes('email')) {
+              mostrarToast('Este email já está registado', 'error');
+            } else if (mensagem.includes('utilizador') || mensagem.includes('username')) {
+              mostrarToast('Este nome de utilizador já existe', 'error');
+            } else if (mensagem.includes('telefone')) {
+              mostrarToast('Este número de telefone já está registado', 'error');
+            }
+          }
+        }
+      } catch (erro) {
+        mostrarLoading(false);
+        mostrarToast('Erro ao conectar com o servidor', 'error');
+        console.error('Erro:', erro);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = textoOriginal;
+      }
+    });
+  }
+});

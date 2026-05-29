@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sessão | ByClick Marketplace</title>
+  <link rel="stylesheet" href="../css/cadastros.css">
+  <link rel="stylesheet" href="../css/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Painel lateral com imagem de contexto -->
+    <div class="left login-image" id="leftImage">
+      <div class="overlay">
+        <h1>Bem-vindo de volta!</h1>
+        <p>Aceda à sua conta para continuar comprando e vendendo.</p>
+      </div>
+    </div>
+
+    <!-- Conteúdo principal do formulário de login -->
+    <div class="right">
+      <a class="back-link" href="../">← Voltar</a>
+
+      <div class="top-title">
+        <h2>Iniciar Sessão</h2>
+        <p>Utilize o seu email ou número de telefone.</p>
+      </div>
+
+      <!-- Formulário de login -->
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="identificador">Email ou Telefone</label>
+          <div class="input-wrapper">
+            <i class="fas fa-user"></i>
+            <input
+              type="text"
+              id="identificador"
+              name="identificador"
+              placeholder="seu@email.com ou +244..."
+              required>
+          </div>
+          <span class="error-message" id="identificadorError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="senha">Senha</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="senha"
+              name="senha"
+              placeholder="Digite a sua senha"
+              required>
+            <button type="button" class="toggle-password" onclick="togglePassword()">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message" id="senhaError"></span>
+        </div>
+
+        <div class="remember-forgot">
+          <label class="checkbox">
+            <input type="checkbox" id="lembrar">
+            <span>Manter-me ligado</span>
+          </label>
+          <a href="#" class="forgot-link">Esqueceu a senha?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">Iniciar Sessão</button>
+
+        <span class="error-message form-error" id="formError"></span>
+
+        <div class="divider">ou</div>
+
+        <div class="social-login">
+          <button type="button" class="btn-social google">
+            <i class="fab fa-google"></i> Google
+          </button>
+          <button type="button" class="btn-social facebook">
+            <i class="fab fa-facebook"></i> Facebook
+          </button>
+        </div>
+      </form>
+
+      <!-- Link para criar conta -->
+      <div class="signup-link">
+        <p>Não tem conta? <a href="../cadastro/">Crie uma aqui</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de notificação -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/api.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/script.js"></script>
+  <script src="../js/login.js"></script>
+</body>
+</html>
