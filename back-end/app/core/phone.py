@@ -4,10 +4,7 @@ import re
 
 
 def normalizar_telefone_angola(valor: str) -> str:
-<<<<<<< Updated upstream
-=======
     """Normaliza telefones para o formato 244XXXXXXXXX."""
->>>>>>> Stashed changes
     digitos = re.sub(r"\D", "", valor or "")
 
     if digitos.startswith("00"):

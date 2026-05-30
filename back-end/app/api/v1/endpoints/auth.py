@@ -11,16 +11,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-<<<<<<< Updated upstream
-from app.core.database import get_db
-from app.core.phone import normalizar_telefone_angola, parece_telefone, variantes_telefone_angola
-from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, decode_token
-from app.models.models import Utilizador, CodigoVerificacao, TipoUtilizadorEnum
-from app.schemas.schemas import (
-    RegistoComipradorSchema, LoginSchema, TokenSchema, VerificarCodigoSchema, UtilizadorResponseSchema
-)
-=======
->>>>>>> Stashed changes
 from app.api.v1.endpoints.deps import get_utilizador_atual
 from app.core.database import get_db
 from app.core.phone import normalizar_telefone_angola, parece_telefone, variantes_telefone_angola
@@ -70,13 +60,6 @@ def gerar_nome_utilizador_empresa(db: Session, nome_empresa: str) -> str:
 
     return candidato
 
-<<<<<<< Updated upstream
-    if db.query(Utilizador).filter(
-        Utilizador.numero_telefone.in_(variantes_telefone_angola(dados.numero_telefone))
-    ).first():
-        raise HTTPException(status_code=400, detail="Este número de telefone já está registado")
-=======
->>>>>>> Stashed changes
 
 def validar_utilizador_unico(
     db: Session,

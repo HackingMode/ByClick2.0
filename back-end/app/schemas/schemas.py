@@ -49,16 +49,6 @@ class RegistoBaseSchema(BaseModel):
             raise ValueError("A senha deve ter pelo menos 8 caracteres")
         return v
 
-    @field_validator("email")
-    @classmethod
-    def email_minusculo(cls, v):
-        return str(v).lower()
-
-    @field_validator("numero_telefone")
-    @classmethod
-    def telefone_normalizado(cls, v):
-        return normalizar_telefone_angola(v)
-
     @model_validator(mode="after")
     def senhas_iguais(self):
         if self.senha != self.confirmar_senha:

@@ -36,9 +36,6 @@ function extrairMensagemErro(error) {
   return error.message;
 }
 
-<<<<<<< Updated upstream
-// Função auxiliar para fazer requisições
-=======
 function respostaErro(error) {
   return {
     success: false,
@@ -48,7 +45,6 @@ function respostaErro(error) {
   };
 }
 
->>>>>>> Stashed changes
 async function apiCall(method, endpoint, data = null) {
   const url = `${API_BASE_URL}${endpoint}`;
   const options = {
@@ -119,17 +115,6 @@ async function registarComprador(dados) {
       mensagem: response.mensagem
     };
   } catch (error) {
-<<<<<<< Updated upstream
-    // Extrair mensagem de erro mais clara
-    const mensagemErro = extrairMensagemErro(error);
-
-    return {
-      success: false,
-      error: mensagemErro,
-      details: error.data,
-      status: error.status
-    };
-=======
     return respostaErro(error);
   }
 }
@@ -211,9 +196,9 @@ async function registarEmpresa(dados) {
     };
   } catch (error) {
     return respostaErro(error);
->>>>>>> Stashed changes
   }
 }
+
 
 async function login(identificador, senha) {
   try {
