@@ -277,16 +277,6 @@ function validateCompanyPasswords() {
 
 const companySubmitBtn = document.getElementById('companySubmitBtn');
 
-if (companySubmitBtn) {
-  companySubmitBtn.addEventListener('click', function () {
-    if (!validateCompanyDescription() || !validateCompanyPasswords()) {
-      return;
-    }
-
-    mostrarToast('Cadastro da empresa preparado para envio.', 'success');
-  });
-}
-
 // Define a imagem inicial do painel lateral quando a pagina possui esse elemento.
 const leftImage = document.getElementById('leftImage');
 
@@ -295,6 +285,141 @@ if (leftImage) {
 }
 
 // Funções de validação para cadastros
+function textoInputPorTipo(tipo, indice = 0) {
+  return document.querySelectorAll(`input[type="${tipo}"]`)[indice]?.value?.trim() || '';
+}
+
+function valorSelect(indice = 0) {
+  return document.querySelectorAll('select')[indice]?.value?.trim() || '';
+}
+
+function normalizarGenero(valor) {
+  const genero = valor?.toLowerCase();
+
+  if (genero === 'masculino' || genero === 'feminino' || genero === 'outro') {
+    return genero;
+  }
+
+  return null;
+}
+
+function tipoLojaPorCategoria(categoria) {
+  const valor = categoria?.toLowerCase() || '';
+
+  if (valor.includes('serv')) {
+    return 'servicos';
+  }
+
+  if (valor.includes('outros')) {
+    return 'ambos';
+  }
+
+  return 'produtos';
+}
+
+function mostrarErrosCadastro(erros) {
+  erros.forEach(erro => mostrarToast(erro, 'error'));
+}
+
+function validarSenhasBasicas(senha, confirmarSenha, erros) {
+  if (!senha) {
+    erros.push('Senha e obrigatoria');
+  } else if (senha.length < 8) {
+    erros.push('Senha deve ter pelo menos 8 caracteres');
+  }
+
+  if (!confirmarSenha) {
+    erros.push('Confirmacao de senha e obrigatoria');
+  } else if (senha !== confirmarSenha) {
+    erros.push('As senhas nao coincidem');
+  }
+}
+
+function coletarDadosComprador() {
+  const textInputs = document.querySelectorAll('input[type="text"]');
+  const dates = document.querySelectorAll('input[type="date"]');
+  const senhas = document.querySelectorAll('input[type="password"]');
+
+  return {
+    nome_completo: textInputs[0]?.value?.trim(),
+    nome_utilizador: textInputs[1]?.value?.trim(),
+    email: textoInputPorTipo('email'),
+    numero_telefone: textoInputPorTipo('tel'),
+    genero: normalizarGenero(valorSelect(0)),
+    data_nascimento: dates[0]?.value || null,
+    provincia: valorSelect(1) || null,
+    municipio: valorSelect(2) || null,
+    bairro: textInputs[2]?.value?.trim() || null,
+    endereco_completo: textInputs[3]?.value?.trim() || null,
+    senha: senhas[0]?.value,
+    confirmar_senha: senhas[1]?.value
+  };
+}
+
+function coletarDadosVendedor() {
+  const textInputs = document.querySelectorAll('input[type="text"]');
+  const dates = document.querySelectorAll('input[type="date"]');
+  const senhas = document.querySelectorAll('input[type="password"]');
+
+  return {
+    nome_completo: textInputs[0]?.value?.trim(),
+    nome_utilizador: textInputs[1]?.value?.trim(),
+    email: textoInputPorTipo('email'),
+    numero_telefone: textoInputPorTipo('tel'),
+    genero: normalizarGenero(valorSelect(0)),
+    data_nascimento: dates[0]?.value || null,
+    provincia: valorSelect(1) || null,
+    municipio: valorSelect(2) || null,
+    bairro: textInputs[2]?.value?.trim() || null,
+    endereco_completo: textInputs[3]?.value?.trim() || null,
+    numero_bi: textInputs[4]?.value?.trim(),
+    nif: textInputs[5]?.value?.trim() || null,
+    data_emissao: dates[1]?.value,
+    data_validade: dates[2]?.value,
+    nome_loja: textInputs[1]?.value?.trim(),
+    senha: senhas[0]?.value,
+    confirmar_senha: senhas[1]?.value,
+    tipo_loja: 'produtos'
+  };
+}
+
+function valorPorId(id) {
+  return document.getElementById(id)?.value?.trim() || '';
+}
+
+function coletarDadosEmpresa() {
+  const categoria = valorPorId('companyCategory');
+
+  return {
+    nome_empresa: valorPorId('companyName'),
+    nif: valorPorId('companyNif'),
+    tipo_empresa: valorPorId('companyType'),
+    categoria_principal: categoria,
+    data_criacao: valorPorId('companyCreationDate') || null,
+    provincia: valorPorId('companyProvince'),
+    municipio: valorPorId('companyMunicipality'),
+    website: valorPorId('companyWebsite') || null,
+    telefone: valorPorId('companyPhone'),
+    email: valorPorId('companyEmail'),
+    whatsapp: valorPorId('companyWhatsapp') || null,
+    representante_nome: valorPorId('representativeName'),
+    representante_cargo: valorPorId('representativeRole'),
+    representante_bi: valorPorId('representativeBi'),
+    representante_nif: valorPorId('representativeNif') || null,
+    representante_telefone: valorPorId('representativePhone') || null,
+    representante_email: valorPorId('representativeEmail') || null,
+    descricao: valorPorId('companyDescription') || null,
+    iban: valorPorId('iban') || null,
+    titular_conta: valorPorId('accountHolder') || null,
+    numero_express: valorPorId('expressNumber') || null,
+    paypay_entidade: valorPorId('paypalEntity') || null,
+    paypay_referencia: valorPorId('paypalReference') || null,
+    senha: valorPorId('companyPassword'),
+    confirmar_senha: valorPorId('companyConfirmPassword'),
+    tipo_loja: tipoLojaPorCategoria(categoria)
+  };
+}
+
 function validarFormularioCadastro() {
   const erros = [];
 
@@ -338,6 +463,141 @@ function validarFormularioCadastro() {
 
   return erros;
 }
+
+function validarFormularioVendedor() {
+  const erros = validarFormularioCadastro();
+  const dados = coletarDadosVendedor();
+
+  if (!dados.numero_bi) {
+    erros.push('Numero do BI e obrigatorio');
+  }
+
+  if (!dados.data_emissao) {
+    erros.push('Data de emissao do BI e obrigatoria');
+  }
+
+  if (!dados.data_validade) {
+    erros.push('Data de validade do BI e obrigatoria');
+  }
+
+  return erros;
+}
+
+function validarFormularioEmpresa() {
+  const erros = [];
+  const dados = coletarDadosEmpresa();
+
+  if (!validateCompanyDescription() || !validateCompanyPasswords()) {
+    erros.push('Corrija os dados da empresa antes de enviar');
+  }
+
+  const obrigatorios = [
+    ['Nome da empresa', dados.nome_empresa],
+    ['NIF empresarial', dados.nif],
+    ['Tipo de empresa', dados.tipo_empresa],
+    ['Categoria principal', dados.categoria_principal],
+    ['Data de criacao da empresa', dados.data_criacao],
+    ['Provincia', dados.provincia],
+    ['Municipio', dados.municipio],
+    ['Telefone empresarial', dados.telefone],
+    ['Email empresarial', dados.email],
+    ['WhatsApp empresarial', dados.whatsapp],
+    ['Nome do representante', dados.representante_nome],
+    ['Cargo do representante', dados.representante_cargo],
+    ['BI do representante', dados.representante_bi],
+    ['Telefone do representante', dados.representante_telefone],
+    ['Email do representante', dados.representante_email],
+  ];
+
+  obrigatorios.forEach(([campo, valor]) => {
+    if (!valor) {
+      erros.push(`${campo} e obrigatorio`);
+    }
+  });
+
+  if (dados.email && !validarEmail(dados.email)) {
+    erros.push('Email empresarial invalido');
+  }
+
+  if (dados.representante_email && !validarEmail(dados.representante_email)) {
+    erros.push('Email do representante invalido');
+  }
+
+  if (dados.telefone && !validarTelefone(dados.telefone)) {
+    erros.push('Telefone empresarial invalido');
+  }
+
+  if (dados.whatsapp && !validarTelefone(dados.whatsapp)) {
+    erros.push('WhatsApp empresarial invalido');
+  }
+
+  if (dados.representante_telefone && !validarTelefone(dados.representante_telefone)) {
+    erros.push('Telefone do representante invalido');
+  }
+
+  validarSenhasBasicas(dados.senha, dados.confirmar_senha, erros);
+
+  return erros;
+}
+
+async function submeterCadastro(event, botao, config) {
+  event.preventDefault();
+
+  const erros = config.validar();
+  if (erros.length > 0) {
+    mostrarErrosCadastro(erros);
+    return;
+  }
+
+  const textoOriginal = botao.textContent;
+  botao.disabled = true;
+  botao.textContent = 'Registando...';
+  mostrarLoading(true);
+
+  try {
+    const resultado = await config.registar(config.coletar());
+
+    if (resultado.success) {
+      mostrarToast(config.sucesso, 'success');
+      setTimeout(() => {
+        window.location.href = '../../../login/';
+      }, 2000);
+      return;
+    }
+
+    mostrarToast(resultado.error || 'Erro ao registar', 'error');
+  } catch (erro) {
+    mostrarToast('Erro ao conectar com o servidor', 'error');
+    console.error('Erro:', erro);
+  } finally {
+    mostrarLoading(false);
+    botao.disabled = false;
+    botao.textContent = textoOriginal;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const pathname = window.location.pathname;
+
+  if (pathname.includes('cadastro_vendedor')) {
+    const submitBtn = document.querySelector('.submit-btn');
+    submitBtn?.addEventListener('click', event => submeterCadastro(event, submitBtn, {
+      validar: validarFormularioVendedor,
+      coletar: coletarDadosVendedor,
+      registar: registarVendedor,
+      sucesso: 'Cadastro de vendedor realizado com sucesso!'
+    }));
+  }
+
+  if (pathname.includes('cadastro_empresa')) {
+    companySubmitBtn?.addEventListener('click', event => submeterCadastro(event, companySubmitBtn, {
+      validar: validarFormularioEmpresa,
+      coletar: coletarDadosEmpresa,
+      registar: registarEmpresa,
+      sucesso: 'Cadastro de empresa realizado com sucesso!'
+    }));
+  }
+});
 
 // Conectar formulário de cadastro comprador com a API
 document.addEventListener('DOMContentLoaded', function() {

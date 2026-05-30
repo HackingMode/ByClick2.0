@@ -2,7 +2,7 @@
 Schemas Pydantic - Validação de dados de entrada e saída da API.
 """
 
-from pydantic import BaseModel, EmailStr, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, field_validator, model_validator
 from typing import Optional
 from datetime import date, datetime
 from app.core.phone import normalizar_telefone_angola
@@ -14,8 +14,10 @@ from app.models.models import (
 
 # ─────────────────────── AUTENTICAÇÃO ───────────────────────
 
-class RegistoComipradorSchema(BaseModel):
-    """Dados para registar um comprador."""
+class RegistoBaseSchema(BaseModel):
+    """Dados comuns para criar uma conta de acesso."""
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     nome_completo: str
     nome_utilizador: str
     email: EmailStr
@@ -24,6 +26,21 @@ class RegistoComipradorSchema(BaseModel):
     confirmar_senha: str
     data_nascimento: Optional[date] = None
     genero: Optional[GeneroEnum] = None
+    provincia: Optional[str] = None
+    municipio: Optional[str] = None
+    bairro: Optional[str] = None
+    endereco_completo: Optional[str] = None
+    nif: Optional[str] = None
+
+    @field_validator("email")
+    @classmethod
+    def email_minusculo(cls, v):
+        return str(v).lower()
+
+    @field_validator("numero_telefone")
+    @classmethod
+    def telefone_normalizado(cls, v):
+        return normalizar_telefone_angola(v)
 
     @field_validator("senha")
     @classmethod
@@ -49,8 +66,90 @@ class RegistoComipradorSchema(BaseModel):
         return self
 
 
+class RegistoCompradorSchema(RegistoBaseSchema):
+    """Dados para registar um comprador."""
+    pass
+
+
+# Mantem compatibilidade com o nome usado anteriormente no endpoint.
+RegistoComipradorSchema = RegistoCompradorSchema
+
+
+class RegistoContaVendedorSchema(RegistoBaseSchema):
+    """Dados para criar uma conta de vendedor individual."""
+    numero_bi: str
+    data_emissao: date
+    data_validade: date
+    nome_loja: Optional[str] = None
+    descricao_loja: Optional[str] = None
+    tipo_loja: TipoLojaEnum = TipoLojaEnum.produtos
+
+
+class RegistoEmpresaSchema(BaseModel):
+    """Dados para criar uma conta empresarial."""
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    nome_empresa: str
+    nif: str
+    tipo_empresa: Optional[str] = None
+    categoria_principal: Optional[str] = None
+    data_criacao: Optional[date] = None
+    provincia: str
+    municipio: str
+    website: Optional[str] = None
+    telefone: str
+    email: EmailStr
+    whatsapp: Optional[str] = None
+    representante_nome: str
+    representante_cargo: str
+    representante_bi: str
+    representante_nif: Optional[str] = None
+    representante_telefone: Optional[str] = None
+    representante_email: Optional[EmailStr] = None
+    descricao: Optional[str] = None
+    iban: Optional[str] = None
+    titular_conta: Optional[str] = None
+    numero_express: Optional[str] = None
+    paypay_entidade: Optional[str] = None
+    paypay_referencia: Optional[str] = None
+    senha: str
+    confirmar_senha: str
+    nome_utilizador: Optional[str] = None
+    tipo_loja: TipoLojaEnum = TipoLojaEnum.ambos
+
+    @field_validator("email")
+    @classmethod
+    def email_empresa_minusculo(cls, v):
+        return str(v).lower()
+
+    @field_validator("representante_email")
+    @classmethod
+    def email_representante_minusculo(cls, v):
+        return str(v).lower() if v else v
+
+    @field_validator("telefone", "whatsapp", "representante_telefone")
+    @classmethod
+    def telefone_empresa_normalizado(cls, v):
+        return normalizar_telefone_angola(v) if v else v
+
+    @field_validator("senha")
+    @classmethod
+    def senha_empresa_minima(cls, v):
+        if len(v) < 8:
+            raise ValueError("A senha deve ter pelo menos 8 caracteres")
+        return v
+
+    @model_validator(mode="after")
+    def senhas_empresa_iguais(self):
+        if self.senha != self.confirmar_senha:
+            raise ValueError("As senhas nao coincidem")
+        return self
+
+
 class LoginSchema(BaseModel):
     """Login com email ou telefone."""
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     identificador: str  # email ou numero_telefone
     senha: str
 

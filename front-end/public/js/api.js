@@ -1,6 +1,5 @@
 /**
- * API Client para ByClick
- * Funções de integração com os endpoints do backend
+ * API Client para ByClick.
  */
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -37,7 +36,19 @@ function extrairMensagemErro(error) {
   return error.message;
 }
 
+<<<<<<< Updated upstream
 // Função auxiliar para fazer requisições
+=======
+function respostaErro(error) {
+  return {
+    success: false,
+    error: extrairMensagemErro(error),
+    details: error.data,
+    status: error.status
+  };
+}
+
+>>>>>>> Stashed changes
 async function apiCall(method, endpoint, data = null) {
   const url = `${API_BASE_URL}${endpoint}`;
   const options = {
@@ -47,10 +58,9 @@ async function apiCall(method, endpoint, data = null) {
     },
   };
 
-  // Adicionar token se existir
   const token = localStorage.getItem('access_token');
   if (token) {
-    options.headers['Authorization'] = `Bearer ${token}`;
+    options.headers.Authorization = `Bearer ${token}`;
   }
 
   if (data) {
@@ -64,7 +74,7 @@ async function apiCall(method, endpoint, data = null) {
     if (!response.ok) {
       throw {
         status: response.status,
-        message: result.detail || 'Erro na requisição',
+        message: result.detail || 'Erro na requisicao',
         data: result
       };
     }
@@ -74,15 +84,15 @@ async function apiCall(method, endpoint, data = null) {
     if (error.status !== undefined) {
       throw error;
     }
+
     throw {
       status: 0,
-      message: 'Erro de conexão com o servidor',
+      message: 'Erro de conexao com o servidor',
       error: error.message
     };
   }
 }
 
-// Registar novo comprador
 async function registarComprador(dados) {
   try {
     const payload = {
@@ -94,9 +104,14 @@ async function registarComprador(dados) {
       confirmar_senha: dados.confirmar_senha,
       data_nascimento: dados.data_nascimento || null,
       genero: dados.genero?.toLowerCase() || null,
+      provincia: dados.provincia || null,
+      municipio: dados.municipio || null,
+      bairro: dados.bairro || null,
+      endereco_completo: dados.endereco_completo || null,
+      nif: dados.nif || null,
     };
 
-    const response = await apiCall('POST', '/auth/registar', payload);
+    const response = await apiCall('POST', '/auth/registar-comprador', payload);
     return {
       success: true,
       data: response,
@@ -104,6 +119,7 @@ async function registarComprador(dados) {
       mensagem: response.mensagem
     };
   } catch (error) {
+<<<<<<< Updated upstream
     // Extrair mensagem de erro mais clara
     const mensagemErro = extrairMensagemErro(error);
 
@@ -113,10 +129,92 @@ async function registarComprador(dados) {
       details: error.data,
       status: error.status
     };
+=======
+    return respostaErro(error);
   }
 }
 
-// Login
+async function registarVendedor(dados) {
+  try {
+    const payload = {
+      nome_completo: dados.nome_completo,
+      nome_utilizador: dados.nome_utilizador,
+      email: dados.email,
+      numero_telefone: normalizarTelefone(dados.numero_telefone),
+      senha: dados.senha,
+      confirmar_senha: dados.confirmar_senha,
+      data_nascimento: dados.data_nascimento || null,
+      genero: dados.genero?.toLowerCase() || null,
+      provincia: dados.provincia || null,
+      municipio: dados.municipio || null,
+      bairro: dados.bairro || null,
+      endereco_completo: dados.endereco_completo || null,
+      nif: dados.nif || null,
+      numero_bi: dados.numero_bi,
+      data_emissao: dados.data_emissao,
+      data_validade: dados.data_validade,
+      nome_loja: dados.nome_loja || dados.nome_utilizador,
+      descricao_loja: dados.descricao_loja || null,
+      tipo_loja: dados.tipo_loja || 'produtos'
+    };
+
+    const response = await apiCall('POST', '/auth/registar-vendedor', payload);
+    return {
+      success: true,
+      data: response,
+      utilizador_id: response.utilizador_id,
+      mensagem: response.mensagem
+    };
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function registarEmpresa(dados) {
+  try {
+    const payload = {
+      nome_empresa: dados.nome_empresa,
+      nif: dados.nif,
+      tipo_empresa: dados.tipo_empresa || null,
+      categoria_principal: dados.categoria_principal || null,
+      data_criacao: dados.data_criacao || null,
+      provincia: dados.provincia,
+      municipio: dados.municipio,
+      website: dados.website || null,
+      telefone: normalizarTelefone(dados.telefone),
+      email: dados.email,
+      whatsapp: dados.whatsapp ? normalizarTelefone(dados.whatsapp) : null,
+      representante_nome: dados.representante_nome,
+      representante_cargo: dados.representante_cargo,
+      representante_bi: dados.representante_bi,
+      representante_nif: dados.representante_nif || null,
+      representante_telefone: dados.representante_telefone ? normalizarTelefone(dados.representante_telefone) : null,
+      representante_email: dados.representante_email || null,
+      descricao: dados.descricao || null,
+      iban: dados.iban || null,
+      titular_conta: dados.titular_conta || null,
+      numero_express: dados.numero_express || null,
+      paypay_entidade: dados.paypay_entidade || null,
+      paypay_referencia: dados.paypay_referencia || null,
+      senha: dados.senha,
+      confirmar_senha: dados.confirmar_senha,
+      nome_utilizador: dados.nome_utilizador || null,
+      tipo_loja: dados.tipo_loja || 'ambos'
+    };
+
+    const response = await apiCall('POST', '/auth/registar-empresa', payload);
+    return {
+      success: true,
+      data: response,
+      utilizador_id: response.utilizador_id,
+      mensagem: response.mensagem
+    };
+  } catch (error) {
+    return respostaErro(error);
+>>>>>>> Stashed changes
+  }
+}
+
 async function login(identificador, senha) {
   try {
     const identificadorNormalizado = validarEmail(identificador)
@@ -128,7 +226,6 @@ async function login(identificador, senha) {
       senha
     });
 
-    // Guardar tokens no localStorage
     if (response.access_token) {
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
@@ -148,7 +245,6 @@ async function login(identificador, senha) {
   }
 }
 
-// Verificar código OTP
 async function verificarCodigo(utilizadorId, codigo, tipo) {
   try {
     const response = await apiCall('POST', '/auth/verificar-codigo', {
@@ -169,7 +265,6 @@ async function verificarCodigo(utilizadorId, codigo, tipo) {
   }
 }
 
-// Obter dados do utilizador autenticado
 async function obterMeuPerfil() {
   try {
     const response = await apiCall('GET', '/auth/me');
@@ -179,10 +274,10 @@ async function obterMeuPerfil() {
     };
   } catch (error) {
     if (error.status === 401) {
-      // Token expirado, limpar localStorage
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
     }
+
     return {
       success: false,
       error: error.message
@@ -190,7 +285,6 @@ async function obterMeuPerfil() {
   }
 }
 
-// Fazer logout
 function logout() {
   localStorage.removeItem('access_token');
   localStorage.removeItem('refresh_token');
@@ -199,31 +293,28 @@ function logout() {
   window.location.href = '../login/';
 }
 
-// Verificar se está autenticado
 function estaAutenticado() {
   return !!localStorage.getItem('access_token');
 }
 
-// Obter token de acesso
 function obterToken() {
   return localStorage.getItem('access_token');
 }
 
-// Função para validar email
 function validarEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
+  return regex.test(String(email || '').trim());
 }
 
-// Função para validar telefone angolano
 function validarTelefone(telefone) {
-  // Remove espaços e caracteres especiais
-  const cleaned = telefone.replace(/\D/g, '');
-  // Verifica se tem 9 ou 12 dígitos (com ou sem código de país)
-  return cleaned.length === 9 || cleaned.length === 12;
+  try {
+    normalizarTelefone(telefone);
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
-// Função para validar identificador (email ou telefone)
 function validarIdentificador(identificador) {
   return validarEmail(identificador) || validarTelefone(identificador);
 }
