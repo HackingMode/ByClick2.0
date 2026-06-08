@@ -1,75 +1,174 @@
+/**
+ * Painel do Vendedor - ByClick
+ * Carrega dados reais da API e atualiza o dashboard.
+ */
+
 let autoRefreshInterval = null;
 let charts = {};
 
-async function carregarDadosPainel() {
-  const user = await obterMeuPerfil();
-  const loja = await obterDadosVendedor();
-  const produtos = await obterProdutos({ limit: 10 });
-  const pedidos = await obterPedidos({ limit: 10, status: 'pendente' });
-
-  if (user.success) {
-    atualizarPerfilUsuario(user.data);
+// ===== AUTH CHECK =====
+function verificarAutenticacao() {
+  if (!estaAutenticado()) {
+    window.location.href = '../../login/';
+    return false;
   }
-
-  if (loja.success) {
-    atualizarDadosLoja(loja.data);
-  }
-
-  if (produtos.success) {
-    atualizarProdutos(produtos.data);
-  }
-
-  if (pedidos.success) {
-    atualizarPedidos(pedidos.data);
-  }
+  return true;
 }
 
+// ===== DATA LOADING =====
+async function carregarDadosPainel() {
+  if (!verificarAutenticacao()) return;
+
+  try {
+    const [user, loja, stats, pedidos] = await Promise.allSettled([
+      obterMeuPerfil(),
+      obterDadosVendedor(),
+      obterEstatisticas('vendedor'),
+      obterMeusPedidos('vendedor', 10)
+    ]);
+
+    if (user.status === 'fulfilled' && user.value.success) {
+      atualizarPerfilUsuario(user.value.data);
+    }
+
+    if (loja.status === 'fulfilled' && loja.value.success) {
+      atualizarDadosLoja(loja.value.data);
+    }
+
+    if (stats.status === 'fulfilled' && stats.value.success) {
+      atualizarEstatisticas(stats.value.data);
+    }
+
+    if (pedidos.status === 'fulfilled' && pedidos.value.success) {
+      atualizarTabelaPedidos(pedidos.value.data);
+    }
+  } catch (erro) {
+    console.error('Erro ao carregar dados do painel:', erro);
+  }
+
+  atualizarData();
+}
+
+// ===== UPDATE UI =====
 function atualizarPerfilUsuario(usuario) {
   const nomeEl = document.querySelector('[data-user-name]');
   const fotoEl = document.querySelector('[data-user-photo]');
+  const tipoEl = document.querySelector('[data-user-type]');
+  const greetEl = document.querySelector('[data-greeting]');
 
-  if (nomeEl) nomeEl.textContent = usuario.nome_completo || usuario.nome_utilizador;
-  if (fotoEl) fotoEl.src = usuario.foto_perfil_url || 'https://via.placeholder.com/40';
+  const nome = usuario.nome_completo || usuario.nome_utilizador || 'Vendedor';
+  const primeiroNome = nome.split(' ')[0];
+
+  if (nomeEl) nomeEl.textContent = nome;
+  if (fotoEl && usuario.foto_perfil_url) fotoEl.src = usuario.foto_perfil_url;
+  if (tipoEl) tipoEl.textContent = 'Vendedor Individual';
+  if (greetEl) greetEl.textContent = `Olá, ${primeiroNome}! 👋`;
 }
 
 function atualizarDadosLoja(loja) {
-  const lojaNameEl = document.querySelector('[data-store-name]');
-  const lojaDescEl = document.querySelector('[data-store-desc]');
-  const lojaLogoEl = document.querySelector('[data-store-logo]');
-  const lojaVerEl = document.querySelector('[data-store-verified]');
+  const nomeEl = document.querySelector('[data-store-name]');
+  const logoEl = document.querySelector('[data-store-logo]');
+  const verEl = document.querySelector('[data-store-verified]');
+  const statusEl = document.querySelector('[data-store-status]');
+  const tipoEl = document.querySelector('[data-store-type]');
+  const membroEl = document.querySelector('[data-member-since]');
+  const catsEl = document.querySelector('[data-store-categories]');
 
-  if (lojaNameEl) lojaNameEl.textContent = loja.nome_loja || 'Minha Loja';
-  if (lojaDescEl) lojaDescEl.textContent = loja.descricao_loja || 'Descrição não disponível';
-  if (lojaLogoEl) lojaLogoEl.src = loja.logo_loja_url || 'https://via.placeholder.com/80';
-  if (lojaVerEl) lojaVerEl.textContent = loja.verificado ? '✓ Verificada' : 'Aguardando verificação';
-}
+  if (nomeEl) nomeEl.textContent = loja.nome_loja || 'Minha Loja';
+  if (logoEl) logoEl.textContent = (loja.nome_loja || 'ML').substring(0, 2).toUpperCase();
 
-function atualizarProdutos(produtos) {
-  const countEl = document.querySelector('[data-products-count]');
-  if (countEl) countEl.textContent = produtos.length || 0;
-}
-
-function atualizarPedidos(pedidos) {
-  const countEl = document.querySelector('[data-orders-count]');
-  if (countEl) countEl.textContent = pedidos.length || 0;
-}
-
-function atualizarGraficos() {
-  if (charts.sales) {
-    charts.sales.data.labels = obterUltimos9Dias();
-    charts.sales.update();
+  if (verEl) {
+    if (loja.verificado) {
+      verEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> Loja Verificada';
+      verEl.style.color = '#16a34a';
+    } else {
+      verEl.innerHTML = '<i class="fa-solid fa-clock"></i> Aguardando verificação';
+      verEl.style.color = '#ea580c';
+    }
   }
 
-  if (charts.orders) {
-    charts.orders.data.labels = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'];
-    charts.orders.update();
+  if (statusEl) {
+    statusEl.textContent = loja.verificado ? 'Verificada' : 'Pendente';
+    statusEl.classList.toggle('green', loja.verificado);
   }
 
-  if (charts.categories) {
-    charts.categories.update();
+  const tipoMap = { 'individual': 'Vendedor Ind.', 'empresa': 'Empresa' };
+  if (tipoEl) tipoEl.textContent = tipoMap[loja.tipo_vendedor] || loja.tipo_vendedor;
+
+  const lojaMap = { 'produtos': 'Produtos', 'servicos': 'Serviços', 'ambos': 'Produtos • Serviços' };
+  if (catsEl) catsEl.textContent = lojaMap[loja.tipo_loja] || loja.tipo_loja;
+
+  if (membroEl && loja.criado_em) {
+    membroEl.textContent = new Date(loja.criado_em).toLocaleDateString('pt-AO');
   }
 }
 
+function atualizarEstatisticas(stats) {
+  const prodEl = document.querySelector('[data-products-count]');
+  const pedidosEl = document.querySelector('[data-orders-count]');
+  const receitaEl = document.querySelector('[data-revenue]');
+  const ratingEl = document.querySelector('[data-rating]');
+  const totalEl = document.querySelector('[data-total-sales]');
+
+  if (prodEl) prodEl.textContent = stats.produtos_count || 0;
+  if (pedidosEl) pedidosEl.textContent = stats.pedidos_mes || 0;
+  if (receitaEl) receitaEl.textContent = `${(stats.receita_mes || 0).toLocaleString('pt-AO')} Kz`;
+  if (ratingEl) ratingEl.textContent = (stats.avaliacao_media || 0).toFixed(1);
+  if (totalEl) totalEl.textContent = stats.total_vendas || 0;
+}
+
+function atualizarTabelaPedidos(pedidos) {
+  const tbody = document.getElementById('ordersTableBody');
+  if (!tbody) return;
+
+  if (!pedidos || pedidos.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:2rem;">Nenhum pedido recente</td></tr>';
+    return;
+  }
+
+  const statusClasses = {
+    'pendente': 's-proc',
+    'confirmado': 's-pago',
+    'em_processamento': 's-proc',
+    'enviado': 's-envio',
+    'entregue': 's-entregue',
+    'cancelado': 's-cancel',
+    'reembolsado': 's-cancel'
+  };
+
+  const statusLabels = {
+    'pendente': 'Pendente',
+    'confirmado': 'Confirmado',
+    'em_processamento': 'Processando',
+    'enviado': 'Em envio',
+    'entregue': 'Entregue',
+    'cancelado': 'Cancelado',
+    'reembolsado': 'Reembolsado'
+  };
+
+  tbody.innerHTML = pedidos.map(p => `
+    <tr>
+      <td class="order-id">#${p.numero_pedido || p.id}</td>
+      <td>${p.cliente_nome || 'Cliente'}</td>
+      <td><b>${(p.valor_total || 0).toLocaleString('pt-AO')} Kz</b></td>
+      <td><span class="status ${statusClasses[p.status] || 's-proc'}"><span class="dot"></span>${statusLabels[p.status] || p.status}</span></td>
+      <td style="color:var(--text-muted)">${p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-AO') : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function atualizarData() {
+  const dateEl = document.querySelector('[data-current-date]');
+  if (!dateEl) return;
+
+  const hoje = new Date();
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const dataStr = `${hoje.getDate()} de ${meses[hoje.getMonth()]}, ${hoje.getFullYear()}`;
+  const horaStr = hoje.toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' });
+  dateEl.textContent = `${dataStr}  |  ${horaStr}`;
+}
+
+// ===== CHARTS =====
 function obterUltimos9Dias() {
   const dias = [];
   for (let i = 8; i >= 0; i--) {
@@ -80,7 +179,19 @@ function obterUltimos9Dias() {
   return dias;
 }
 
+function atualizarGraficos() {
+  if (charts.sales) {
+    charts.sales.data.labels = obterUltimos9Dias();
+    charts.sales.update();
+  }
+  if (charts.orders) charts.orders.update();
+  if (charts.categories) charts.categories.update();
+}
+
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', function () {
+  if (!verificarAutenticacao()) return;
+
   // Mobile sidebar
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
@@ -97,6 +208,17 @@ document.addEventListener('DOMContentLoaded', function () {
     this.classList.add('active');
   }));
 
+  // Logout
+  const logoutBtn = document.getElementById('btnLogout');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm('Tem certeza que deseja terminar a sessão?')) {
+        logout();
+      }
+    });
+  }
+
   // Carregar dados do painel
   carregarDadosPainel();
 
@@ -110,9 +232,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const refreshBtn = document.querySelector('[data-refresh-btn]');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', () => {
-      refreshBtn.disabled = true;
+      refreshBtn.style.animation = 'spin 0.5s ease';
+      refreshBtn.querySelector('i').style.animation = 'spin 0.5s ease';
       carregarDadosPainel().then(() => {
-        refreshBtn.disabled = false;
+        setTimeout(() => {
+          refreshBtn.style.animation = '';
+          refreshBtn.querySelector('i').style.animation = '';
+        }, 500);
       });
     });
   }

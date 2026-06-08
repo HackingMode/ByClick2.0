@@ -277,7 +277,7 @@ async function verificarCodigo(utilizadorId, codigo, tipo) {
   }
 }
 
-function obterMeuPerfil() {
+async function obterMeuPerfil() {
   try {
     const response = await apiCall('GET', '/auth/me');
     return {
@@ -410,7 +410,16 @@ function logout() {
   localStorage.removeItem('refresh_token');
   localStorage.removeItem('token_type');
   localStorage.removeItem('login_timestamp');
-  window.location.href = '../login/';
+  localStorage.removeItem('usuario');
+  // Smart redirect: find login path relative to current page
+  const path = window.location.pathname;
+  if (path.includes('/paineis/')) {
+    window.location.href = '../../login/';
+  } else if (path.includes('/explorar/') || path.includes('/produto/')) {
+    window.location.href = '../login/';
+  } else {
+    window.location.href = '/login/';
+  }
 }
 
 function estaAutenticado() {

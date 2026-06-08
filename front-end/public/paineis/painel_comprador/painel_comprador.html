@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - ByClick</title>
+    <meta name="description" content="Painel do comprador ByClick — acompanhe pedidos, gerir perfil e explorar produtos.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/painel_comprador.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>By<em>Click</em></span>
+    </div>
+    <div class="profile-section">
+        <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-img" data-user-photo>
+        <div class="profile-info">
+            <h4 data-user-name>Carregando...</h4>
+            <div class="profile-role"><i class="fa-solid fa-user"></i> <span data-user-type>Comprador</span></div>
+        </div>
+    </div>
+    <nav>
+        <div class="nav-label">Menu</div>
+        <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i> Página Inicial</a>
+        <a href="../../explorar/" class="nav-item"><i class="fa-solid fa-compass"></i> Explorar</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-clipboard-list"></i> Meus Pedidos</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-heart"></i> Favoritos</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-user-pen"></i> Meu Perfil</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Definições</a>
+        <a href="#" class="nav-item nav-logout" id="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Terminar Sessão</a>
+    </nav>
+</aside>
+
+<div class="main-content">
+    <header class="topbar">
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+        <div class="topbar-logo">By<em>Click</em></div>
+        <div class="topbar-actions">
+            <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">0</span></div>
+            <div class="topbar-divider"></div>
+            <div class="icon-btn"><i class="fa-solid fa-cart-shopping"></i><span class="badge">0</span></div>
+        </div>
+    </header>
+
+    <main class="page">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2 data-greeting>Olá! 👋</h2>
+            <p>Explore milhares de produtos e serviços no marketplace angolano mais moderno.</p>
+            <a href="../../explorar/" class="btn-explore"><i class="fa-solid fa-compass"></i> Explorar Produtos</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-blue"><i class="fa-solid fa-clipboard-list"></i></div>
+                <div class="stat-info">
+                    <div class="label">Pedidos</div>
+                    <div class="value" data-orders-count>0</div>
+                    <div class="sub">Total</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-orange"><i class="fa-solid fa-truck"></i></div>
+                <div class="stat-info">
+                    <div class="label">Em Curso</div>
+                    <div class="value" data-pending-count>0</div>
+                    <div class="sub">A caminho</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="stat-info">
+                    <div class="label">Entregues</div>
+                    <div class="value" data-delivered-count>0</div>
+                    <div class="sub">Concluídos</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-red"><i class="fa-solid fa-heart"></i></div>
+                <div class="stat-info">
+                    <div class="label">Favoritos</div>
+                    <div class="value" data-favorites-count>0</div>
+                    <div class="sub">Produtos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+            <div class="left-col">
+                <!-- Orders Table -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-clipboard-list"></i> Meus Pedidos Recentes</h3>
+                        <a href="#" class="btn-link">Ver todos <i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pedido</th>
+                                    <th>Vendedor</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #999; padding: 2rem;">
+                                        <div class="empty-state">
+                                            <i class="fa-solid fa-bag-shopping"></i>
+                                            <p>Ainda não fez nenhum pedido.<br><a href="../../explorar/" style="color: var(--blue); text-decoration: none; font-weight: 600;">Explorar produtos →</a></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <!-- User Profile -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-user"></i> Meu Perfil</h3>
+                        <button class="btn-edit"><i class="fa-solid fa-pen"></i> Editar</button>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://via.placeholder.com/64" alt="Foto" class="user-avatar" data-profile-photo>
+                        <div>
+                            <div class="user-name" data-profile-name>Carregando...</div>
+                            <div class="user-email" data-profile-email>—</div>
+                            <span class="user-badge"><i class="fa-solid fa-user"></i> Comprador</span>
+                        </div>
+                    </div>
+                    <div class="user-meta">
+                        <div class="meta-item"><div class="meta-label">Telefone</div><div class="meta-val" data-profile-phone>—</div></div>
+                        <div class="meta-item"><div class="meta-label">Membro desde</div><div class="meta-val" data-member-since>—</div></div>
+                        <div class="meta-item"><div class="meta-label">Email</div><div class="meta-val" data-profile-verified>—</div></div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="panel">
+                    <div class="actions-title">Ações Rápidas</div>
+                    <div class="actions-grid">
+                        <a href="../../explorar/" class="action-btn ab-blue" style="text-decoration:none;"><i class="fa-solid fa-compass"></i> Explorar</a>
+                        <button class="action-btn ab-green"><i class="fa-solid fa-clipboard-list"></i> Meus Pedidos</button>
+                        <button class="action-btn ab-yellow"><i class="fa-solid fa-heart"></i> Favoritos</button>
+                        <button class="action-btn ab-teal"><i class="fa-solid fa-gear"></i> Definições</button>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-bell"></i> Notificações</h3>
+                    </div>
+                    <div class="notif-list">
+                        <div class="notif-item">
+                            <div class="notif-icon" style="background: var(--blue);"><i class="fa-solid fa-info-circle"></i></div>
+                            <div>
+                                <div class="notif-text">Bem-vindo ao ByClick! 🎉 Explore os melhores produtos de Angola.</div>
+                                <span class="notif-time">Agora</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../../js/api.js"></script>
+<script src="../../js/toast.js"></script>
+<script src="../../js/painel_comprador.js"></script>
+</body>
+</html>

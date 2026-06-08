@@ -34,11 +34,27 @@ def listar_produtos(
     skip: int = 0,
     limit: int = 20,
     categoria_id: Optional[int] = None,
+    q: Optional[str] = None,
+    ordenar: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
     query = db.query(Produto).filter(Produto.ativo == True)
     if categoria_id:
         query = query.filter(Produto.categoria_id == categoria_id)
+    if q:
+        termo = f"%{q}%"
+        query = query.filter(
+            (Produto.nome.ilike(termo)) | (Produto.descricao.ilike(termo))
+        )
+    # Ordenação
+    if ordenar == "preco_asc":
+        query = query.order_by(Produto.preco.asc())
+    elif ordenar == "preco_desc":
+        query = query.order_by(Produto.preco.desc())
+    elif ordenar == "avaliacao":
+        query = query.order_by(Produto.avaliacao_media.desc())
+    else:
+        query = query.order_by(Produto.criado_em.desc())
     return query.offset(skip).limit(limit).all()
 
 

@@ -102,12 +102,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (perfilResult.success && perfilResult.data) {
           const tipo = perfilResult.data.tipo_utilizador;
+          localStorage.setItem('usuario', JSON.stringify(perfilResult.data));
           if (tipo === 'vendedor') {
-            redirecionamento = '../paineis/painel_vendedor/';
+            redirecionamento = '../paineis/painel_vendedor/painel_vendedor.html';
           } else if (tipo === 'empresa') {
-            redirecionamento = '../paineis/painel_empresa/';
+            redirecionamento = '../paineis/painel_empresa/painel_empresa.html';
           } else if (tipo === 'comprador') {
-            redirecionamento = '../paineis/painel_comprador/';
+            redirecionamento = '../paineis/painel_comprador/painel_comprador.html';
           }
         }
 
@@ -149,11 +150,3 @@ function togglePassword() {
     toggleBtn.classList.add('fa-eye');
   }
 }
-
-// Função para mostrar toast (usa toast.js)
-function mostrarToast(mensagem, tipo = 'info') {
-  if (typeof showToast === 'function') {
-    showToast(mensagem, tipo);
-  }
-}
-

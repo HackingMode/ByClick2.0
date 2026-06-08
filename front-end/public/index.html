@@ -108,7 +108,7 @@
 
     <!-- SEARCH -->
     <div class="navbar__search">
-      <input type="text"
+      <input type="text" id="landingSearch"
       placeholder="Pesquisar produtos, serviços e empresas...">
     </div>
 
@@ -116,9 +116,8 @@
     <!-- LINKS -->
     <nav class="navbar__links">
 
-      <a href="#">Explorar</a>
-      <a href="#">Categorias</a>
-      <a href="#">Serviços</a>
+      <a href="explorar/">Explorar</a>
+      <a href="explorar/?categoria=servicos">Serviços</a>
       <a href="#">Ajuda</a>
 
     </nav>
@@ -127,12 +126,16 @@
     <!-- BOTÕES -->
     <div class="navbar__cta">
 
-      <a href="cadastro/index.html" class="btn btn-ghost btn-sm">
+      <a href="cadastro/" class="btn btn-ghost btn-sm" id="btnCadastro">
         Cadastrar
       </a>
 
-      <a href="login/index.html" class="btn btn-primary btn-sm">
+      <a href="login/" class="btn btn-primary btn-sm" id="btnLogin">
         Login
+      </a>
+
+      <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">
+        Meu Painel
       </a>
 
     </div>
@@ -175,13 +178,13 @@
 
       <div class="hero__actions">
 
-        <button class="btn btn-primary btn-lg">
+        <a href="cadastro/" class="btn btn-primary btn-lg">
           Começar Agora
-        </button>
+        </a>
 
-        <button class="btn btn-ghost btn-lg">
+        <a href="explorar/" class="btn btn-ghost btn-lg">
           Explorar
-        </button>
+        </a>
 
       </div>
 
@@ -659,6 +662,9 @@
   </div>
 
 </footer>
+
+<script src="js/api.js"></script>
+<script src="js/landing_page.js"></script>
 
 </body>
 </html>

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - ByClick</title>
+    <title>Dashboard Vendedor - ByClick</title>
+    <meta name="description" content="Painel de controlo do vendedor ByClick — gerir produtos, pedidos e estatísticas da sua loja.">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,10 +19,10 @@
         <span>By<em>Click</em></span>
     </div>
     <div class="profile-section">
-        <img src="https://i.pravatar.cc/150?u=maria-garcia" alt="Maria" class="profile-img">
+        <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-img" data-user-photo>
         <div class="profile-info">
-            <h4>Maria Alberto Garcia</h4>
-            <div class="profile-role"><i class="fa-solid fa-circle-check"></i> Vendedor Individual</div>
+            <h4 data-user-name>Carregando...</h4>
+            <div class="profile-role"><i class="fa-solid fa-circle-check"></i> <span data-user-type>Vendedor</span></div>
         </div>
     </div>
     <nav>
@@ -34,7 +35,7 @@
         <a href="#" class="nav-item"><i class="fa-solid fa-wallet"></i> Pagamentos</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-star"></i> Avaliações</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Definições</a>
-        <a href="#" class="nav-item nav-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Terminar Sessão</a>
+        <a href="#" class="nav-item nav-logout" id="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Terminar Sessão</a>
     </nav>
 </aside>
 
@@ -43,11 +44,11 @@
         <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
         <div class="topbar-logo">By<em>Click</em></div>
         <div class="topbar-actions">
-            <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">12</span></div>
+            <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge" data-notif-count>0</span></div>
             <div class="topbar-divider"></div>
-            <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge">8</span></div>
+            <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge" data-msg-count>0</span></div>
             <div class="topbar-divider"></div>
-            <div class="icon-btn"><i class="fa-solid fa-bars"></i></div>
+            <div class="icon-btn" data-refresh-btn style="cursor:pointer;" title="Atualizar dados"><i class="fa-solid fa-rotate-right"></i></div>
         </div>
     </header>
 
@@ -55,10 +56,10 @@
         <!-- Header -->
         <div class="header-section">
             <div class="greeting">
-                <h1>Olá, Maria! 👋</h1>
+                <h1 data-greeting>Olá! 👋</h1>
                 <p>Aqui está o resumo da sua loja hoje.</p>
             </div>
-            <div class="date-badge"><i class="fa-regular fa-calendar"></i> 17 de Maio, 2025 &nbsp;|&nbsp; 15:42</div>
+            <div class="date-badge"><i class="fa-regular fa-calendar"></i> <span data-current-date></span></div>
         </div>
 
         <!-- Stats Cards -->
@@ -67,7 +68,7 @@
                 <div class="stat-icon icon-green"><i class="fa-solid fa-bag-shopping"></i></div>
                 <div class="stat-info">
                     <div class="label">Produtos</div>
-                    <div class="value">18</div>
+                    <div class="value" data-products-count>—</div>
                     <div class="sub">Publicados</div>
                 </div>
             </div>
@@ -75,7 +76,7 @@
                 <div class="stat-icon icon-blue"><i class="fa-solid fa-cart-shopping"></i></div>
                 <div class="stat-info">
                     <div class="label">Pedidos</div>
-                    <div class="value">24</div>
+                    <div class="value" data-orders-count>—</div>
                     <div class="sub">Neste mês</div>
                 </div>
             </div>
@@ -83,22 +84,22 @@
                 <div class="stat-icon icon-orange"><i class="fa-solid fa-sack-dollar"></i></div>
                 <div class="stat-info">
                     <div class="label">Vendas (Mês)</div>
-                    <div class="value" style="font-size:1.1rem;">245.500 Kz</div>
+                    <div class="value" style="font-size:1.1rem;" data-revenue>— Kz</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon icon-purple"><i class="fa-solid fa-chart-simple"></i></div>
                 <div class="stat-info">
-                    <div class="label">Visualizações</div>
-                    <div class="value">1.248</div>
-                    <div class="sub">Produtos</div>
+                    <div class="label">Total Vendas</div>
+                    <div class="value" data-total-sales>—</div>
+                    <div class="sub">Acumulado</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon icon-red"><i class="fa-solid fa-heart"></i></div>
                 <div class="stat-info">
                     <div class="label">Avaliação Média</div>
-                    <div class="value">4.8</div>
+                    <div class="value" data-rating>—</div>
                     <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
                 </div>
             </div>
@@ -123,12 +124,12 @@
                     <div class="mini-charts">
                         <div class="mini-chart-card">
                             <div class="mc-label">Pedidos por dia</div>
-                            <div class="mc-value" style="color: var(--blue);">1.4 / dia</div>
+                            <div class="mc-value" style="color: var(--blue);" data-orders-per-day>— / dia</div>
                             <div class="mini-chart-container"><canvas id="ordersChart"></canvas></div>
                         </div>
                         <div class="mini-chart-card">
                             <div class="mc-label">Categorias mais vendidas</div>
-                            <div class="mc-value" style="color: var(--purple);">3 Categorias</div>
+                            <div class="mc-value" style="color: var(--purple);" data-categories-count>— Categorias</div>
                             <div class="mini-chart-container"><canvas id="catChart"></canvas></div>
                         </div>
                     </div>
@@ -146,44 +147,14 @@
                                 <tr>
                                     <th>Pedido</th>
                                     <th>Cliente</th>
-                                    <th>Produto</th>
                                     <th>Valor</th>
                                     <th>Status</th>
                                     <th>Data</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="ordersTableBody">
                                 <tr>
-                                    <td class="order-id">#BYC-1258</td>
-                                    <td><div class="client-cell"><img src="https://i.pravatar.cc/150?img=11" alt="João Silva"> João Silva</div></td>
-                                    <td>Fone Bluetooth JBL</td>
-                                    <td><b>28.500 Kz</b></td>
-                                    <td><span class="status s-pago"><span class="dot"></span>Pago</span></td>
-                                    <td style="color:var(--text-muted)">17/05/2025</td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#BYC-1257</td>
-                                    <td><div class="client-cell"><img src="https://i.pravatar.cc/150?img=5" alt="Ana Paula"> Ana Paula</div></td>
-                                    <td>Smartwatch X8</td>
-                                    <td><b>45.000 Kz</b></td>
-                                    <td><span class="status s-envio"><span class="dot"></span>Em envio</span></td>
-                                    <td style="color:var(--text-muted)">16/05/2025</td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#BYC-1256</td>
-                                    <td><div class="client-cell"><img src="https://i.pravatar.cc/150?img=12" alt="Roberto Lima"> Roberto Lima</div></td>
-                                    <td>Teclado Mecânico</td>
-                                    <td><b>18.750 Kz</b></td>
-                                    <td><span class="status s-proc"><span class="dot"></span>Processando</span></td>
-                                    <td style="color:var(--text-muted)">16/05/2025</td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#BYC-1255</td>
-                                    <td><div class="client-cell"><img src="https://i.pravatar.cc/150?img=33" alt="Miguel Alberto"> Miguel Alberto</div></td>
-                                    <td>Mouse Gamer</td>
-                                    <td><b>12.500 Kz</b></td>
-                                    <td><span class="status s-entregue"><span class="dot"></span>Entregue</span></td>
-                                    <td style="color:var(--text-muted)">15/05/2025</td>
+                                    <td colspan="5" style="text-align: center; color: #999;">Carregando pedidos...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -199,17 +170,17 @@
                         <button class="btn-edit"><i class="fa-solid fa-pen"></i> Editar</button>
                     </div>
                     <div class="shop-profile">
-                        <div class="shop-logo">CH<div class="verified-dot"><i class="fa-solid fa-check"></i></div></div>
+                        <div class="shop-logo" data-store-logo>—</div>
                         <div>
-                            <div class="shop-name">Tech Solutions</div>
-                            <div class="shop-cats">Tecnologia • Acessórios • Gadgets</div>
-                            <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Loja Verificada</span>
+                            <div class="shop-name" data-store-name>Carregando...</div>
+                            <div class="shop-cats" data-store-categories>—</div>
+                            <span class="verified-badge" data-store-verified><i class="fa-solid fa-circle-check"></i> Verificando...</span>
                         </div>
                     </div>
                     <div class="shop-meta">
-                        <div class="meta-item"><div class="meta-label">Membro desde</div><div class="meta-val">12/02/2023</div></div>
-                        <div class="meta-item"><div class="meta-label">Status</div><div class="meta-val green">Verificada</div></div>
-                        <div class="meta-item"><div class="meta-label">Tipo</div><div class="meta-val">Vendedor Ind.</div></div>
+                        <div class="meta-item"><div class="meta-label">Membro desde</div><div class="meta-val" data-member-since>—</div></div>
+                        <div class="meta-item"><div class="meta-label">Status</div><div class="meta-val" data-store-status>—</div></div>
+                        <div class="meta-item"><div class="meta-label">Tipo</div><div class="meta-val" data-store-type>—</div></div>
                     </div>
                 </div>
 
@@ -231,26 +202,12 @@
                         <h3 class="panel-title"><i class="fa-solid fa-bell"></i> Notificações</h3>
                         <a href="#" class="btn-link">Ver todas</a>
                     </div>
-                    <div class="notif-list">
+                    <div class="notif-list" id="notifList">
                         <div class="notif-item">
-                            <div class="notif-icon" style="background: var(--primary);"><i class="fa-solid fa-eye"></i></div>
+                            <div class="notif-icon" style="background: var(--primary);"><i class="fa-solid fa-info-circle"></i></div>
                             <div>
-                                <div class="notif-text">O seu produto <b>"Fone Bluetooth JBL"</b> teve 23 novas visualizações.</div>
-                                <span class="notif-time">Há 10 min</span>
-                            </div>
-                        </div>
-                        <div class="notif-item">
-                            <div class="notif-icon" style="background: var(--blue);"><i class="fa-solid fa-message"></i></div>
-                            <div>
-                                <div class="notif-text">Você recebeu uma nova mensagem de <b>João Silva</b>.</div>
-                                <span class="notif-time">Há 30 min</span>
-                            </div>
-                        </div>
-                        <div class="notif-item">
-                            <div class="notif-icon" style="background: var(--orange);"><i class="fa-solid fa-file-signature"></i></div>
-                            <div>
-                                <div class="notif-text">Você tem <b>5 pedidos de inscrição</b> pendentes.</div>
-                                <span class="notif-time">Há 1 hora</span>
+                                <div class="notif-text">Bem-vindo ao seu painel ByClick! 🎉</div>
+                                <span class="notif-time">Agora</span>
                             </div>
                         </div>
                     </div>
@@ -260,6 +217,8 @@
     </main>
 </div>
 
-    <script src="../../js/painel_vendedor.js"></script>
+<script src="../../js/api.js"></script>
+<script src="../../js/toast.js"></script>
+<script src="../../js/painel_vendedor.js"></script>
 </body>
 </html>

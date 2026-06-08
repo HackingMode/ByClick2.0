@@ -1,114 +1,162 @@
+/**
+ * Painel Empresarial - ByClick
+ * Carrega dados reais da API e atualiza o dashboard da empresa.
+ */
+
 let autoRefreshInterval = null;
 let charts = {};
 
+// ===== AUTH CHECK =====
+function verificarAutenticacao() {
+  if (!estaAutenticado()) {
+    window.location.href = '../../login/';
+    return false;
+  }
+  return true;
+}
+
+// ===== DATA LOADING =====
 async function carregarDadosPainel() {
-  const user = await obterMeuPerfil();
-  const empresa = await obterDadosEmpresa();
-  const produtos = await obterProdutos({ limit: 10 });
-  const pedidos = await obterPedidos({ limit: 10, status: 'pendente' });
+  if (!verificarAutenticacao()) return;
 
-  if (user.success) {
-    atualizarPerfilUsuario(user.data);
-  }
+  try {
+    const [user, empresa, stats, pedidos] = await Promise.allSettled([
+      obterMeuPerfil(),
+      obterDadosEmpresa(),
+      obterEstatisticas('empresa'),
+      obterMeusPedidos('empresa', 10)
+    ]);
 
-  if (empresa.success) {
-    atualizarDadosEmpresa(empresa.data);
-  }
+    if (user.status === 'fulfilled' && user.value.success) {
+      atualizarPerfilUsuario(user.value.data);
+    }
 
-  if (produtos.success) {
-    atualizarProdutos(produtos.data);
-  }
+    if (empresa.status === 'fulfilled' && empresa.value.success) {
+      atualizarDadosEmpresa(empresa.value.data);
+    }
 
-  if (pedidos.success) {
-    atualizarPedidos(pedidos.data);
+    if (stats.status === 'fulfilled' && stats.value.success) {
+      atualizarEstatisticas(stats.value.data);
+    }
+
+    if (pedidos.status === 'fulfilled' && pedidos.value.success) {
+      atualizarTabelaPedidos(pedidos.value.data);
+    }
+  } catch (erro) {
+    console.error('Erro ao carregar dados do painel:', erro);
   }
 
   atualizarData();
 }
 
+// ===== UPDATE UI =====
 function atualizarPerfilUsuario(usuario) {
   const nomeEl = document.querySelector('[data-user-name]');
   const fotoEl = document.querySelector('[data-user-photo]');
+  const greetEl = document.querySelector('[data-greeting]');
 
-  if (nomeEl) nomeEl.textContent = usuario.nome_completo || usuario.nome_utilizador;
-  if (fotoEl) fotoEl.src = usuario.foto_perfil_url || 'https://via.placeholder.com/40';
+  const nome = usuario.nome_completo || usuario.nome_utilizador || 'Administrador';
+  const primeiroNome = nome.split(' ')[0];
+
+  if (nomeEl) nomeEl.textContent = nome;
+  if (fotoEl && usuario.foto_perfil_url) fotoEl.src = usuario.foto_perfil_url;
+  if (greetEl) greetEl.textContent = `Bem-vindo, ${primeiroNome}! 👋`;
 }
 
 function atualizarDadosEmpresa(empresa) {
+  // The API returns PerfilVendedorResponseSchema — field is nome_loja, not nome_empresa
   const nomeEl = document.querySelector('[data-store-name]');
   const descEl = document.querySelector('[data-store-desc]');
   const logoEl = document.querySelector('[data-store-logo]');
   const verEl = document.querySelector('[data-store-verified]');
-  const nifEl = document.getElementById('companyNif');
+  const statusEl = document.querySelector('[data-store-status]');
+  const tipoEl = document.querySelector('[data-store-type]');
+  const membroEl = document.querySelector('[data-member-since]');
 
-  if (nomeEl) nomeEl.textContent = empresa.nome_empresa || 'Sua Empresa';
+  const nomeEmpresa = empresa.nome_loja || 'Sua Empresa';
+
+  if (nomeEl) nomeEl.textContent = nomeEmpresa;
   if (descEl) descEl.textContent = empresa.descricao_loja || 'Descrição não disponível';
-  if (logoEl) logoEl.textContent = (empresa.nome_empresa || 'EMP').substring(0, 3).toUpperCase();
-  if (verEl) verEl.textContent = empresa.verificado ? '✓ Empresa Verificada' : 'Aguardando verificação';
-  if (nifEl) nifEl.textContent = empresa.nif || '-';
-}
+  if (logoEl) logoEl.textContent = nomeEmpresa.substring(0, 3).toUpperCase();
 
-function atualizarProdutos(produtos) {
-  const countEl = document.querySelector('[data-products-count]');
-  if (countEl) countEl.textContent = produtos.length || 0;
-}
-
-function atualizarPedidos(pedidos) {
-  const countEl = document.querySelector('[data-orders-count]');
-  const tbody = document.getElementById('ordersTableBody');
-
-  if (countEl) countEl.textContent = pedidos.length || 0;
-
-  if (tbody && pedidos.length > 0) {
-    tbody.innerHTML = pedidos.map(pedido => `
-      <tr>
-        <td class="order-id">#${pedido.numero_pedido || pedido.id}</td>
-        <td>${pedido.cliente_nome || 'Cliente'}</td>
-        <td><b>${(pedido.valor_total || 0).toLocaleString('pt-AO')} Kz</b></td>
-        <td><span class="status s-${pedido.status || 'proc'}"><span class="dot"></span>${pedido.status || 'Processando'}</span></td>
-        <td style="color:var(--text-muted)">${pedido.data_criacao ? new Date(pedido.data_criacao).toLocaleDateString('pt-AO') : '-'}</td>
-      </tr>
-    `).join('');
-  } else if (tbody) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">Nenhum pedido no momento</td></tr>';
+  if (verEl) {
+    if (empresa.verificado) {
+      verEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> Empresa Verificada';
+      verEl.style.color = '#16a34a';
+    } else {
+      verEl.innerHTML = '<i class="fa-solid fa-clock"></i> Aguardando verificação';
+      verEl.style.color = '#ea580c';
+    }
   }
+
+  if (statusEl) {
+    statusEl.textContent = empresa.verificado ? 'Verificada' : 'Pendente';
+    statusEl.classList.toggle('green', empresa.verificado);
+  }
+
+  const lojaMap = { 'produtos': 'Produtos', 'servicos': 'Serviços', 'ambos': 'Produtos & Serviços' };
+  if (tipoEl) tipoEl.textContent = lojaMap[empresa.tipo_loja] || 'Empresa';
+
+  if (membroEl && empresa.criado_em) {
+    membroEl.textContent = new Date(empresa.criado_em).toLocaleDateString('pt-AO');
+  }
+}
+
+function atualizarEstatisticas(stats) {
+  const prodEl = document.querySelector('[data-products-count]');
+  const pedidosEl = document.querySelector('[data-orders-count]');
+  const receitaEl = document.querySelector('[data-revenue]');
+  const ratingEl = document.querySelector('[data-rating]');
+  const totalEl = document.querySelector('[data-total-sales]');
+
+  if (prodEl) prodEl.textContent = stats.produtos_count || 0;
+  if (pedidosEl) pedidosEl.textContent = stats.pedidos_mes || 0;
+  if (receitaEl) receitaEl.textContent = `${(stats.receita_mes || 0).toLocaleString('pt-AO')} Kz`;
+  if (ratingEl) ratingEl.textContent = (stats.avaliacao_media || 0).toFixed(1);
+  if (totalEl) totalEl.textContent = stats.total_vendas || 0;
+}
+
+function atualizarTabelaPedidos(pedidos) {
+  const tbody = document.getElementById('ordersTableBody');
+  if (!tbody) return;
+
+  if (!pedidos || pedidos.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:2rem;">Nenhum pedido recente</td></tr>';
+    return;
+  }
+
+  const statusClasses = {
+    'pendente': 's-proc', 'confirmado': 's-pago', 'em_processamento': 's-proc',
+    'enviado': 's-envio', 'entregue': 's-entregue', 'cancelado': 's-cancel', 'reembolsado': 's-cancel'
+  };
+  const statusLabels = {
+    'pendente': 'Pendente', 'confirmado': 'Confirmado', 'em_processamento': 'Processando',
+    'enviado': 'Em envio', 'entregue': 'Entregue', 'cancelado': 'Cancelado', 'reembolsado': 'Reembolsado'
+  };
+
+  tbody.innerHTML = pedidos.map(p => `
+    <tr>
+      <td class="order-id">#${p.numero_pedido || p.id}</td>
+      <td>${p.cliente_nome || 'Cliente'}</td>
+      <td><b>${(p.valor_total || 0).toLocaleString('pt-AO')} Kz</b></td>
+      <td><span class="status ${statusClasses[p.status] || 's-proc'}"><span class="dot"></span>${statusLabels[p.status] || p.status}</span></td>
+      <td style="color:var(--text-muted)">${p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-AO') : '—'}</td>
+    </tr>
+  `).join('');
 }
 
 function atualizarData() {
+  const dateEl = document.querySelector('[data-current-date]');
+  if (!dateEl) return;
+
   const hoje = new Date();
-  const dataStr = hoje.toLocaleDateString('pt-AO', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-  const horaStr = hoje.toLocaleTimeString('pt-AO', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-
-  const dateEl = document.getElementById('currentDate');
-  const timeEl = document.getElementById('currentTime');
-
-  if (dateEl) dateEl.textContent = dataStr;
-  if (timeEl) timeEl.textContent = horaStr;
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const dataStr = `${hoje.getDate()} de ${meses[hoje.getMonth()]}, ${hoje.getFullYear()}`;
+  const horaStr = hoje.toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' });
+  dateEl.textContent = `${dataStr}  |  ${horaStr}`;
 }
 
-function atualizarGraficos() {
-  if (charts.revenue) {
-    charts.revenue.data.labels = obterUltimos9Dias();
-    charts.revenue.update();
-  }
-
-  if (charts.orders) {
-    charts.orders.data.labels = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'];
-    charts.orders.update();
-  }
-
-  if (charts.categories) {
-    charts.categories.update();
-  }
-}
-
+// ===== CHARTS =====
 function obterUltimos9Dias() {
   const dias = [];
   for (let i = 8; i >= 0; i--) {
@@ -119,7 +167,16 @@ function obterUltimos9Dias() {
   return dias;
 }
 
+function atualizarGraficos() {
+  if (charts.revenue) { charts.revenue.data.labels = obterUltimos9Dias(); charts.revenue.update(); }
+  if (charts.orders) charts.orders.update();
+  if (charts.categories) charts.categories.update();
+}
+
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', function () {
+  if (!verificarAutenticacao()) return;
+
   // Mobile sidebar
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
@@ -130,28 +187,30 @@ document.addEventListener('DOMContentLoaded', function () {
   overlay?.addEventListener('click', close);
 
   // Chart tab switching
-  const tabs = document.querySelectorAll('.chart-tab');
-  tabs.forEach(t => t.addEventListener('click', function() {
-    tabs.forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.chart-tab').forEach(t => t.addEventListener('click', function() {
+    document.querySelectorAll('.chart-tab').forEach(x => x.classList.remove('active'));
     this.classList.add('active');
   }));
 
-  // Carregar dados do painel
+  // Logout
+  document.getElementById('btnLogout')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (confirm('Tem certeza que deseja terminar a sessão?')) logout();
+  });
+
+  // Load data
   carregarDadosPainel();
 
-  // Auto-refresh a cada 45 segundos
-  autoRefreshInterval = setInterval(() => {
-    carregarDadosPainel();
-    atualizarGraficos();
-  }, 45000);
+  // Auto-refresh
+  autoRefreshInterval = setInterval(() => { carregarDadosPainel(); atualizarGraficos(); }, 45000);
 
-  // Botão de refresh manual
+  // Manual refresh
   const refreshBtn = document.querySelector('[data-refresh-btn]');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', () => {
-      refreshBtn.disabled = true;
+      refreshBtn.querySelector('i').style.animation = 'spin 0.5s ease';
       carregarDadosPainel().then(() => {
-        refreshBtn.disabled = false;
+        setTimeout(() => { refreshBtn.querySelector('i').style.animation = ''; }, 500);
       });
     });
   }
@@ -162,111 +221,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const grad = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
     grad.addColorStop(0, 'rgba(0,200,83,0.35)');
     grad.addColorStop(1, 'rgba(0,200,83,0.01)');
-
     charts.revenue = new Chart(revenueCtx.getContext('2d'), {
       type: 'line',
       data: {
         labels: obterUltimos9Dias(),
-        datasets: [{
-          data: [35000, 52000, 48000, 72000, 85000, 95000, 110000, 128000, 145000],
-          borderColor: '#00c853',
-          backgroundColor: grad,
-          borderWidth: 2.5,
-          pointBackgroundColor: '#fff',
-          pointBorderColor: '#00c853',
-          pointBorderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          fill: true,
-          tension: 0.4
-        }]
+        datasets: [{ data: [35000,52000,48000,72000,85000,95000,110000,128000,145000], borderColor: '#00c853', backgroundColor: grad, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#00c853', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.4 }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#111',
-            titleColor: '#aaa',
-            bodyColor: '#fff',
-            padding: 10,
-            displayColors: false,
-            callbacks: {
-              label: ctx => `Receita: ${ctx.raw.toLocaleString('pt-AO')} Kz`
-            }
-          }
-        },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } },
-          y: {
-            beginAtZero: true, max: 200000,
-            grid: { color: '#f3f4f6' },
-            ticks: {
-              color: '#9ca3af', font: { size: 11 },
-              callback: v => v >= 1000 ? (v / 1000) + 'K' : v
-            }
-          }
-        }
-      }
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#111', titleColor: '#aaa', bodyColor: '#fff', padding: 10, displayColors: false, callbacks: { label: ctx => `Receita: ${ctx.raw.toLocaleString('pt-AO')} Kz` } } }, scales: { x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } }, y: { beginAtZero: true, max: 200000, grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', font: { size: 11 }, callback: v => v >= 1000 ? (v/1000)+'K' : v } } } }
     });
   }
 
-  // ===== MINI: ORDERS BAR CHART =====
+  // ===== ORDERS BAR =====
   const ordCtx = document.getElementById('ordersChart');
   if (ordCtx) {
     charts.orders = new Chart(ordCtx.getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'],
-        datasets: [{
-          data: [2, 3, 2, 4, 3, 5, 4],
-          backgroundColor: 'rgba(59,130,246,0.6)',
-          borderRadius: 4,
-          borderSkipped: false
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        scales: {
-          x: { display: false },
-          y: { display: false, beginAtZero: true }
-        }
-      }
+      type: 'bar', data: { labels: ['S1','S2','S3','S4','S5','S6','S7'], datasets: [{ data: [2,3,2,4,3,5,4], backgroundColor: 'rgba(59,130,246,0.6)', borderRadius: 4, borderSkipped: false }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, beginAtZero: true } } }
     });
   }
 
-  // ===== MINI: CATEGORY DOUGHNUT =====
+  // ===== CATEGORY DOUGHNUT =====
   const catCtx = document.getElementById('catChart');
   if (catCtx) {
     charts.categories = new Chart(catCtx.getContext('2d'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Tecnologia', 'Serviços', 'Consultoria', 'Varejo', 'Outros'],
-        datasets: [{
-          data: [28, 22, 20, 18, 12],
-          backgroundColor: ['#00c853', '#a855f7', '#3b82f6', '#f59e0b', '#ef4444'],
-          borderWidth: 2,
-          borderColor: '#fff'
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        cutout: '68%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: { label: c => `${c.label}: ${c.raw}%` }
-          }
-        }
-      }
+      type: 'doughnut', data: { labels: ['Tecnologia','Serviços','Consultoria','Varejo','Outros'], datasets: [{ data: [28,22,20,18,12], backgroundColor: ['#00c853','#a855f7','#3b82f6','#f59e0b','#ef4444'], borderWidth: 2, borderColor: '#fff' }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.label}: ${c.raw}%` } } } }
     });
   }
 
-  // Cleanup on page leave
-  window.addEventListener('beforeunload', () => {
-    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-  });
+  window.addEventListener('beforeunload', () => { if (autoRefreshInterval) clearInterval(autoRefreshInterval); });
 });

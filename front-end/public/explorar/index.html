@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explorar Produtos — ByClick Marketplace</title>
+  <meta name="description" content="Explore milhares de produtos e serviços no ByClick, o marketplace moderno de Angola.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/explorar.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+  <div class="container navbar__inner">
+    <a href="../" class="navbar__logo">
+      <div class="navbar__logo-icon">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M18 24H46L43 52H21L18 24Z" fill="currentColor" opacity="0.15"/>
+          <path d="M18 24H46L43 52H21L18 24Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M24 24V18C24 13.5 27.5 10 32 10C36.5 10 40 13.5 40 18V24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M30 30L39 42L41.5 36.5L47 34L35 25L34 31L30 30Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <span>ByClick</span>
+    </a>
+
+    <div class="navbar__search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Pesquisar produtos, serviços e empresas...">
+    </div>
+
+    <div class="navbar__cta">
+      <a href="../login/" class="btn btn-ghost btn-sm" id="btnLogin">Login</a>
+      <a href="../cadastro/" class="btn btn-primary btn-sm" id="btnCadastro">Cadastrar</a>
+      <!-- Shown when logged in -->
+      <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">Meu Painel</a>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+  <div class="container">
+    <h1>Explorar Produtos</h1>
+    <p>Descubra as melhores ofertas do marketplace angolano</p>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="cats">
+  <div class="container cats__inner" id="categoriesBar">
+    <button class="cat-pill cat-pill--active" data-cat="all">🛒 Todos</button>
+    <button class="cat-pill" data-cat="smartphones">📱 Smartphones</button>
+    <button class="cat-pill" data-cat="informatica">💻 Informática</button>
+    <button class="cat-pill" data-cat="veiculos">🚗 Veículos</button>
+    <button class="cat-pill" data-cat="servicos">💼 Serviços</button>
+    <button class="cat-pill" data-cat="consolas">🎮 Consolas</button>
+    <button class="cat-pill" data-cat="moveis">🛋️ Móveis</button>
+  </div>
+</section>
+
+<!-- FILTERS BAR -->
+<section class="filters-bar">
+  <div class="container filters__inner">
+    <div class="results-count"><span id="resultsCount">0</span> produtos encontrados</div>
+    <div class="filters-actions">
+      <select id="sortSelect" class="filter-select">
+        <option value="recentes">Mais Recentes</option>
+        <option value="preco_asc">Preço: Menor → Maior</option>
+        <option value="preco_desc">Preço: Maior → Menor</option>
+        <option value="avaliacao">Melhor Avaliação</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS GRID -->
+<section class="products">
+  <div class="container">
+    <div class="products__grid" id="productsGrid">
+      <!-- Loading -->
+      <div class="loading-state" id="loadingState">
+        <div class="spinner-products"></div>
+        <p>Carregando produtos...</p>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-products" id="emptyState" style="display:none;">
+      <i class="fa-solid fa-box-open"></i>
+      <h3>Nenhum produto encontrado</h3>
+      <p>Tente pesquisar por outro termo ou categoria.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__bottom">
+      <p>© 2026 ByClick — Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/toast.js"></script>
+<script src="../js/explorar.js"></script>
+</body>
+</html>

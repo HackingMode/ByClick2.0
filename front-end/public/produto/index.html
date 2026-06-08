@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Produto — ByClick</title>
+  <meta name="description" content="Detalhes do produto no ByClick Marketplace">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/produto.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="container navbar__inner">
+    <a href="../" class="navbar__logo">
+      <div class="navbar__logo-icon">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M18 24H46L43 52H21L18 24Z" fill="currentColor" opacity="0.15"/>
+          <path d="M18 24H46L43 52H21L18 24Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M24 24V18C24 13.5 27.5 10 32 10C36.5 10 40 13.5 40 18V24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M30 30L39 42L41.5 36.5L47 34L35 25L34 31L30 30Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <span>ByClick</span>
+    </a>
+    <nav class="navbar__nav">
+      <a href="../explorar/">Explorar</a>
+    </nav>
+    <div class="navbar__cta">
+      <a href="../login/" class="btn btn-ghost btn-sm" id="btnLogin">Login</a>
+      <a href="../cadastro/" class="btn btn-primary btn-sm" id="btnCadastro">Cadastrar</a>
+      <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">Meu Painel</a>
+    </div>
+  </div>
+</header>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb container">
+  <a href="../">Início</a> <i class="fa-solid fa-chevron-right"></i>
+  <a href="../explorar/">Explorar</a> <i class="fa-solid fa-chevron-right"></i>
+  <span data-product-name>Produto</span>
+</div>
+
+<!-- Product Main -->
+<main class="container product-main">
+  <!-- Loading state -->
+  <div class="loading-product" id="loadingState">
+    <div class="spinner-products"></div>
+    <p>Carregando produto...</p>
+  </div>
+
+  <!-- Product Content (hidden until loaded) -->
+  <div class="product-content" id="productContent" style="display:none;">
+    <div class="product-gallery">
+      <div class="gallery-main">
+        <img id="mainImage" src="https://via.placeholder.com/600x400" alt="Imagem principal">
+      </div>
+      <div class="gallery-thumbs" id="galleryThumbs"></div>
+    </div>
+
+    <div class="product-info">
+      <div class="product-badges" id="productBadges"></div>
+      <h1 data-product-title>—</h1>
+      <div class="product-price" data-product-price>—</div>
+
+      <div class="product-meta">
+        <div class="meta-chip"><i class="fa-solid fa-location-dot"></i> <span data-product-location>—</span></div>
+        <div class="meta-chip"><i class="fa-solid fa-clock"></i> <span data-product-date>—</span></div>
+        <div class="meta-chip"><i class="fa-solid fa-eye"></i> <span data-product-views>0</span> visualizações</div>
+      </div>
+
+      <div class="product-description">
+        <h3>Descrição</h3>
+        <p data-product-desc>—</p>
+      </div>
+
+      <div class="product-actions">
+        <button class="btn btn-primary btn-lg" id="btnComprar"><i class="fa-solid fa-cart-shopping"></i> Comprar Agora</button>
+        <button class="btn btn-outline btn-lg" id="btnContactar"><i class="fa-brands fa-whatsapp"></i> Contactar Vendedor</button>
+        <button class="btn btn-icon" id="btnFavorite" title="Adicionar aos favoritos"><i class="fa-regular fa-heart"></i></button>
+      </div>
+
+      <!-- Seller Card -->
+      <div class="seller-card">
+        <div class="seller-avatar" data-seller-avatar>V</div>
+        <div class="seller-info">
+          <div class="seller-name" data-seller-name>Vendedor</div>
+          <div class="seller-meta" data-seller-meta>Membro desde —</div>
+        </div>
+        <a href="#" class="btn btn-sm btn-ghost" style="color: var(--primary); border-color: var(--primary);">Ver Loja</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container"><p>© 2026 ByClick — Todos os direitos reservados.</p></div>
+</footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/toast.js"></script>
+<script src="../js/produto.js"></script>
+</body>
+</html>
