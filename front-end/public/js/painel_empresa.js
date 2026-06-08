@@ -3,7 +3,7 @@ let charts = {};
 
 async function carregarDadosPainel() {
   const user = await obterMeuPerfil();
-  const loja = await obterDadosVendedor();
+  const empresa = await obterDadosEmpresa();
   const produtos = await obterProdutos({ limit: 10 });
   const pedidos = await obterPedidos({ limit: 10, status: 'pendente' });
 
@@ -11,8 +11,8 @@ async function carregarDadosPainel() {
     atualizarPerfilUsuario(user.data);
   }
 
-  if (loja.success) {
-    atualizarDadosLoja(loja.data);
+  if (empresa.success) {
+    atualizarDadosEmpresa(empresa.data);
   }
 
   if (produtos.success) {
@@ -22,6 +22,8 @@ async function carregarDadosPainel() {
   if (pedidos.success) {
     atualizarPedidos(pedidos.data);
   }
+
+  atualizarData();
 }
 
 function atualizarPerfilUsuario(usuario) {
@@ -32,16 +34,18 @@ function atualizarPerfilUsuario(usuario) {
   if (fotoEl) fotoEl.src = usuario.foto_perfil_url || 'https://via.placeholder.com/40';
 }
 
-function atualizarDadosLoja(loja) {
-  const lojaNameEl = document.querySelector('[data-store-name]');
-  const lojaDescEl = document.querySelector('[data-store-desc]');
-  const lojaLogoEl = document.querySelector('[data-store-logo]');
-  const lojaVerEl = document.querySelector('[data-store-verified]');
+function atualizarDadosEmpresa(empresa) {
+  const nomeEl = document.querySelector('[data-store-name]');
+  const descEl = document.querySelector('[data-store-desc]');
+  const logoEl = document.querySelector('[data-store-logo]');
+  const verEl = document.querySelector('[data-store-verified]');
+  const nifEl = document.getElementById('companyNif');
 
-  if (lojaNameEl) lojaNameEl.textContent = loja.nome_loja || 'Minha Loja';
-  if (lojaDescEl) lojaDescEl.textContent = loja.descricao_loja || 'Descrição não disponível';
-  if (lojaLogoEl) lojaLogoEl.src = loja.logo_loja_url || 'https://via.placeholder.com/80';
-  if (lojaVerEl) lojaVerEl.textContent = loja.verificado ? '✓ Verificada' : 'Aguardando verificação';
+  if (nomeEl) nomeEl.textContent = empresa.nome_empresa || 'Sua Empresa';
+  if (descEl) descEl.textContent = empresa.descricao_loja || 'Descrição não disponível';
+  if (logoEl) logoEl.textContent = (empresa.nome_empresa || 'EMP').substring(0, 3).toUpperCase();
+  if (verEl) verEl.textContent = empresa.verificado ? '✓ Empresa Verificada' : 'Aguardando verificação';
+  if (nifEl) nifEl.textContent = empresa.nif || '-';
 }
 
 function atualizarProdutos(produtos) {
@@ -51,13 +55,48 @@ function atualizarProdutos(produtos) {
 
 function atualizarPedidos(pedidos) {
   const countEl = document.querySelector('[data-orders-count]');
+  const tbody = document.getElementById('ordersTableBody');
+
   if (countEl) countEl.textContent = pedidos.length || 0;
+
+  if (tbody && pedidos.length > 0) {
+    tbody.innerHTML = pedidos.map(pedido => `
+      <tr>
+        <td class="order-id">#${pedido.numero_pedido || pedido.id}</td>
+        <td>${pedido.cliente_nome || 'Cliente'}</td>
+        <td><b>${(pedido.valor_total || 0).toLocaleString('pt-AO')} Kz</b></td>
+        <td><span class="status s-${pedido.status || 'proc'}"><span class="dot"></span>${pedido.status || 'Processando'}</span></td>
+        <td style="color:var(--text-muted)">${pedido.data_criacao ? new Date(pedido.data_criacao).toLocaleDateString('pt-AO') : '-'}</td>
+      </tr>
+    `).join('');
+  } else if (tbody) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">Nenhum pedido no momento</td></tr>';
+  }
+}
+
+function atualizarData() {
+  const hoje = new Date();
+  const dataStr = hoje.toLocaleDateString('pt-AO', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+  const horaStr = hoje.toLocaleTimeString('pt-AO', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  const dateEl = document.getElementById('currentDate');
+  const timeEl = document.getElementById('currentTime');
+
+  if (dateEl) dateEl.textContent = dataStr;
+  if (timeEl) timeEl.textContent = horaStr;
 }
 
 function atualizarGraficos() {
-  if (charts.sales) {
-    charts.sales.data.labels = obterUltimos9Dias();
-    charts.sales.update();
+  if (charts.revenue) {
+    charts.revenue.data.labels = obterUltimos9Dias();
+    charts.revenue.update();
   }
 
   if (charts.orders) {
@@ -117,19 +156,19 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ===== MAIN SALES CHART =====
-  const salesCtx = document.getElementById('salesChart');
-  if (salesCtx) {
-    const grad = salesCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
+  // ===== REVENUE CHART =====
+  const revenueCtx = document.getElementById('revenueChart');
+  if (revenueCtx) {
+    const grad = revenueCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
     grad.addColorStop(0, 'rgba(0,200,83,0.35)');
     grad.addColorStop(1, 'rgba(0,200,83,0.01)');
 
-    charts.sales = new Chart(salesCtx.getContext('2d'), {
+    charts.revenue = new Chart(revenueCtx.getContext('2d'), {
       type: 'line',
       data: {
         labels: obterUltimos9Dias(),
         datasets: [{
-          data: [18000, 42000, 35000, 65000, 98500, 80000, 120000, 155000, 190000],
+          data: [35000, 52000, 48000, 72000, 85000, 95000, 110000, 128000, 145000],
           borderColor: '#00c853',
           backgroundColor: grad,
           borderWidth: 2.5,
@@ -155,14 +194,14 @@ document.addEventListener('DOMContentLoaded', function () {
             padding: 10,
             displayColors: false,
             callbacks: {
-              label: ctx => `Vendas: ${ctx.raw.toLocaleString('pt-AO')} Kz`
+              label: ctx => `Receita: ${ctx.raw.toLocaleString('pt-AO')} Kz`
             }
           }
         },
         scales: {
           x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } },
           y: {
-            beginAtZero: true, max: 220000,
+            beginAtZero: true, max: 200000,
             grid: { color: '#f3f4f6' },
             ticks: {
               color: '#9ca3af', font: { size: 11 },
@@ -182,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
       data: {
         labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'],
         datasets: [{
-          data: [1, 2, 1, 3, 2, 4, 3],
+          data: [2, 3, 2, 4, 3, 5, 4],
           backgroundColor: 'rgba(59,130,246,0.6)',
           borderRadius: 4,
           borderSkipped: false
@@ -205,10 +244,10 @@ document.addEventListener('DOMContentLoaded', function () {
     charts.categories = new Chart(catCtx.getContext('2d'), {
       type: 'doughnut',
       data: {
-        labels: ['Audio', 'Wearables', 'Periféricos'],
+        labels: ['Tecnologia', 'Serviços', 'Consultoria', 'Varejo', 'Outros'],
         datasets: [{
-          data: [38, 32, 30],
-          backgroundColor: ['#00c853', '#a855f7', '#3b82f6'],
+          data: [28, 22, 20, 18, 12],
+          backgroundColor: ['#00c853', '#a855f7', '#3b82f6', '#f59e0b', '#ef4444'],
           borderWidth: 2,
           borderColor: '#fff'
         }]

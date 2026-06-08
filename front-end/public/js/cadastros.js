@@ -285,8 +285,25 @@ if (leftImage) {
 }
 
 // Funções de validação para cadastros
+
+// Helper para validar se um valor está vazio (inclui espaços em branco)
+function estaVazio(valor) {
+  return !valor || typeof valor !== 'string' || valor.trim() === '';
+}
+
+// Helper para validar comprimento mínimo
+function temComprimentoMinimo(valor, minimo) {
+  return typeof valor === 'string' && valor.trim().length >= minimo;
+}
+
+// Helper para trim e validar
+function trimAndValidate(valor, minLength = 1) {
+  const trimmed = typeof valor === 'string' ? valor.trim() : '';
+  return trimmed.length >= minLength ? trimmed : '';
+}
+
 function textoInputPorTipo(tipo, indice = 0) {
-  return document.querySelectorAll(`input[type="${tipo}"]`)[indice]?.value?.trim() || '';
+  return trimAndValidate(document.querySelectorAll(`input[type="${tipo}"]`)[indice]?.value);
 }
 
 function valorSelect(indice = 0) {
@@ -341,18 +358,18 @@ function coletarDadosComprador() {
   const senhas = document.querySelectorAll('input[type="password"]');
 
   return {
-    nome_completo: textInputs[0]?.value?.trim(),
-    nome_utilizador: textInputs[1]?.value?.trim(),
+    nome_completo: trimAndValidate(textInputs[0]?.value),
+    nome_utilizador: trimAndValidate(textInputs[1]?.value),
     email: textoInputPorTipo('email'),
     numero_telefone: textoInputPorTipo('tel'),
     genero: normalizarGenero(valorSelect(0)),
     data_nascimento: dates[0]?.value || null,
     provincia: valorSelect(1) || null,
     municipio: valorSelect(2) || null,
-    bairro: textInputs[2]?.value?.trim() || null,
-    endereco_completo: textInputs[3]?.value?.trim() || null,
-    senha: senhas[0]?.value,
-    confirmar_senha: senhas[1]?.value
+    bairro: trimAndValidate(textInputs[2]?.value) || null,
+    endereco_completo: trimAndValidate(textInputs[3]?.value) || null,
+    senha: trimAndValidate(senhas[0]?.value),
+    confirmar_senha: trimAndValidate(senhas[1]?.value)
   };
 }
 
@@ -362,29 +379,29 @@ function coletarDadosVendedor() {
   const senhas = document.querySelectorAll('input[type="password"]');
 
   return {
-    nome_completo: textInputs[0]?.value?.trim(),
-    nome_utilizador: textInputs[1]?.value?.trim(),
+    nome_completo: trimAndValidate(textInputs[0]?.value),
+    nome_utilizador: trimAndValidate(textInputs[1]?.value),
     email: textoInputPorTipo('email'),
     numero_telefone: textoInputPorTipo('tel'),
     genero: normalizarGenero(valorSelect(0)),
     data_nascimento: dates[0]?.value || null,
     provincia: valorSelect(1) || null,
     municipio: valorSelect(2) || null,
-    bairro: textInputs[2]?.value?.trim() || null,
-    endereco_completo: textInputs[3]?.value?.trim() || null,
-    numero_bi: textInputs[4]?.value?.trim(),
-    nif: textInputs[5]?.value?.trim() || null,
+    bairro: trimAndValidate(textInputs[2]?.value) || null,
+    endereco_completo: trimAndValidate(textInputs[3]?.value) || null,
+    numero_bi: trimAndValidate(textInputs[4]?.value),
+    nif: trimAndValidate(textInputs[5]?.value) || null,
     data_emissao: dates[1]?.value,
     data_validade: dates[2]?.value,
-    nome_loja: textInputs[1]?.value?.trim(),
-    senha: senhas[0]?.value,
-    confirmar_senha: senhas[1]?.value,
+    nome_loja: trimAndValidate(textInputs[1]?.value),
+    senha: trimAndValidate(senhas[0]?.value),
+    confirmar_senha: trimAndValidate(senhas[1]?.value),
     tipo_loja: 'produtos'
   };
 }
 
 function valorPorId(id) {
-  return document.getElementById(id)?.value?.trim() || '';
+  return trimAndValidate(document.getElementById(id)?.value);
 }
 
 function coletarDadosEmpresa() {
@@ -424,21 +441,28 @@ function validarFormularioCadastro() {
   const erros = [];
 
   // Verificar cada input de texto obrigatório na etapa 1
-  const nomCompleto = document.querySelector('input[type="text"]')?.value?.trim();
-  const nomeUtilizador = document.querySelectorAll('input[type="text"]')[1]?.value?.trim();
-  const email = document.querySelector('input[type="email"]')?.value?.trim();
-  const numeroTelefone = document.querySelector('input[type="tel"]')?.value?.trim();
+  const nomCompleto = trimAndValidate(document.querySelector('input[type="text"]')?.value, 3);
+  const nomeUtilizador = trimAndValidate(document.querySelectorAll('input[type="text"]')[1]?.value, 3);
+  const email = trimAndValidate(document.querySelector('input[type="email"]')?.value);
+  const numeroTelefone = trimAndValidate(document.querySelector('input[type="tel"]')?.value);
 
-  if (!nomCompleto) erros.push('Nome completo é obrigatório');
-  if (!nomeUtilizador) erros.push('Nome de utilizador é obrigatório');
+  if (estaVazio(nomCompleto)) {
+    erros.push('Nome completo é obrigatório e deve ter pelo menos 3 caracteres');
+  }
 
-  if (!email) {
+  if (estaVazio(nomeUtilizador)) {
+    erros.push('Nome de utilizador é obrigatório e deve ter pelo menos 3 caracteres');
+  } else if (!temComprimentoMinimo(nomeUtilizador, 3)) {
+    erros.push('Nome de utilizador deve ter pelo menos 3 caracteres');
+  }
+
+  if (estaVazio(email)) {
     erros.push('Email é obrigatório');
   } else if (!validarEmail(email)) {
     erros.push('Email inválido');
   }
 
-  if (!numeroTelefone) {
+  if (estaVazio(numeroTelefone)) {
     erros.push('Número de telefone é obrigatório');
   } else if (!validarTelefone(numeroTelefone)) {
     erros.push('Número de telefone inválido (deve ter 9 ou 12 dígitos)');
@@ -446,16 +470,16 @@ function validarFormularioCadastro() {
 
   // Validar senhas
   const senhas = document.querySelectorAll('input[type="password"]');
-  const senha = senhas[0]?.value;
-  const confirmarSenha = senhas[1]?.value;
+  const senha = trimAndValidate(senhas[0]?.value);
+  const confirmarSenha = trimAndValidate(senhas[1]?.value);
 
-  if (!senha) {
+  if (estaVazio(senha)) {
     erros.push('Senha é obrigatória');
-  } else if (senha.length < 8) {
+  } else if (!temComprimentoMinimo(senha, 8)) {
     erros.push('Senha deve ter pelo menos 8 caracteres');
   }
 
-  if (!confirmarSenha) {
+  if (estaVazio(confirmarSenha)) {
     erros.push('Confirmação de senha é obrigatória');
   } else if (senha !== confirmarSenha) {
     erros.push('As senhas não coincidem');
@@ -468,7 +492,7 @@ function validarFormularioVendedor() {
   const erros = validarFormularioCadastro();
   const dados = coletarDadosVendedor();
 
-  if (!dados.numero_bi) {
+  if (estaVazio(dados.numero_bi)) {
     erros.push('Numero do BI e obrigatorio');
   }
 
@@ -510,32 +534,42 @@ function validarFormularioEmpresa() {
   ];
 
   obrigatorios.forEach(([campo, valor]) => {
-    if (!valor) {
+    if (estaVazio(valor)) {
       erros.push(`${campo} e obrigatorio`);
     }
   });
 
-  if (dados.email && !validarEmail(dados.email)) {
+  if (!estaVazio(dados.email) && !validarEmail(dados.email)) {
     erros.push('Email empresarial invalido');
   }
 
-  if (dados.representante_email && !validarEmail(dados.representante_email)) {
+  if (!estaVazio(dados.representante_email) && !validarEmail(dados.representante_email)) {
     erros.push('Email do representante invalido');
   }
 
-  if (dados.telefone && !validarTelefone(dados.telefone)) {
+  if (!estaVazio(dados.telefone) && !validarTelefone(dados.telefone)) {
     erros.push('Telefone empresarial invalido');
   }
 
-  if (dados.whatsapp && !validarTelefone(dados.whatsapp)) {
+  if (!estaVazio(dados.whatsapp) && !validarTelefone(dados.whatsapp)) {
     erros.push('WhatsApp empresarial invalido');
   }
 
-  if (dados.representante_telefone && !validarTelefone(dados.representante_telefone)) {
+  if (!estaVazio(dados.representante_telefone) && !validarTelefone(dados.representante_telefone)) {
     erros.push('Telefone do representante invalido');
   }
 
-  validarSenhasBasicas(dados.senha, dados.confirmar_senha, erros);
+  if (estaVazio(dados.senha)) {
+    erros.push('Senha é obrigatória');
+  } else if (!temComprimentoMinimo(dados.senha, 8)) {
+    erros.push('Senha deve ter pelo menos 8 caracteres');
+  }
+
+  if (estaVazio(dados.confirmar_senha)) {
+    erros.push('Confirmação de senha é obrigatória');
+  } else if (dados.senha !== dados.confirmar_senha) {
+    erros.push('As senhas não coincidem');
+  }
 
   return erros;
 }

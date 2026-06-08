@@ -108,6 +108,15 @@ async function registarComprador(dados) {
     };
 
     const response = await apiCall('POST', '/auth/registar-comprador', payload);
+
+    if (typeof showToast === 'function') {
+      showToast('Cadastro realizado com sucesso! Redirecionando...', 'success');
+    }
+
+    setTimeout(() => {
+      window.location.href = '../../login/?novo=true&tipo=comprador';
+    }, 2000);
+
     return {
       success: true,
       data: response,
@@ -144,6 +153,15 @@ async function registarVendedor(dados) {
     };
 
     const response = await apiCall('POST', '/auth/registar-vendedor', payload);
+
+    if (typeof showToast === 'function') {
+      showToast('Cadastro de vendedor realizado com sucesso! Redirecionando...', 'success');
+    }
+
+    setTimeout(() => {
+      window.location.href = '../../login/?novo=true&tipo=vendedor';
+    }, 2000);
+
     return {
       success: true,
       data: response,
@@ -188,6 +206,15 @@ async function registarEmpresa(dados) {
     };
 
     const response = await apiCall('POST', '/auth/registar-empresa', payload);
+
+    if (typeof showToast === 'function') {
+      showToast('Cadastro de empresa realizado com sucesso! Redirecionando...', 'success');
+    }
+
+    setTimeout(() => {
+      window.location.href = '../../login/?novo=true&tipo=empresa';
+    }, 2000);
+
     return {
       success: true,
       data: response,
@@ -250,7 +277,7 @@ async function verificarCodigo(utilizadorId, codigo, tipo) {
   }
 }
 
-async function obterMeuPerfil() {
+function obterMeuPerfil() {
   try {
     const response = await apiCall('GET', '/auth/me');
     return {
@@ -263,6 +290,114 @@ async function obterMeuPerfil() {
       localStorage.removeItem('refresh_token');
     }
 
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+async function obterDadosVendedor() {
+  try {
+    const response = await apiCall('GET', '/vendedor/minha-loja');
+    return {
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+async function obterDadosEmpresa() {
+  try {
+    const response = await apiCall('GET', '/empresa/minha-empresa');
+    return {
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+async function obterProdutos(filtros = {}) {
+  try {
+    let endpoint = '/produtos?';
+    if (filtros.vendedor_id) endpoint += `vendedor_id=${filtros.vendedor_id}&`;
+    if (filtros.categoria_id) endpoint += `categoria_id=${filtros.categoria_id}&`;
+    if (filtros.limit) endpoint += `limit=${filtros.limit}&`;
+
+    const response = await apiCall('GET', endpoint.slice(0, -1));
+    return {
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+async function obterPedidos(filtros = {}) {
+  try {
+    let endpoint = '/pedidos?';
+    if (filtros.vendedor_id) endpoint += `vendedor_id=${filtros.vendedor_id}&`;
+    if (filtros.status) endpoint += `status=${filtros.status}&`;
+    if (filtros.limit) endpoint += `limit=${filtros.limit}&`;
+
+    const response = await apiCall('GET', endpoint.slice(0, -1));
+    return {
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+async function obterEstatisticas(tipo = 'vendedor') {
+  try {
+    const endpoint = tipo === 'empresa'
+      ? '/empresa/minhas-estatisticas/dashboard'
+      : '/vendedor/minhas-estatisticas/dashboard';
+
+    const response = await apiCall('GET', endpoint);
+    return {
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+async function obterMeusPedidos(tipo = 'vendedor', limit = 10) {
+  try {
+    const endpoint = tipo === 'empresa'
+      ? `/empresa/meus-pedidos/recentes?limit=${limit}`
+      : `/vendedor/meus-pedidos/recentes?limit=${limit}`;
+
+    const response = await apiCall('GET', endpoint);
+    return {
+      success: true,
+      data: response
+    };
+  } catch (error) {
     return {
       success: false,
       error: error.message

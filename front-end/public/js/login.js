@@ -14,13 +14,30 @@ document.addEventListener('DOMContentLoaded', function() {
     lembrarCheckbox.checked = true;
   }
 
-  // Limpar erros quando o utilizador começa a escrever
+  // Validação em tempo real para identificador
   identificadorInput.addEventListener('input', function() {
     document.getElementById('identificadorError').textContent = '';
+    const identificador = this.value.trim();
+
+    if (identificador) {
+      if (validarIdentificador(identificador)) {
+        this.style.borderColor = '#16a34a';
+      } else {
+        this.style.borderColor = '#ef4444';
+      }
+    } else {
+      this.style.borderColor = '#e2e8f0';
+    }
   });
 
+  // Validação em tempo real para senha
   senhaInput.addEventListener('input', function() {
     document.getElementById('senhaError').textContent = '';
+    if (this.value) {
+      this.style.borderColor = '#16a34a';
+    } else {
+      this.style.borderColor = '#e2e8f0';
+    }
   });
 
   // Event listener para o formulário
@@ -39,14 +56,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!identificador) {
       document.getElementById('identificadorError').textContent = 'Email ou telefone são obrigatórios';
+      identificadorInput.style.borderColor = '#ef4444';
       temErros = true;
     } else if (!validarIdentificador(identificador)) {
       document.getElementById('identificadorError').textContent = 'Email ou telefone inválido';
+      identificadorInput.style.borderColor = '#ef4444';
       temErros = true;
     }
 
     if (!senha) {
       document.getElementById('senhaError').textContent = 'Senha é obrigatória';
+      senhaInput.style.borderColor = '#ef4444';
       temErros = true;
     }
 
@@ -56,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Mostrar loading
-    mostrarLoading(true);
     const botao = loginForm.querySelector('.btn-submit');
     botao.disabled = true;
     const textoOriginal = botao.textContent;
@@ -76,27 +95,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         mostrarToast('Login realizado com sucesso!', 'success');
-        mostrarLoading(false);
 
-        // Redirecionar para home após 1 segundo
+        // Obter perfil para determinar tipo de utilizador e redirecionar
+        const perfilResult = await obterMeuPerfil();
+        let redirecionamento = '../';
+
+        if (perfilResult.success && perfilResult.data) {
+          const tipo = perfilResult.data.tipo_utilizador;
+          if (tipo === 'vendedor') {
+            redirecionamento = '../paineis/painel_vendedor/';
+          } else if (tipo === 'empresa') {
+            redirecionamento = '../paineis/painel_empresa/';
+          } else if (tipo === 'comprador') {
+            redirecionamento = '../paineis/painel_comprador/';
+          }
+        }
+
+        // Redirecionar após 1 segundo
         setTimeout(() => {
-          window.location.href = '../';
+          window.location.href = redirecionamento;
         }, 1000);
       } else {
-        const mensagem = resultado.error === 'Credenciais inválidas'
+        const mensagem = resultado.error === 'Credenciais invalidas'
           ? 'Email/telefone ou senha incorretos'
           : resultado.error;
         document.getElementById('formError').textContent = mensagem;
         mostrarToast(mensagem, 'error');
-        mostrarLoading(false);
       }
     } catch (erro) {
       document.getElementById('formError').textContent = 'Erro ao conectar com o servidor';
       mostrarToast('Erro ao conectar com o servidor', 'error');
-      mostrarLoading(false);
     } finally {
       botao.disabled = false;
       botao.textContent = textoOriginal;
+      identificadorInput.style.borderColor = '#e2e8f0';
+      senhaInput.style.borderColor = '#e2e8f0';
     }
   });
 });
@@ -117,23 +150,10 @@ function togglePassword() {
   }
 }
 
-// Função para mostrar toast
+// Função para mostrar toast (usa toast.js)
 function mostrarToast(mensagem, tipo = 'info') {
-  const toast = document.getElementById('toast');
-  toast.textContent = mensagem;
-  toast.className = `toast ${tipo} show`;
-
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 3000);
-}
-
-// Função para controlar loading
-function mostrarLoading(mostrar) {
-  const overlay = document.getElementById('loadingOverlay');
-  if (mostrar) {
-    overlay.classList.add('show');
-  } else {
-    overlay.classList.remove('show');
+  if (typeof showToast === 'function') {
+    showToast(mensagem, tipo);
   }
 }
+

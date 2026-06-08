@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Empresarial - ByClick</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../../css/painel_empresa.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>By<em>Click</em></span>
+    </div>
+    <div class="profile-section">
+        <img src="https://i.pravatar.cc/150?u=empresa" alt="Empresa" class="profile-img" data-user-photo>
+        <div class="profile-info">
+            <h4 data-user-name>Sua Empresa</h4>
+            <div class="profile-role"><i class="fa-solid fa-building"></i> Empresa</div>
+        </div>
+    </div>
+    <nav>
+        <div class="nav-label">Menu</div>
+        <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i> Página Inicial</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-box-open"></i> Produtos e Serviços</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-chart-line"></i> Estatísticas</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-handshake"></i> Parcerias</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-wallet"></i> Financeiro</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-star"></i> Avaliações</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i> Definições</a>
+        <a href="#" class="nav-item nav-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Terminar Sessão</a>
+    </nav>
+</aside>
+
+<div class="main-content">
+    <header class="topbar">
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+        <div class="topbar-logo">By<em>Click</em></div>
+        <div class="topbar-actions">
+            <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">5</span></div>
+            <div class="topbar-divider"></div>
+            <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge">3</span></div>
+            <div class="topbar-divider"></div>
+            <div class="icon-btn" data-refresh-btn style="cursor: pointer;"><i class="fa-solid fa-rotate-right"></i></div>
+        </div>
+    </header>
+
+    <main class="page">
+        <!-- Header -->
+        <div class="header-section">
+            <div class="greeting">
+                <h1>Bem-vindo, Administrador! 👋</h1>
+                <p>Aqui está o resumo da sua empresa hoje.</p>
+            </div>
+            <div class="date-badge"><i class="fa-regular fa-calendar"></i> <span id="currentDate"></span> &nbsp;|&nbsp; <span id="currentTime"></span></div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-green"><i class="fa-solid fa-box-open"></i></div>
+                <div class="stat-info">
+                    <div class="label">Produtos/Serviços</div>
+                    <div class="value" data-products-count>0</div>
+                    <div class="sub">Ativos</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-blue"><i class="fa-solid fa-cart-shopping"></i></div>
+                <div class="stat-info">
+                    <div class="label">Pedidos</div>
+                    <div class="value" data-orders-count>0</div>
+                    <div class="sub">Neste mês</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-orange"><i class="fa-solid fa-sack-dollar"></i></div>
+                <div class="stat-info">
+                    <div class="label">Receita (Mês)</div>
+                    <div class="value" style="font-size:1.1rem;" data-revenue>0 Kz</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-purple"><i class="fa-solid fa-chart-simple"></i></div>
+                <div class="stat-info">
+                    <div class="label">Visualizações</div>
+                    <div class="value" data-views>0</div>
+                    <div class="sub">Perfil</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-red"><i class="fa-solid fa-heart"></i></div>
+                <div class="stat-info">
+                    <div class="label">Avaliação Média</div>
+                    <div class="value" data-rating>0.0</div>
+                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+            <div class="left-col">
+                <!-- Sales Chart -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-sliders"></i> Desempenho Mensal</h3>
+                        <div class="chart-tabs">
+                            <button class="chart-tab">Semana</button>
+                            <button class="chart-tab active">Mês</button>
+                            <button class="chart-tab">Ano</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    <div class="mini-charts">
+                        <div class="mini-chart-card">
+                            <div class="mc-label">Pedidos por dia</div>
+                            <div class="mc-value" style="color: var(--blue);">2.5 / dia</div>
+                            <div class="mini-chart-container"><canvas id="ordersChart"></canvas></div>
+                        </div>
+                        <div class="mini-chart-card">
+                            <div class="mc-label">Categorias ofertadas</div>
+                            <div class="mc-value" style="color: var(--purple);">5 Categorias</div>
+                            <div class="mini-chart-container"><canvas id="catChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-bag-shopping"></i> Pedidos Recentes</h3>
+                        <a href="#" class="btn-link">Ver todos <i class="fa-solid fa-chevron-right" style="font-size:0.7rem;"></i></a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: #999;">Carregando pedidos...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <!-- Company Info -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Informações da Empresa</h3>
+                        <button class="btn-edit"><i class="fa-solid fa-pen"></i> Editar</button>
+                    </div>
+                    <div class="company-profile">
+                        <div class="company-logo" data-store-logo>EMP</div>
+                        <div>
+                            <div class="company-name" data-store-name>Sua Empresa</div>
+                            <div class="company-desc" data-store-desc>Descrição não disponível</div>
+                            <span class="verified-badge" data-store-verified><i class="fa-solid fa-circle-check"></i> Aguardando verificação</span>
+                        </div>
+                    </div>
+                    <div class="company-meta">
+                        <div class="meta-item"><div class="meta-label">Membro desde</div><div class="meta-val" id="memberSince">-</div></div>
+                        <div class="meta-item"><div class="meta-label">Status</div><div class="meta-val" id="companyStatus">Ativo</div></div>
+                        <div class="meta-item"><div class="meta-label">NIF</div><div class="meta-val" id="companyNif">-</div></div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="panel">
+                    <div class="actions-title">Ações Rápidas</div>
+                    <div class="actions-grid">
+                        <button class="action-btn ab-green"><i class="fa-solid fa-plus-circle"></i> Novo Produto</button>
+                        <button class="action-btn ab-blue"><i class="fa-solid fa-briefcase"></i> Novo Serviço</button>
+                        <button class="action-btn ab-yellow"><i class="fa-solid fa-file-signature"></i> Documentos</button>
+                        <button class="action-btn ab-red"><i class="fa-solid fa-bullhorn"></i> Campanhas</button>
+                        <button class="action-btn ab-teal"><i class="fa-solid fa-gear"></i> Definições</button>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="fa-solid fa-bell"></i> Notificações</h3>
+                        <a href="#" class="btn-link">Ver todas</a>
+                    </div>
+                    <div class="notif-list">
+                        <div class="notif-item">
+                            <div class="notif-icon" style="background: var(--primary);"><i class="fa-solid fa-eye"></i></div>
+                            <div>
+                                <div class="notif-text">Seu perfil teve <b>156 novas visualizações</b>.</div>
+                                <span class="notif-time">Há 10 min</span>
+                            </div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-icon" style="background: var(--blue);"><i class="fa-solid fa-message"></i></div>
+                            <div>
+                                <div class="notif-text">Você recebeu <b>3 novas mensagens</b> de clientes.</div>
+                                <span class="notif-time">Há 30 min</span>
+                            </div>
+                        </div>
+                        <div class="notif-item">
+                            <div class="notif-icon" style="background: var(--orange);"><i class="fa-solid fa-star"></i></div>
+                            <div>
+                                <div class="notif-text">Você recebeu uma <b>avaliação 5 estrelas</b>.</div>
+                                <span class="notif-time">Há 1 hora</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../../js/api.js"></script>
+<script src="../../js/toast.js"></script>
+<script src="../../js/painel_empresa.js"></script>
+</body>
+</html>

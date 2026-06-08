@@ -1,89 +1,54 @@
 """
-Endpoints do Módulo Vendedor - Criar loja, gerir perfil
+Endpoints do Módulo Empresa - Dados e estatísticas de empresas
 """
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 from app.core.database import get_db
 from app.models.models import (
     Utilizador, PerfilVendedor, TipoUtilizadorEnum,
     Produto, Pedido, ItemPedido
 )
-from app.schemas.schemas import RegistoVendedorSchema, PerfilVendedorResponseSchema
+from app.schemas.schemas import PerfilVendedorResponseSchema
 from app.api.v1.endpoints.deps import get_utilizador_atual
 
-router = APIRouter(prefix="/vendedor", tags=["Vendedor"])
+router = APIRouter(prefix="/empresa", tags=["Empresa"])
 
 
-@router.post("/registar-loja", response_model=PerfilVendedorResponseSchema, status_code=201)
-def registar_loja(
-    dados: RegistoVendedorSchema,
+@router.get("/minha-empresa", response_model=PerfilVendedorResponseSchema)
+def get_my_company(
     utilizador: Utilizador = Depends(get_utilizador_atual),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
 ):
-    """Criar loja virtual para um utilizador existente."""
+    """Retorna dados da empresa do utilizador autenticado"""
+    if utilizador.tipo_utilizador != TipoUtilizadorEnum.empresa:
+        raise HTTPException(status_code=403, detail="Não é uma empresa")
 
-    if utilizador.perfil_vendedor:
-        raise HTTPException(status_code=400, detail="Já tem uma loja criada")
-
-    # Verificar nome único
-    if db.query(PerfilVendedor).filter(PerfilVendedor.nome_loja == dados.nome_loja).first():
-        raise HTTPException(status_code=400, detail="Este nome de loja já existe")
-
-    perfil = PerfilVendedor(
-        utilizador_id=utilizador.id,
-        nome_loja=dados.nome_loja,
-        descricao_loja=dados.descricao_loja,
-        tipo_vendedor=dados.tipo_vendedor,
-        tipo_loja=dados.tipo_loja,
-    )
-    db.add(perfil)
-
-    # Atualizar tipo do utilizador
-    utilizador.tipo_utilizador = TipoUtilizadorEnum.vendedor
-    db.commit()
-    db.refresh(perfil)
+    perfil = utilizador.perfil_vendedor
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Perfil de empresa não encontrado")
 
     return perfil
 
 
-@router.get("/minha-loja", response_model=PerfilVendedorResponseSchema)
-def ver_minha_loja(
-    utilizador: Utilizador = Depends(get_utilizador_atual),
-    db: Session = Depends(get_db),
-):
-    if not utilizador.perfil_vendedor:
-        raise HTTPException(status_code=404, detail="Sem loja registada")
-    return utilizador.perfil_vendedor
-
-
-@router.get("/{nome_loja}", response_model=PerfilVendedorResponseSchema)
-def ver_loja_publica(nome_loja: str, db: Session = Depends(get_db)):
-    loja = db.query(PerfilVendedor).filter(
-        PerfilVendedor.nome_loja == nome_loja,
-        PerfilVendedor.ativo == True
-    ).first()
-    if not loja:
-        raise HTTPException(status_code=404, detail="Loja não encontrada")
-    return loja
-
-
 @router.get("/minhas-estatisticas/dashboard")
-def get_my_stats(
+def get_company_stats(
     utilizador: Utilizador = Depends(get_utilizador_atual),
     db: Session = Depends(get_db)
 ):
-    """Retorna estatísticas do vendedor para o dashboard"""
-    if not utilizador.perfil_vendedor:
-        raise HTTPException(status_code=404, detail="Sem loja registada")
+    """Retorna estatísticas da empresa para o dashboard"""
+    if utilizador.tipo_utilizador != TipoUtilizadorEnum.empresa:
+        raise HTTPException(status_code=403, detail="Não é uma empresa")
 
     perfil = utilizador.perfil_vendedor
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Perfil de empresa não encontrado")
 
-    # Contar produtos ativos
+    # Contar produtos/serviços ativos
     produtos_count = db.query(func.count(Produto.id)).filter(
         Produto.vendedor_id == perfil.id,
         Produto.ativo == True
@@ -114,19 +79,21 @@ def get_my_stats(
 
 
 @router.get("/meus-pedidos/recentes")
-def get_my_orders(
+def get_company_orders(
     utilizador: Utilizador = Depends(get_utilizador_atual),
     db: Session = Depends(get_db),
     limit: int = 10,
     status: Optional[str] = None
 ):
-    """Retorna pedidos recentes do vendedor"""
-    if not utilizador.perfil_vendedor:
-        raise HTTPException(status_code=404, detail="Sem loja registada")
+    """Retorna pedidos recentes da empresa"""
+    if utilizador.tipo_utilizador != TipoUtilizadorEnum.empresa:
+        raise HTTPException(status_code=403, detail="Não é uma empresa")
 
     perfil = utilizador.perfil_vendedor
+    if not perfil:
+        raise HTTPException(status_code=404, detail="Perfil de empresa não encontrado")
 
-    # Buscar pedidos deste vendedor
+    # Buscar pedidos desta empresa
     query = db.query(Pedido).join(ItemPedido).filter(
         ItemPedido.vendedor_id == perfil.id
     ).distinct()
