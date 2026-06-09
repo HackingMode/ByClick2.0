@@ -28,7 +28,8 @@
     <nav>
         <div class="nav-label">Menu</div>
         <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i> Página Inicial</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-box-open"></i> Produtos e Serviços</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-box-open"></i> Meus Produtos</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-briefcase"></i> Meus Serviços</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-chart-line"></i> Estatísticas</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-handshake"></i> Parcerias</a>
@@ -67,8 +68,16 @@
             <div class="stat-card">
                 <div class="stat-icon icon-green"><i class="fa-solid fa-box-open"></i></div>
                 <div class="stat-info">
-                    <div class="label">Produtos/Serviços</div>
+                    <div class="label">Produtos</div>
                     <div class="value" data-products-count>—</div>
+                    <div class="sub">Ativos</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon icon-purple"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="stat-info">
+                    <div class="label">Serviços</div>
+                    <div class="value" data-services-count>—</div>
                     <div class="sub">Ativos</div>
                 </div>
             </div>
@@ -150,11 +159,12 @@
                                     <th>Valor</th>
                                     <th>Status</th>
                                     <th>Data</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="ordersTableBody">
                                 <tr>
-                                    <td colspan="5" style="text-align: center; color: #999;">Carregando pedidos...</td>
+                                    <td colspan="6" style="text-align: center; color: #999;">Carregando pedidos...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -188,8 +198,8 @@
                 <div class="panel">
                     <div class="actions-title">Ações Rápidas</div>
                     <div class="actions-grid">
-                        <button class="action-btn ab-green"><i class="fa-solid fa-plus-circle"></i> Novo Produto</button>
-                        <button class="action-btn ab-blue"><i class="fa-solid fa-briefcase"></i> Novo Serviço</button>
+                        <button class="action-btn ab-green" onclick="abrirModal('modalServico')"><i class="fa-solid fa-plus-circle"></i> Criar Anúncio (Serviço)</button>
+                        <button class="action-btn ab-blue" onclick="abrirModal('modalProduto')"><i class="fa-solid fa-box"></i> Adicionar Produto</button>
                         <button class="action-btn ab-yellow"><i class="fa-solid fa-file-signature"></i> Documentos</button>
                         <button class="action-btn ab-red"><i class="fa-solid fa-bullhorn"></i> Campanhas</button>
                         <button class="action-btn ab-teal"><i class="fa-solid fa-gear"></i> Definições</button>
@@ -215,6 +225,86 @@
             </div>
         </div>
     </main>
+</div>
+
+<!-- Modal Overlay e Modal Adicionar Produto -->
+<div class="modal-overlay" id="modalProduto">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Adicionar Novo Produto</h3>
+            <button class="btn-close-modal" onclick="fecharModal('modalProduto')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="formAddProduto">
+                <div class="form-group">
+                    <label>Nome do Produto</label>
+                    <input type="text" class="form-control" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea class="form-control" name="descricao" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Preço (Kz)</label>
+                    <input type="number" step="0.01" class="form-control" name="preco" required>
+                </div>
+                <div class="form-group">
+                    <label>Stock Disponível</label>
+                    <input type="number" class="form-control" name="estoque" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoria ID</label>
+                    <input type="number" class="form-control" name="categoria_id" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="fecharModal('modalProduto')">Cancelar</button>
+            <button class="btn-primary" onclick="submeterNovoProduto()">Salvar Produto</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Adicionar Serviço -->
+<div class="modal-overlay" id="modalServico">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Adicionar Novo Serviço</h3>
+            <button class="btn-close-modal" onclick="fecharModal('modalServico')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="formAddServico">
+                <div class="form-group">
+                    <label>Nome do Serviço</label>
+                    <input type="text" class="form-control" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea class="form-control" name="descricao" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Preço Base (Kz)</label>
+                    <input type="number" step="0.01" class="form-control" name="preco_base" required>
+                </div>
+                <div class="form-group">
+                    <label>Duração Estimada (ex: 2h)</label>
+                    <input type="text" class="form-control" name="duracao_estimada">
+                </div>
+                <div class="form-group">
+                    <label>Disponibilidade (ex: online, presencial)</label>
+                    <input type="text" class="form-control" name="disponibilidade">
+                </div>
+                <div class="form-group">
+                    <label>Categoria ID</label>
+                    <input type="number" class="form-control" name="categoria_id" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="fecharModal('modalServico')">Cancelar</button>
+            <button class="btn-primary" onclick="submeterNovoServico()">Salvar Serviço</button>
+        </div>
+    </div>
 </div>
 
 <script src="../../js/api.js"></script>

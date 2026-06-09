@@ -45,6 +45,10 @@ function showForm(id, button, type) {
  * Tambem atualiza os indicadores e encerra a camera quando necessario.
  */
 function nextStep(current, next) {
+  if (!validarEtapa(current)) {
+    return;
+  }
+
   const currentStep = document.getElementById(current);
   const nextStepElement = document.getElementById(next);
 
@@ -54,6 +58,40 @@ function nextStep(current, next) {
     updateStepDots(nextStepElement);
     stopFaceCameraWhenLeaving(current, next);
   }
+}
+
+function validarEtapa(stepId) {
+  let valido = true;
+  
+  if (stepId === 'cstep1' || stepId === 'vstep1') {
+    const prefix = stepId === 'cstep1' ? 'comp' : 'vend';
+    const nome = document.getElementById(prefix + 'NomeCompleto');
+    const email = document.getElementById(prefix + 'Email');
+    const telefone = document.getElementById(prefix + 'Telefone');
+    const username = document.getElementById(prefix + 'NomeUtilizador');
+    
+    if (nome && nome.value.trim() === '') { mostrarToast('Nome completo é obrigatório', 'error'); valido = false; }
+    else if (username && username.value.trim().length < 3) { mostrarToast('Nome de utilizador (mín. 3) é obrigatório', 'error'); valido = false; }
+    else if (email && !validarEmail(email.value)) { mostrarToast('Email inválido', 'error'); valido = false; }
+    else if (telefone && !validarTelefone(telefone.value)) { mostrarToast('Telefone inválido', 'error'); valido = false; }
+    
+    if (stepId === 'vstep1') {
+      const bi = document.getElementById('vendBi');
+      if (bi && bi.value.trim() === '') { mostrarToast('Número do BI é obrigatório', 'error'); valido = false; }
+    }
+  }
+  
+  if (stepId === 'vstep2') {
+    const photo = document.getElementById('biInput');
+    if (photo && photo.files.length === 0) { mostrarToast('Foto do BI é obrigatória', 'error'); valido = false; }
+  }
+  
+  if (stepId === 'vstep3') {
+    const photoData = document.getElementById('facePhotoData');
+    if (photoData && !photoData.value) { mostrarToast('Tire a foto do rosto antes de continuar', 'error'); valido = false; }
+  }
+  
+  return valido;
 }
 
 /**
@@ -353,49 +391,41 @@ function validarSenhasBasicas(senha, confirmarSenha, erros) {
 }
 
 function coletarDadosComprador() {
-  const textInputs = document.querySelectorAll('input[type="text"]');
-  const dates = document.querySelectorAll('input[type="date"]');
-  const senhas = document.querySelectorAll('input[type="password"]');
-
   return {
-    nome_completo: trimAndValidate(textInputs[0]?.value),
-    nome_utilizador: trimAndValidate(textInputs[1]?.value),
-    email: textoInputPorTipo('email'),
-    numero_telefone: textoInputPorTipo('tel'),
-    genero: normalizarGenero(valorSelect(0)),
-    data_nascimento: dates[0]?.value || null,
-    provincia: valorSelect(1) || null,
-    municipio: valorSelect(2) || null,
-    bairro: trimAndValidate(textInputs[2]?.value) || null,
-    endereco_completo: trimAndValidate(textInputs[3]?.value) || null,
-    senha: trimAndValidate(senhas[0]?.value),
-    confirmar_senha: trimAndValidate(senhas[1]?.value)
+    nome_completo: valorPorId('compNomeCompleto'),
+    nome_utilizador: valorPorId('compNomeUtilizador'),
+    email: valorPorId('compEmail'),
+    numero_telefone: valorPorId('compTelefone'),
+    genero: normalizarGenero(valorPorId('compGenero')),
+    data_nascimento: valorPorId('compDataNascimento') || null,
+    provincia: valorPorId('compProvincia') || null,
+    municipio: valorPorId('compMunicipio') || null,
+    bairro: valorPorId('compBairro') || null,
+    endereco_completo: valorPorId('compRua') || null,
+    senha: valorPorId('compSenha'),
+    confirmar_senha: valorPorId('compConfirmarSenha')
   };
 }
 
 function coletarDadosVendedor() {
-  const textInputs = document.querySelectorAll('input[type="text"]');
-  const dates = document.querySelectorAll('input[type="date"]');
-  const senhas = document.querySelectorAll('input[type="password"]');
-
   return {
-    nome_completo: trimAndValidate(textInputs[0]?.value),
-    nome_utilizador: trimAndValidate(textInputs[1]?.value),
-    email: textoInputPorTipo('email'),
-    numero_telefone: textoInputPorTipo('tel'),
-    genero: normalizarGenero(valorSelect(0)),
-    data_nascimento: dates[0]?.value || null,
-    provincia: valorSelect(1) || null,
-    municipio: valorSelect(2) || null,
-    bairro: trimAndValidate(textInputs[2]?.value) || null,
-    endereco_completo: trimAndValidate(textInputs[3]?.value) || null,
-    numero_bi: trimAndValidate(textInputs[4]?.value),
-    nif: trimAndValidate(textInputs[5]?.value) || null,
-    data_emissao: dates[1]?.value,
-    data_validade: dates[2]?.value,
-    nome_loja: trimAndValidate(textInputs[1]?.value),
-    senha: trimAndValidate(senhas[0]?.value),
-    confirmar_senha: trimAndValidate(senhas[1]?.value),
+    nome_completo: valorPorId('vendNomeCompleto'),
+    nome_utilizador: valorPorId('vendNomeUtilizador'),
+    email: valorPorId('vendEmail'),
+    numero_telefone: valorPorId('vendTelefone'),
+    genero: normalizarGenero(valorPorId('vendGenero')),
+    data_nascimento: valorPorId('vendDataNascimento') || null,
+    provincia: valorPorId('vendProvincia') || null,
+    municipio: valorPorId('vendMunicipio') || null,
+    bairro: valorPorId('vendBairro') || null,
+    endereco_completo: valorPorId('vendRua') || null,
+    numero_bi: valorPorId('vendBi'),
+    nif: valorPorId('vendNif') || null,
+    data_emissao: valorPorId('vendDataEmissao'),
+    data_validade: valorPorId('vendDataValidade'),
+    nome_loja: valorPorId('vendNomeUtilizador'), // Fallback to username for now
+    senha: valorPorId('vendSenha'),
+    confirmar_senha: valorPorId('vendConfirmarSenha'),
     tipo_loja: 'produtos'
   };
 }
@@ -437,21 +467,20 @@ function coletarDadosEmpresa() {
   };
 }
 
-function validarFormularioCadastro() {
+function validarFormularioCadastro(dados) {
   const erros = [];
 
-  // Verificar cada input de texto obrigatório na etapa 1
-  const nomCompleto = trimAndValidate(document.querySelector('input[type="text"]')?.value, 3);
-  const nomeUtilizador = trimAndValidate(document.querySelectorAll('input[type="text"]')[1]?.value, 3);
-  const email = trimAndValidate(document.querySelector('input[type="email"]')?.value);
-  const numeroTelefone = trimAndValidate(document.querySelector('input[type="tel"]')?.value);
+  const nomCompleto = dados.nome_completo;
+  const nomeUtilizador = dados.nome_utilizador;
+  const email = dados.email;
+  const numeroTelefone = dados.numero_telefone;
 
   if (estaVazio(nomCompleto)) {
-    erros.push('Nome completo é obrigatório e deve ter pelo menos 3 caracteres');
+    erros.push('Nome completo é obrigatório');
   }
 
   if (estaVazio(nomeUtilizador)) {
-    erros.push('Nome de utilizador é obrigatório e deve ter pelo menos 3 caracteres');
+    erros.push('Nome de utilizador é obrigatório');
   } else if (!temComprimentoMinimo(nomeUtilizador, 3)) {
     erros.push('Nome de utilizador deve ter pelo menos 3 caracteres');
   }
@@ -468,10 +497,8 @@ function validarFormularioCadastro() {
     erros.push('Número de telefone inválido (deve ter 9 ou 12 dígitos)');
   }
 
-  // Validar senhas
-  const senhas = document.querySelectorAll('input[type="password"]');
-  const senha = trimAndValidate(senhas[0]?.value);
-  const confirmarSenha = trimAndValidate(senhas[1]?.value);
+  const senha = dados.senha;
+  const confirmarSenha = dados.confirmar_senha;
 
   if (estaVazio(senha)) {
     erros.push('Senha é obrigatória');
@@ -489,8 +516,8 @@ function validarFormularioCadastro() {
 }
 
 function validarFormularioVendedor() {
-  const erros = validarFormularioCadastro();
   const dados = coletarDadosVendedor();
+  const erros = validarFormularioCadastro(dados);
 
   if (estaVazio(dados.numero_bi)) {
     erros.push('Numero do BI e obrigatorio');
@@ -641,41 +668,15 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.addEventListener('click', async function(e) {
       e.preventDefault();
 
+      // Coletar dados do formulário
+      const dados = coletarDadosComprador();
+      
       // Validar formulário
-      const erros = validarFormularioCadastro();
+      const erros = validarFormularioCadastro(dados);
       if (erros.length > 0) {
         erros.forEach(erro => mostrarToast(erro, 'error'));
         return;
       }
-
-      // Coletar dados do formulário
-      const textInputs = document.querySelectorAll('input[type="text"]');
-      const nomCompleto = textInputs[0]?.value?.trim();
-      const nomeUtilizador = textInputs[1]?.value?.trim();
-      const email = document.querySelector('input[type="email"]')?.value?.trim();
-      const numeroTelefone = document.querySelector('input[type="tel"]')?.value?.trim();
-      const generoSelect = document.querySelector('select');
-      const dataNascimento = document.querySelector('input[type="date"]')?.value;
-      const senhas = document.querySelectorAll('input[type="password"]');
-      const senha = senhas[0]?.value;
-      const confirmarSenha = senhas[1]?.value;
-
-      // Mapear valor do género para lowercase
-      let genero = generoSelect?.value?.toLowerCase();
-      if (genero === 'masculino') genero = 'masculino';
-      if (genero === 'feminino') genero = 'feminino';
-
-      // Preparar dados
-      const dados = {
-        nome_completo: nomCompleto,
-        nome_utilizador: nomeUtilizador,
-        email: email,
-        numero_telefone: numeroTelefone,
-        genero: genero || null,
-        data_nascimento: dataNascimento || null,
-        senha: senha,
-        confirmar_senha: confirmarSenha
-      };
 
       submitBtn.disabled = true;
       const textoOriginal = submitBtn.textContent;

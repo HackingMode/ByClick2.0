@@ -2,12 +2,12 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:'Poppins', sans-serif;
+  font-family:'Plus Jakarta Sans', sans-serif;
 }
 
 body{
   min-height:100vh;
-  background:linear-gradient(135deg,#0f172a,#1e293b,#2563eb);
+  background:linear-gradient(135deg,#1A1208,#3D2B1F,#C84B1F);
 
   display:flex;
   justify-content:center;
@@ -38,8 +38,8 @@ body{
 }
 
 .cadastro-home .left{
-  height:720px;
-  min-height:720px;
+  height:auto;
+  min-height:100%;
 }
 
 .cadastro-home .right{
@@ -99,9 +99,25 @@ body{
   transition:0.25s;
 }
 
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:24px;
+  padding:12px 18px;
+  border:1px solid #E8DFD0;
+  border-radius:8px;
+  background:#FAF7F2;
+  color:#C84B1F;
+  font-size:14px;
+  font-weight:600;
+  text-decoration:none;
+  transition:0.25s;
+}
+
 .back-link:hover{
-  border-color:#2563eb;
-  background:#eff6ff;
+  border-color:#C84B1F;
+  background:#fff0ea;
 }
 
 .choice-grid{
@@ -121,9 +137,9 @@ body{
 }
 
 .choice-card:hover{
-  border-color:#2563eb;
+  border-color:#C84B1F;
   transform:translateY(-2px);
-  box-shadow:0 14px 30px rgba(37,99,235,0.12);
+  box-shadow:0 14px 30px rgba(200,75,31,0.12);
 }
 
 .choice-card strong{
@@ -139,7 +155,7 @@ body{
 
 .choice-type{
   display:inline-block;
-  color:#2563eb;
+  color:#C84B1F;
   font-size:13px;
   font-weight:700;
   text-transform:uppercase;
@@ -213,7 +229,7 @@ body{
 }
 
 .tab-btn.active{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  background:linear-gradient(135deg,#C84B1F,#A03A14);
   color:white;
 }
 
@@ -250,19 +266,63 @@ input,
 select,
 textarea{
   width:100%;
-
   padding:15px;
-
-  border-radius:14px;
-  border:1px solid #cbd5e1;
-
+  border-radius:10px;
+  border:2px solid #e2e8f0;
   background:#f8fafc;
+  font-size:15px;
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #C84B1F;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(200, 75, 31, 0.1);
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper > i.fa-solid, .input-wrapper > i.fas {
+  position: absolute;
+  left: 16px;
+  color: #94a3b8;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  padding-left: 45px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.3s ease;
+  padding: 5px;
+  z-index: 10;
+}
+
+.toggle-password:hover {
+  color: #C84B1F;
 }
 
 textarea{
   min-height:220px;
   resize:vertical;
   line-height:1.6;
+  padding-left:15px; /* no icon for textarea usually */
 }
 
 .buttons{
@@ -285,8 +345,15 @@ textarea{
 
 .next-btn,
 .submit-btn{
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  background:linear-gradient(135deg,#C84B1F,#A03A14);
   color:white;
+  transition: all 0.3s ease;
+}
+
+.next-btn:hover,
+.submit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(200,75,31,0.3);
 }
 
 .back-btn{
@@ -333,7 +400,7 @@ textarea{
   width:35px;
   border-radius:20px;
 
-  background:#2563eb;
+  background:#C84B1F;
 }
 
 .profile-upload{
@@ -364,7 +431,7 @@ textarea{
 
   margin:0 auto 20px;
 
-  border:5px solid #2563eb;
+  border:5px solid #C84B1F;
 }
 
 .profile-preview img{
@@ -398,7 +465,7 @@ textarea{
 
   border-radius:14px;
 
-  background:#2563eb;
+  background:#C84B1F;
   color:white;
 
   cursor:pointer;
@@ -414,7 +481,7 @@ textarea{
   max-width:520px;
   aspect-ratio:4/3;
   margin:0 auto 22px;
-  border:5px solid #2563eb;
+  border:5px solid #C84B1F;
   border-radius:20px;
   background:#0f172a;
   object-fit:cover;

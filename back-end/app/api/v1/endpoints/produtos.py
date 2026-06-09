@@ -66,6 +66,33 @@ def ver_produto(produto_id: int, db: Session = Depends(get_db)):
     return produto
 
 
+@router.put("/{produto_id}", response_model=ProdutoResponseSchema)
+def editar_produto(
+    produto_id: int,
+    dados: ProdutoCreateSchema,
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db),
+):
+    """Editar um produto (apenas o dono)."""
+    if not utilizador.perfil_vendedor:
+        raise HTTPException(status_code=403, detail="Sem perfil de vendedor")
+
+    produto = db.query(Produto).filter(
+        Produto.id == produto_id,
+        Produto.vendedor_id == utilizador.perfil_vendedor.id,
+        Produto.ativo == True
+    ).first()
+    if not produto:
+        raise HTTPException(status_code=404, detail="Produto não encontrado ou sem permissão")
+
+    for key, value in dados.model_dump(exclude_unset=True).items():
+        setattr(produto, key, value)
+
+    db.commit()
+    db.refresh(produto)
+    return produto
+
+
 @router.delete("/{produto_id}", status_code=204)
 def remover_produto(
     produto_id: int,
@@ -80,3 +107,4 @@ def remover_produto(
         raise HTTPException(status_code=404, detail="Produto não encontrado ou sem permissão")
     produto.ativo = False
     db.commit()
+

@@ -5,6 +5,7 @@
 
 let todosOsProdutos = [];
 let categoriaAtiva = 'all';
+let tipoAtivo = 'all';
 let searchTimeout = null;
 
 // ===== INIT =====
@@ -16,10 +17,20 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('categoriesBar')?.addEventListener('click', function(e) {
     const pill = e.target.closest('.cat-pill');
     if (!pill) return;
-    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('cat-pill--active'));
+    document.querySelectorAll('#categoriesBar .cat-pill').forEach(p => p.classList.remove('cat-pill--active'));
     pill.classList.add('cat-pill--active');
     categoriaAtiva = pill.dataset.cat;
-    filtrarProdutos();
+    carregarProdutos(); // Refetch from API might be better if doing backend filter, but we filter client side for now
+  });
+
+  // Type filter pills
+  document.getElementById('typeFilterBar')?.addEventListener('click', function(e) {
+    const pill = e.target.closest('.cat-pill');
+    if (!pill) return;
+    document.querySelectorAll('#typeFilterBar .cat-pill').forEach(p => p.classList.remove('cat-pill--active'));
+    pill.classList.add('cat-pill--active');
+    tipoAtivo = pill.dataset.type;
+    carregarProdutos(); // We can pass type directly to the API
   });
 
   // Search input with debounce
@@ -72,7 +83,12 @@ async function carregarProdutos() {
   const empty = document.getElementById('emptyState');
 
   try {
-    const response = await apiCall('GET', '/produtos/?skip=0&limit=50');
+    const searchTerm = document.getElementById('searchInput')?.value.trim() || '';
+    let url = `/explorar/pesquisa?`;
+    if (searchTerm) url += `q=${encodeURIComponent(searchTerm)}&`;
+    if (tipoAtivo !== 'all') url += `tipo=${tipoAtivo}`;
+
+    const response = await apiCall('GET', url);
     todosOsProdutos = response || [];
 
     if (loading) loading.style.display = 'none';
@@ -100,15 +116,21 @@ function filtrarProdutos() {
 
   let filtrados = [...todosOsProdutos];
 
+  // Client-side Type Filter fallback
+  if (tipoAtivo !== 'all') {
+    filtrados = filtrados.filter(p => p.tipo === tipoAtivo);
+  }
+
   // Category filter
   if (categoriaAtiva !== 'all') {
     filtrados = filtrados.filter(p =>
       (p.categoria || '').toLowerCase() === categoriaAtiva ||
-      (p.tipo_produto || '').toLowerCase() === categoriaAtiva
+      (p.tipo_produto || '').toLowerCase() === categoriaAtiva ||
+      (p.tipo === 'servico' && categoriaAtiva === 'servicos')
     );
   }
 
-  // Search filter
+  // Search filter (client side refinement)
   if (searchTerm) {
     filtrados = filtrados.filter(p =>
       (p.nome || '').toLowerCase().includes(searchTerm) ||
@@ -147,23 +169,31 @@ function renderizarProdutos(produtos) {
 
   grid.innerHTML = produtos.map(p => {
     const img = p.imagem_url || p.imagens?.[0]?.url || `https://picsum.photos/seed/${p.id || Math.random()}/400/300`;
-    const badge = p.condicao === 'usado' ? '<span class="prod-card__badge badge-used">Usado</span>' :
-                  p.tipo === 'servico' ? '<span class="prod-card__badge badge-service">Serviço</span>' :
-                  '<span class="prod-card__badge badge-new">Novo</span>';
+    
+    // Distinguish Service vs Product
+    const isServico = p.tipo === 'servico';
+    const badgeStr = isServico 
+      ? '<span class="prod-card__badge badge-service" style="background:#8b5cf6;">Serviço</span>' 
+      : (p.condicao === 'usado' ? '<span class="prod-card__badge badge-used">Usado</span>' : '<span class="prod-card__badge badge-new">Novo</span>');
+    
+    const url = isServico ? `../servico/?id=${p.id}` : `../produto/?id=${p.id}`;
+    const precoText = isServico ? `A partir de ${(p.preco || 0).toLocaleString('pt-AO')} Kz` : `${(p.preco || 0).toLocaleString('pt-AO')} Kz`;
+    const subtext = isServico && p.duracao_estimada ? `<small style="display:block; color:#64748b; font-size:12px; margin-top:4px;">⏱️ ${p.duracao_estimada}</small>` : '';
 
     return `
-      <a href="../produto/?id=${p.id}" class="prod-card">
+      <a href="${url}" class="prod-card">
         <button class="prod-card__favorite" onclick="event.preventDefault();event.stopPropagation();"><i class="fa-regular fa-heart"></i></button>
         <div class="prod-card__img">
-          <img src="${img}" alt="${p.nome || 'Produto'}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${p.id || 1}/400/300'">
+          <img src="${img}" alt="${p.nome || 'Oferta'}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${p.id || 1}/400/300'">
         </div>
         <div class="prod-card__body">
-          <div class="prod-card__badges">${badge}</div>
-          <h3>${p.nome || 'Produto sem nome'}</h3>
-          <span class="prod-card__price">${(p.preco || 0).toLocaleString('pt-AO')} Kz</span>
-          <div class="prod-card__location">
-            <i class="fa-solid fa-location-dot"></i>
-            ${p.localizacao || p.provincia || 'Luanda, Angola'}
+          <div class="prod-card__badges">${badgeStr}</div>
+          <h3>${p.nome || 'Oferta sem nome'}</h3>
+          <span class="prod-card__price">${precoText}</span>
+          ${subtext}
+          <div class="prod-card__location" style="margin-top: 10px;">
+            <i class="fa-solid fa-star" style="color: #fbbf24;"></i>
+            ${(p.avaliacao_media || 0).toFixed(1)}
           </div>
         </div>
       </a>

@@ -28,7 +28,7 @@
   align-items: center;
 }
 
-.input-wrapper i {
+.input-wrapper > i {
   position: absolute;
   left: 16px;
   color: #94a3b8;
@@ -38,20 +38,20 @@
 
 .input-wrapper input {
   width: 100%;
-  padding: 14px 16px 14px 45px;
+  padding: 14px 50px 14px 45px;
   border: 2px solid #e2e8f0;
   border-radius: 10px;
   font-size: 15px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   transition: all 0.3s ease;
   background: #f8fafc;
 }
 
 .input-wrapper input:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: #C84B1F;
   background: white;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(200, 75, 31, 0.1);
 }
 
 .input-wrapper input::placeholder {
@@ -61,17 +61,20 @@
 .toggle-password {
   position: absolute;
   right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   color: #94a3b8;
   cursor: pointer;
   font-size: 16px;
   transition: color 0.3s ease;
-  padding: 0;
+  padding: 5px;
+  z-index: 10;
 }
 
 .toggle-password:hover {
-  color: #2563eb;
+  color: #C84B1F;
 }
 
 .error-message {
@@ -88,6 +91,7 @@
   background: #fee2e2;
   border-radius: 6px;
   text-align: center;
+  display: none;
 }
 
 .remember-forgot {
@@ -113,21 +117,21 @@
 }
 
 .forgot-link {
-  color: #2563eb;
+  color: #C84B1F;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .forgot-link:hover {
-  color: #1d4ed8;
+  color: #A03A14;
   text-decoration: underline;
 }
 
 .btn-submit {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(135deg, #C84B1F, #A03A14);
   color: white;
   border: none;
   border-radius: 10px;
@@ -136,12 +140,12 @@
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 12px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 20px rgba(200, 75, 31, 0.3);
 }
 
 .btn-submit:active {
@@ -199,7 +203,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   color: #475569;
 }
 
@@ -227,14 +231,14 @@
 }
 
 .signup-link a {
-  color: #2563eb;
+  color: #C84B1F;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .signup-link a:hover {
-  color: #1d4ed8;
+  color: #A03A14;
   text-decoration: underline;
 }
 

@@ -104,12 +104,14 @@ function atualizarDadosEmpresa(empresa) {
 
 function atualizarEstatisticas(stats) {
   const prodEl = document.querySelector('[data-products-count]');
+  const servEl = document.querySelector('[data-services-count]');
   const pedidosEl = document.querySelector('[data-orders-count]');
   const receitaEl = document.querySelector('[data-revenue]');
   const ratingEl = document.querySelector('[data-rating]');
   const totalEl = document.querySelector('[data-total-sales]');
 
   if (prodEl) prodEl.textContent = stats.produtos_count || 0;
+  if (servEl) servEl.textContent = stats.servicos_count || 0;
   if (pedidosEl) pedidosEl.textContent = stats.pedidos_mes || 0;
   if (receitaEl) receitaEl.textContent = `${(stats.receita_mes || 0).toLocaleString('pt-AO')} Kz`;
   if (ratingEl) ratingEl.textContent = (stats.avaliacao_media || 0).toFixed(1);
@@ -134,15 +136,46 @@ function atualizarTabelaPedidos(pedidos) {
     'enviado': 'Em envio', 'entregue': 'Entregue', 'cancelado': 'Cancelado', 'reembolsado': 'Reembolsado'
   };
 
-  tbody.innerHTML = pedidos.map(p => `
+  tbody.innerHTML = pedidos.map(p => {
+    let selectOptions = '';
+    const statusValidos = ['pendente', 'confirmado', 'em_processamento', 'enviado', 'entregue', 'cancelado', 'reembolsado'];
+    statusValidos.forEach(s => {
+        selectOptions += `<option value="${s}" ${p.status === s ? 'selected' : ''}>${statusLabels[s]}</option>`;
+    });
+
+    const isServico = p.tipo === 'servico';
+    const tipoPath = isServico ? 'servicos' : 'produtos';
+
+    return `
     <tr>
-      <td class="order-id">#${p.numero_pedido || p.id}</td>
-      <td>${p.cliente_nome || 'Cliente'}</td>
-      <td><b>${(p.valor_total || 0).toLocaleString('pt-AO')} Kz</b></td>
+        <td style="font-weight: 500;">
+          ${p.numero_pedido}
+          ${isServico ? '<br><small style="color:var(--purple);font-size:0.75rem;"><i class="fa-solid fa-briefcase"></i> Serviço</small>' : '<br><small style="color:var(--text-light);font-size:0.75rem;"><i class="fa-solid fa-box"></i> Produto</small>'}
+        </td>
+        <td>${p.cliente_nome}</td>
+        <td><b>${(p.valor_total || 0).toLocaleString('pt-AO')} Kz</b></td>
       <td><span class="status ${statusClasses[p.status] || 's-proc'}"><span class="dot"></span>${statusLabels[p.status] || p.status}</span></td>
       <td style="color:var(--text-muted)">${p.criado_em ? new Date(p.criado_em).toLocaleDateString('pt-AO') : '—'}</td>
+      <td>
+        <select onchange="atualizarStatusPedido(${p.id}, '${tipoPath}', this.value)" style="padding:4px; border-radius:4px; border:1px solid var(--border); font-size:0.75rem;">
+            ${selectOptions}
+        </select>
+      </td>
     </tr>
-  `).join('');
+  `}).join('');
+}
+
+async function atualizarStatusPedido(id, tipo, novoStatus) {
+    try {
+        const res = await apiCall('PUT', `/pedidos/${tipo}/${id}/status`, { status: novoStatus });
+        if (res) {
+            showToast('Status atualizado com sucesso!', 'success');
+            carregarDadosPainel(); // Recarregar tabela
+        }
+    } catch (e) {
+        showToast('Erro ao atualizar status.', 'error');
+        carregarDadosPainel(); // Reset para o valor original
+    }
 }
 
 function atualizarData() {
@@ -251,3 +284,69 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.addEventListener('beforeunload', () => { if (autoRefreshInterval) clearInterval(autoRefreshInterval); });
 });
+
+// ===== MODAL LOGIC =====
+function abrirModal(id) {
+  document.getElementById(id).classList.add('active');
+}
+
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+async function submeterNovoProduto() {
+  const form = document.getElementById('formAddProduto');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  const payload = {
+    nome: form.nome.value,
+    descricao: form.descricao.value,
+    preco: parseFloat(form.preco.value),
+    estoque: parseInt(form.estoque.value),
+    categoria_id: parseInt(form.categoria_id.value)
+  };
+
+  try {
+    const data = await apiCall('POST', '/produtos/', payload);
+    if (data) {
+      showToast('Produto adicionado com sucesso!', 'success');
+      fecharModal('modalProduto');
+      form.reset();
+      carregarDadosPainel();
+    }
+  } catch (e) {
+    showToast('Erro ao adicionar produto', 'error');
+  }
+}
+
+async function submeterNovoServico() {
+  const form = document.getElementById('formAddServico');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const payload = {
+    nome: form.nome.value,
+    descricao: form.descricao.value,
+    preco_base: parseFloat(form.preco_base.value),
+    duracao_estimada: form.duracao_estimada.value,
+    disponibilidade: form.disponibilidade.value,
+    categoria_id: parseInt(form.categoria_id.value)
+  };
+
+  try {
+    const data = await apiCall('POST', '/servicos/', payload);
+    if (data) {
+      showToast('Serviço adicionado com sucesso!', 'success');
+      fecharModal('modalServico');
+      form.reset();
+      carregarDadosPainel();
+    }
+  } catch (e) {
+    showToast('Erro ao adicionar serviço', 'error');
+  }
+}

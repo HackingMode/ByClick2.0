@@ -11,7 +11,7 @@ from typing import Optional, List
 from app.core.database import get_db
 from app.models.models import (
     Utilizador, PerfilVendedor, TipoUtilizadorEnum,
-    Produto, Pedido, ItemPedido
+    Produto, Pedido, ItemPedido, Servico, PedidoServico
 )
 from app.schemas.schemas import RegistoVendedorSchema, PerfilVendedorResponseSchema
 from app.api.v1.endpoints.deps import get_utilizador_atual
@@ -89,7 +89,13 @@ def get_my_stats(
         Produto.ativo == True
     ).scalar() or 0
 
-    # Contar pedidos deste mês
+    # Contar serviços ativos
+    servicos_count = db.query(func.count(Servico.id)).filter(
+        Servico.vendedor_id == perfil.id,
+        Servico.ativo == True
+    ).scalar() or 0
+
+    # Contar pedidos deste mês (produtos)
     hoje = datetime.now()
     primeiro_dia = hoje.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
@@ -98,16 +104,30 @@ def get_my_stats(
         Pedido.criado_em >= primeiro_dia
     ).scalar() or 0
 
-    # Calcular receita do mês
-    receita_mes = db.query(func.sum(ItemPedido.subtotal)).filter(
+    # Contar pedidos de serviço deste mês
+    pedidos_servico_mes = db.query(func.count(PedidoServico.id)).join(Servico).filter(
+        Servico.vendedor_id == perfil.id,
+        PedidoServico.criado_em >= primeiro_dia
+    ).scalar() or 0
+
+    # Calcular receita do mês (produtos + serviços)
+    receita_produtos = db.query(func.sum(ItemPedido.subtotal)).filter(
         ItemPedido.vendedor_id == perfil.id,
         Pedido.criado_em >= primeiro_dia
     ).scalar() or 0
 
+    receita_servicos = db.query(func.sum(PedidoServico.valor_total)).join(Servico).filter(
+        Servico.vendedor_id == perfil.id,
+        PedidoServico.criado_em >= primeiro_dia
+    ).scalar() or 0
+
+    receita_mes = float(receita_produtos) + float(receita_servicos)
+
     return {
         "produtos_count": int(produtos_count),
-        "pedidos_mes": int(pedidos_mes),
-        "receita_mes": float(receita_mes) if receita_mes else 0.0,
+        "servicos_count": int(servicos_count),
+        "pedidos_mes": int(pedidos_mes) + int(pedidos_servico_mes),
+        "receita_mes": float(receita_mes),
         "avaliacao_media": float(perfil.avaliacao_media) if perfil.avaliacao_media else 0.0,
         "total_vendas": perfil.total_vendas or 0
     }
@@ -126,22 +146,52 @@ def get_my_orders(
 
     perfil = utilizador.perfil_vendedor
 
-    # Buscar pedidos deste vendedor
-    query = db.query(Pedido).join(ItemPedido).filter(
+    # Buscar pedidos de produtos deste vendedor
+    query_prod = db.query(Pedido).join(ItemPedido).filter(
         ItemPedido.vendedor_id == perfil.id
     ).distinct()
 
     if status:
-        query = query.filter(Pedido.status == status)
+        query_prod = query_prod.filter(Pedido.status == status)
 
-    pedidos = query.order_by(Pedido.criado_em.desc()).limit(limit).all()
+    pedidos_produtos = query_prod.order_by(Pedido.criado_em.desc()).limit(limit).all()
 
-    return [{
-        "id": p.id,
-        "numero_pedido": p.numero_pedido,
-        "cliente_nome": p.comprador.nome_completo if p.comprador else "Cliente",
-        "valor_total": float(p.valor_total or 0),
-        "status": p.status,
-        "criado_em": p.criado_em.isoformat() if p.criado_em else None,
-        "atualizado_em": p.atualizado_em.isoformat() if p.atualizado_em else None
-    } for p in pedidos]
+    # Buscar pedidos de serviço deste vendedor
+    query_serv = db.query(PedidoServico).join(Servico).filter(
+        Servico.vendedor_id == perfil.id
+    ).distinct()
+
+    if status:
+        query_serv = query_serv.filter(PedidoServico.status == status)
+
+    pedidos_servicos = query_serv.order_by(PedidoServico.criado_em.desc()).limit(limit).all()
+
+    # Unificar e formatar
+    resultados = []
+    for p in pedidos_produtos:
+        resultados.append({
+            "id": p.id,
+            "tipo": "produto",
+            "numero_pedido": p.numero_pedido,
+            "cliente_nome": p.comprador.nome_completo if p.comprador else "Cliente",
+            "valor_total": float(p.valor_total or 0),
+            "status": p.status,
+            "criado_em": p.criado_em.isoformat() if p.criado_em else None,
+            "atualizado_em": p.atualizado_em.isoformat() if p.atualizado_em else None
+        })
+
+    for s in pedidos_servicos:
+        resultados.append({
+            "id": s.id,
+            "tipo": "servico",
+            "numero_pedido": s.numero_pedido,
+            "cliente_nome": s.comprador.nome_completo if s.comprador else "Cliente",
+            "valor_total": float(s.valor_total or 0),
+            "status": s.status,
+            "criado_em": s.criado_em.isoformat() if s.criado_em else None,
+            "atualizado_em": s.atualizado_em.isoformat() if s.atualizado_em else None
+        })
+
+    # Ordenar por data mais recente
+    resultados.sort(key=lambda x: x["criado_em"], reverse=True)
+    return resultados[:limit]

@@ -229,9 +229,19 @@ async function registarEmpresa(dados) {
 
 async function login(identificador, senha) {
   try {
-    const identificadorNormalizado = validarEmail(identificador)
-      ? identificador.trim().toLowerCase()
-      : normalizarTelefone(identificador);
+    let identificadorNormalizado = identificador.trim();
+    if (validarEmail(identificadorNormalizado)) {
+      identificadorNormalizado = identificadorNormalizado.toLowerCase();
+    } else {
+      // Se tiver apenas digitos e '+' entao tenta normalizar como telefone
+      if (/^[\+\d\s]+$/.test(identificadorNormalizado)) {
+        try {
+          identificadorNormalizado = normalizarTelefone(identificadorNormalizado);
+        } catch (e) {
+          // Ignora erro e envia como nome de utilizador
+        }
+      }
+    }
 
     const response = await apiCall('POST', '/auth/login', {
       identificador: identificadorNormalizado,
@@ -446,4 +456,114 @@ function validarTelefone(telefone) {
 
 function validarIdentificador(identificador) {
   return validarEmail(identificador) || validarTelefone(identificador);
+}
+
+
+// ─────────────────────── CATEGORIAS ───────────────────────
+
+async function obterCategorias(tipo = null) {
+  try {
+    let endpoint = '/categorias';
+    if (tipo) endpoint += `?tipo=${tipo}`;
+    const response = await apiCall('GET', endpoint);
+    return { success: true, data: response };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+
+// ─────────────────────── PEDIDOS COMPRADOR ───────────────────────
+
+async function obterMeusPedidosComprador(limit = 20) {
+  try {
+    const response = await apiCall('GET', `/pedidos/meus-pedidos?limit=${limit}`);
+    return { success: true, data: response };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+
+// ─────────────────────── AVALIAÇÕES ───────────────────────
+
+async function criarAvaliacao(dados) {
+  try {
+    const response = await apiCall('POST', '/avaliacoes', dados);
+    return { success: true, data: response };
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function obterAvaliacoes(filtros = {}) {
+  try {
+    let endpoint = '/avaliacoes?';
+    if (filtros.vendedor_id) endpoint += `vendedor_id=${filtros.vendedor_id}&`;
+    if (filtros.produto_id) endpoint += `produto_id=${filtros.produto_id}&`;
+    if (filtros.servico_id) endpoint += `servico_id=${filtros.servico_id}&`;
+    if (filtros.limit) endpoint += `limit=${filtros.limit}&`;
+
+    const response = await apiCall('GET', endpoint.slice(0, -1));
+    return { success: true, data: response };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+
+// ─────────────────────── CRIAR/EDITAR PRODUTOS E SERVIÇOS ───────────────────────
+
+async function criarProduto(dados) {
+  try {
+    const response = await apiCall('POST', '/produtos/', dados);
+    return { success: true, data: response };
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function editarProduto(produtoId, dados) {
+  try {
+    const response = await apiCall('PUT', `/produtos/${produtoId}`, dados);
+    return { success: true, data: response };
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function eliminarProduto(produtoId) {
+  try {
+    await apiCall('DELETE', `/produtos/${produtoId}`);
+    return { success: true };
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function criarServico(dados) {
+  try {
+    const response = await apiCall('POST', '/servicos/', dados);
+    return { success: true, data: response };
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function editarServico(servicoId, dados) {
+  try {
+    const response = await apiCall('PUT', `/servicos/${servicoId}`, dados);
+    return { success: true, data: response };
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function eliminarServico(servicoId) {
+  try {
+    await apiCall('DELETE', `/servicos/${servicoId}`);
+    return { success: true };
+  } catch (error) {
+    return respostaErro(error);
+  }
 }

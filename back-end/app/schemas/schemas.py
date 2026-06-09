@@ -156,6 +156,14 @@ class VerificarCodigoSchema(BaseModel):
     tipo: str  # "email", "telefone"
 
 
+class UtilizadorUpdateSchema(BaseModel):
+    nome_completo: Optional[str] = None
+    numero_telefone: Optional[str] = None
+    provincia: Optional[str] = None
+    municipio: Optional[str] = None
+    bairro: Optional[str] = None
+
+
 # ─────────────────────── ENDEREÇO ───────────────────────
 
 class EnderecoBaseSchema(BaseModel):
@@ -299,3 +307,27 @@ class ServicoResponseSchema(ServicoCreateSchema):
 
     class Config:
         from_attributes = True
+
+# ─────────────────────── PEDIDOS ───────────────────────
+
+class PedidoItemCreateSchema(BaseModel):
+    produto_id: int
+    quantidade: int
+
+class PedidoCreateSchema(BaseModel):
+    itens: list[PedidoItemCreateSchema]
+    endereco_entrega_provincia: Optional[str] = None
+    endereco_entrega_municipio: Optional[str] = None
+    endereco_entrega_bairro: Optional[str] = None
+    notas: Optional[str] = None
+
+class PedidoServicoCreateSchema(BaseModel):
+    servico_id: int
+    data_agendada: Optional[datetime] = None
+    descricao_necessidade: Optional[str] = None
+
+class PedidoStatusUpdateSchema(BaseModel):
+    status: str # pendente, processando, enviado, entregue, cancelado
+
+class PedidoServicoStatusUpdateSchema(BaseModel):
+    status: str # pendente, em_andamento, concluido, cancelado

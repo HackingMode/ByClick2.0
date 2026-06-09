@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho — ByClick Marketplace</title>
+  <meta name="description" content="Reveja os itens do seu carrinho antes de finalizar a compra no ByClick.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/landing_page.css">
+  <link rel="stylesheet" href="../css/carrinho.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar" id="navbar">
+  <div class="container navbar__inner">
+    <a href="../" class="navbar__logo">
+      <div class="navbar__logo-icon">
+        <svg viewBox="0 0 64 64" fill="none">
+          <path d="M18 24H46L43 52H21L18 24Z" fill="currentColor" opacity="0.15"/>
+          <path d="M18 24H46L43 52H21L18 24Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M24 24V18C24 13.5 27.5 10 32 10C36.5 10 40 13.5 40 18V24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M30 30L39 42L41.5 36.5L47 34L35 25L34 31L30 30Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <span>ByClick</span>
+    </a>
+
+    <div class="navbar__cta">
+      <a href="../explorar/" class="btn btn-ghost btn-sm">Explorar</a>
+      <a href="../login/" class="btn btn-ghost btn-sm" id="btnLogin">Login</a>
+      <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">Meu Painel</a>
+    </div>
+  </div>
+</header>
+
+<!-- CART CONTENT -->
+<main class="cart-page">
+  <div class="container">
+    <div class="cart-header">
+      <h1><i class="fa-solid fa-bag-shopping"></i> O Seu Carrinho</h1>
+      <span class="cart-count-label" id="cartCountLabel">0 itens</span>
+    </div>
+
+    <!-- Empty State -->
+    <div class="cart-empty" id="cartEmpty" style="display:none;">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <h2>O seu carrinho está vazio</h2>
+      <p>Explore o marketplace e adicione produtos ou serviços ao seu carrinho.</p>
+      <a href="../explorar/" class="btn btn-primary btn-lg">Explorar Ofertas</a>
+    </div>
+
+    <!-- Cart Items + Summary -->
+    <div class="cart-layout" id="cartLayout" style="display:none;">
+      <div class="cart-items" id="cartItems">
+        <!-- Itens renderizados por JS -->
+      </div>
+
+      <aside class="cart-summary">
+        <h3>Resumo</h3>
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="cartSubtotal">0 Kz</span>
+        </div>
+        <div class="summary-row">
+          <span>Entrega</span>
+          <span class="delivery-note">Calculado no checkout</span>
+        </div>
+        <div class="summary-row summary-total">
+          <span>Total Estimado</span>
+          <span id="cartTotal">0 Kz</span>
+        </div>
+
+        <a href="../checkout/" class="btn-checkout" id="btnCheckout">
+          Finalizar Compra <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+        <button class="btn-clear" id="btnClearCart">
+          <i class="fa-solid fa-trash-can"></i> Limpar Carrinho
+        </button>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__bottom">
+      <p>© 2026 ByClick — Todos os direitos reservados.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/api.js"></script>
+<script src="../js/toast.js"></script>
+<script src="../js/carrinho.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderCart();
+
+  document.getElementById('btnClearCart').addEventListener('click', () => {
+    if (confirm('Tem certeza que deseja limpar todo o carrinho?')) {
+      clearCart();
+      renderCart();
+    }
+  });
+
+  // Auth state
+  if (estaAutenticado()) {
+    document.getElementById('btnLogin').style.display = 'none';
+    document.getElementById('btnPainel').style.display = 'inline-flex';
+  }
+});
+
+function renderCart() {
+  const cart = getCart();
+  const itemsEl = document.getElementById('cartItems');
+  const emptyEl = document.getElementById('cartEmpty');
+  const layoutEl = document.getElementById('cartLayout');
+  const countLabel = document.getElementById('cartCountLabel');
+
+  const totalCount = getCartCount();
+  countLabel.textContent = `${totalCount} ${totalCount === 1 ? 'item' : 'itens'}`;
+
+  if (cart.length === 0) {
+    emptyEl.style.display = 'flex';
+    layoutEl.style.display = 'none';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  layoutEl.style.display = 'grid';
+
+  itemsEl.innerHTML = cart.map(item => `
+    <div class="cart-item" data-id="${item.id}" data-tipo="${item.tipo}">
+      <div class="cart-item__image">
+        <img src="${item.imagem_url || 'https://placehold.co/120x120/FAF7F2/C84B1F?text=Sem+Foto'}" alt="${item.nome}">
+      </div>
+      <div class="cart-item__details">
+        <span class="cart-item__type">${item.tipo === 'servico' ? '💼 Serviço' : '📦 Produto'}</span>
+        <h3 class="cart-item__name">${item.nome}</h3>
+        <p class="cart-item__seller">${item.vendedor_nome || 'Vendedor'}</p>
+      </div>
+      <div class="cart-item__qty">
+        <button class="qty-btn" onclick="changeQty(${item.id}, '${item.tipo}', -1)">−</button>
+        <span class="qty-value">${item.quantidade}</span>
+        <button class="qty-btn" onclick="changeQty(${item.id}, '${item.tipo}', 1)">+</button>
+      </div>
+      <div class="cart-item__price">
+        <span class="price-total">${formatarPreco(item.preco * item.quantidade)}</span>
+        ${item.quantidade > 1 ? `<span class="price-unit">${formatarPreco(item.preco)} /un</span>` : ''}
+      </div>
+      <button class="cart-item__remove" onclick="removeItem(${item.id}, '${item.tipo}')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  `).join('');
+
+  // Update summary
+  const total = getCartTotal();
+  document.getElementById('cartSubtotal').textContent = formatarPreco(total);
+  document.getElementById('cartTotal').textContent = formatarPreco(total);
+}
+
+function changeQty(id, tipo, delta) {
+  const cart = getCart();
+  const item = cart.find(c => c.id === id && c.tipo === tipo);
+  if (item) {
+    updateQuantity(id, tipo, item.quantidade + delta);
+    renderCart();
+  }
+}
+
+function removeItem(id, tipo) {
+  removeFromCart(id, tipo);
+  renderCart();
+  if (typeof showToast === 'function') {
+    showToast('Item removido do carrinho.', 'info');
+  }
+}
+</script>
+</body>
+</html>

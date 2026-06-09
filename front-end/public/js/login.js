@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const identificador = this.value.trim();
 
     if (identificador) {
-      if (validarIdentificador(identificador)) {
+      if (identificador.length >= 3) {
         this.style.borderColor = '#16a34a';
       } else {
         this.style.borderColor = '#ef4444';
@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Limpar erros anteriores
     document.getElementById('identificadorError').textContent = '';
     document.getElementById('senhaError').textContent = '';
-    document.getElementById('formError').textContent = '';
+    const formErrorDiv = document.getElementById('formError');
+    formErrorDiv.textContent = '';
+    formErrorDiv.style.display = 'none';
 
     // Validar campos
     let temErros = false;
@@ -55,11 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const senha = senhaInput.value;
 
     if (!identificador) {
-      document.getElementById('identificadorError').textContent = 'Email ou telefone são obrigatórios';
+      document.getElementById('identificadorError').textContent = 'Email, telefone ou nome de utilizador são obrigatórios';
       identificadorInput.style.borderColor = '#ef4444';
       temErros = true;
-    } else if (!validarIdentificador(identificador)) {
-      document.getElementById('identificadorError').textContent = 'Email ou telefone inválido';
+    } else if (identificador.length < 3) {
+      document.getElementById('identificadorError').textContent = 'Identificador muito curto';
       identificadorInput.style.borderColor = '#ef4444';
       temErros = true;
     }
@@ -120,11 +122,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const mensagem = resultado.error === 'Credenciais invalidas'
           ? 'Email/telefone ou senha incorretos'
           : resultado.error;
-        document.getElementById('formError').textContent = mensagem;
+        const formErrorDiv = document.getElementById('formError');
+        formErrorDiv.textContent = mensagem;
+        formErrorDiv.style.display = 'block';
         mostrarToast(mensagem, 'error');
       }
     } catch (erro) {
-      document.getElementById('formError').textContent = 'Erro ao conectar com o servidor';
+      const formErrorDiv = document.getElementById('formError');
+      formErrorDiv.textContent = 'Erro ao conectar com o servidor';
+      formErrorDiv.style.display = 'block';
       mostrarToast('Erro ao conectar com o servidor', 'error');
     } finally {
       botao.disabled = false;

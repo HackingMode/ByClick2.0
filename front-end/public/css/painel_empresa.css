@@ -393,3 +393,50 @@ td b { font-weight: 700; }
     .header-section { flex-direction: column; }
     .shop-meta { grid-template-columns: 1fr; }
 }
+
+/* ===== MODALS ===== */
+.modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 2000;
+    backdrop-filter: blur(3px); align-items: center; justify-content: center;
+    padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+    background: var(--white); width: 100%; max-width: 600px;
+    border-radius: var(--radius); box-shadow: var(--shadow-md);
+    display: flex; flex-direction: column; max-height: 90vh;
+}
+.modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); }
+.btn-close-modal {
+    background: none; border: none; font-size: 1.2rem;
+    color: var(--text-muted); cursor: pointer; transition: color 0.2s;
+}
+.btn-close-modal:hover { color: var(--red); }
+.modal-body {
+    padding: 24px; overflow-y: auto; flex: 1;
+}
+.modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 12px;
+}
+
+/* Forms in Modal */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; }
+.form-control {
+    width: 100%; padding: 10px 14px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: var(--font); font-size: 0.9rem; transition: border-color 0.2s;
+}
+.form-control:focus { outline: none; border-color: var(--primary); }
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+.btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn-secondary:hover { background: #e5e7eb; }

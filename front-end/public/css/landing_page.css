@@ -718,3 +718,84 @@ a{
   }
 
 }
+
+
+/* =========================================================
+   ANIMATIONS & POLISH
+========================================================= */
+
+/* Hero image floating animation */
+.hero__main-photo{
+  animation:heroFloat 6s ease-in-out infinite;
+}
+
+@keyframes heroFloat{
+  0%{ transform:rotate(-2deg) translateY(0); }
+  50%{ transform:rotate(-2deg) translateY(-14px); }
+  100%{ transform:rotate(-2deg) translateY(0); }
+}
+
+/* Navbar link hover effect */
+.navbar__links a{
+  position:relative;
+  transition:color .25s ease;
+}
+
+.navbar__links a::after{
+  content:'';
+  position:absolute;
+  bottom:-4px;
+  left:0;
+  width:0;
+  height:2px;
+  background:var(--terra);
+  transition:width .3s ease;
+  border-radius:2px;
+}
+
+.navbar__links a:hover{
+  color:var(--terra);
+}
+
+.navbar__links a:hover::after{
+  width:100%;
+}
+
+/* Scroll reveal */
+.pre-animate{
+  opacity:0;
+  transform:translateY(40px);
+  transition:opacity .7s ease, transform .7s ease;
+}
+
+.animate-up{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Product card stagger */
+.prod-card{
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+
+/* Button press effect */
+.btn-primary:active{
+  transform:scale(0.97);
+}
+
+.btn-ghost:hover{
+  box-shadow:var(--shadow-sm);
+}
+
+/* Cat pill hover */
+.cat-pill{
+  cursor:pointer;
+  transition:background .25s ease, color .25s ease, transform .2s ease;
+  border:2px solid transparent;
+}
+
+.cat-pill:hover:not(.cat-pill--active){
+  border-color:var(--terra);
+  color:var(--terra);
+  transform:translateY(-2px);
+}

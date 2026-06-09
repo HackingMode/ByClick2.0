@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session, joinedload
 from typing import List, Optional
 
 from app.core.database import get_db
-from app.models.models import Utilizador, Pedido, PedidoServico
+from app.models.models import Utilizador, Pedido, PedidoServico, Endereco
 from app.api.v1.endpoints.deps import get_utilizador_atual
+from app.schemas.schemas import UtilizadorUpdateSchema
 
 router = APIRouter(prefix="/comprador", tags=["Comprador"])
 
@@ -43,6 +44,47 @@ def meu_perfil(
         "criado_em": user.criado_em.isoformat() if user.criado_em else None,
         "endereco": endereco,
     }
+
+
+@router.put("/meu-perfil")
+def atualizar_meu_perfil(
+    dados: UtilizadorUpdateSchema,
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db),
+):
+    """Atualiza os dados de perfil e endereço do utilizador logado."""
+    user = db.query(Utilizador).filter(Utilizador.id == utilizador.id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Utilizador não encontrado.")
+
+    if dados.nome_completo is not None:
+        user.nome_completo = dados.nome_completo
+    if dados.numero_telefone is not None:
+        user.numero_telefone = dados.numero_telefone
+
+    # Update address
+    if any([dados.provincia, dados.municipio, dados.bairro]):
+        if not user.endereco:
+            user.endereco = Endereco(
+                utilizador_id=user.id,
+                provincia=dados.provincia or "",
+                municipio=dados.municipio or "",
+                bairro=dados.bairro,
+                endereco_completo=f"{dados.bairro or ''}, {dados.municipio or ''}, {dados.provincia or ''}".strip(", ")
+            )
+            db.add(user.endereco)
+        else:
+            if dados.provincia is not None:
+                user.endereco.provincia = dados.provincia
+            if dados.municipio is not None:
+                user.endereco.municipio = dados.municipio
+            if dados.bairro is not None:
+                user.endereco.bairro = dados.bairro
+            user.endereco.endereco_completo = f"{user.endereco.bairro or ''}, {user.endereco.municipio or ''}, {user.endereco.provincia or ''}".strip(", ")
+
+    db.commit()
+    db.refresh(user)
+    return {"mensagem": "Perfil atualizado com sucesso."}
 
 
 @router.get("/meus-pedidos")

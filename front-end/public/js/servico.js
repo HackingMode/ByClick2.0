@@ -5,15 +5,14 @@
 document.addEventListener('DOMContentLoaded', async function() {
   atualizarNavbarAuth();
 
-  const params = new URLSearchParams(window.location.search);
-  const produtoId = params.get('id');
+  const servicoId = params.get('id');
 
-  if (!produtoId) {
-    mostrarErro('Produto não encontrado.');
+  if (!servicoId) {
+    mostrarErro('Serviço não encontrado.');
     return;
   }
 
-  await carregarProduto(produtoId);
+  await carregarServico(servicoId);
 });
 
 function atualizarNavbarAuth() {
@@ -39,53 +38,57 @@ function atualizarNavbarAuth() {
   }
 }
 
-async function carregarProduto(id) {
+async function carregarServico(id) {
   const loading = document.getElementById('loadingState');
   const content = document.getElementById('productContent');
 
   try {
-    const produto = await apiCall('GET', `/produtos/${id}`);
+    const servico = await apiCall('GET', `/servicos/${id}`);
     if (loading) loading.style.display = 'none';
     if (content) content.style.display = 'grid';
-    renderizarProduto(produto);
+    renderizarServico(servico);
   } catch (erro) {
-    console.error('Erro ao carregar produto:', erro);
+    console.error('Erro ao carregar serviço:', erro);
     // Fallback demo
     if (loading) loading.style.display = 'none';
     if (content) content.style.display = 'grid';
-    renderizarProdutoDemo(id);
+    renderizarServicoDemo(id);
   }
 }
 
-function renderizarProduto(p) {
+function renderizarServico(p) {
   // Title
   document.title = `${p.nome} — ByClick`;
-  const titleEl = document.querySelector('[data-product-title]');
-  if (titleEl) titleEl.textContent = p.nome || 'Produto';
+  const titleEl = document.querySelector('[data-service-title]');
+  if (titleEl) titleEl.textContent = p.nome || 'Serviço';
 
   // Breadcrumb
-  const breadEl = document.querySelector('[data-product-name]');
-  if (breadEl) breadEl.textContent = p.nome || 'Produto';
+  const breadEl = document.querySelector('[data-service-name]');
+  if (breadEl) breadEl.textContent = p.nome || 'Serviço';
 
   // Price
-  const priceEl = document.querySelector('[data-product-price]');
-  if (priceEl) priceEl.textContent = `${(p.preco || 0).toLocaleString('pt-AO')} Kz`;
+  const priceEl = document.querySelector('[data-service-price]');
+  if (priceEl) priceEl.textContent = `A partir de ${(p.preco_base || p.preco || 0).toLocaleString('pt-AO')} Kz`;
 
   // Description
-  const descEl = document.querySelector('[data-product-desc]');
+  const descEl = document.querySelector('[data-service-desc]');
   if (descEl) descEl.textContent = p.descricao || 'Sem descrição disponível.';
 
-  // Location
-  const locEl = document.querySelector('[data-product-location]');
-  if (locEl) locEl.textContent = p.localizacao || p.provincia || 'Luanda, Angola';
+  // Duration
+  const durEl = document.querySelector('[data-service-duration]');
+  const chipDuracao = document.getElementById('chipDuracao');
+  if (p.duracao_estimada) {
+    if (durEl) durEl.textContent = p.duracao_estimada;
+    if (chipDuracao) chipDuracao.style.display = 'inline-flex';
+  } else {
+    if (chipDuracao) chipDuracao.style.display = 'none';
+  }
 
-  // Date
-  const dateEl = document.querySelector('[data-product-date]');
-  if (dateEl) dateEl.textContent = p.criado_em ? `Publicado em ${new Date(p.criado_em).toLocaleDateString('pt-AO')}` : '—';
-
-  // Views
-  const viewsEl = document.querySelector('[data-product-views]');
-  if (viewsEl) viewsEl.textContent = p.visualizacoes || 0;
+  // Modalities
+  const chipOnline = document.getElementById('chipOnline');
+  const chipPresencial = document.getElementById('chipPresencial');
+  if (p.disponivel_online && chipOnline) chipOnline.style.display = 'inline-flex';
+  if (p.disponivel_presencial && chipPresencial) chipPresencial.style.display = 'inline-flex';
 
   // Main image
   const mainImg = document.getElementById('mainImage');
@@ -101,12 +104,9 @@ function renderizarProduto(p) {
   }
 
   // Badges
-  const badgesEl = document.getElementById('productBadges');
+  const badgesEl = document.getElementById('serviceBadges');
   if (badgesEl) {
-    let badges = '';
-    if (p.condicao === 'usado') badges += '<span class="badge-item badge-used">Usado</span>';
-    else if (p.tipo === 'servico') badges += '<span class="badge-item badge-service">Serviço</span>';
-    else badges += '<span class="badge-item badge-new">Novo</span>';
+    let badges = '<span class="badge-item badge-service" style="background:#8b5cf6;">Serviço</span>';
     badgesEl.innerHTML = badges;
   }
 
@@ -118,21 +118,23 @@ function renderizarProduto(p) {
   if (sellerMetaEl) sellerMetaEl.textContent = `Membro desde ${p.vendedor_desde ? new Date(p.vendedor_desde).toLocaleDateString('pt-AO') : '—'}`;
   if (sellerAvatarEl) sellerAvatarEl.textContent = (p.vendedor_nome || 'V').charAt(0).toUpperCase();
 
-  const buyBtn = document.getElementById('btnComprar');
+  const buyBtn = document.getElementById('btnContratar');
   if (buyBtn) {
     buyBtn.addEventListener('click', () => {
-      if (typeof addToCart === 'function') {
-        addToCart({
-          id: p.id,
-          tipo: 'produto',
-          nome: p.nome,
-          preco: p.preco_promocional || p.preco,
-          imagem_url: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
-          vendedor_nome: p.vendedor_nome || 'Vendedor ByClick',
-          vendedor_id: p.vendedor_id
-        });
+      if (typeof estaAutenticado === 'function' && !estaAutenticado()) {
+        mostrarToast('Faça login para contratar serviços.', 'warning');
+        setTimeout(() => { window.location.href = '../login/?redirect=../checkout/index.html'; }, 1500);
       } else {
-        mostrarToast('Erro ao adicionar ao carrinho.', 'error');
+        const itemCheckout = {
+            tipo: 'servico',
+            id: p.id,
+            nome: p.nome,
+            preco: p.preco_base || p.preco || 0,
+            imagem: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
+            quantidade: 1
+        };
+        sessionStorage.setItem('checkout_item', JSON.stringify(itemCheckout));
+        window.location.href = '../checkout/index.html';
       }
     });
   }
@@ -141,9 +143,9 @@ function renderizarProduto(p) {
   if (contactBtn) {
     contactBtn.addEventListener('click', () => {
       if (p.vendedor_telefone) {
-        window.open(`https://wa.me/${p.vendedor_telefone}?text=Olá! Tenho interesse no produto "${p.nome}" no ByClick.`, '_blank');
+        window.open(`https://wa.me/${p.vendedor_telefone}?text=Olá! Tenho interesse no seu serviço "${p.nome}" no ByClick.`, '_blank');
       } else {
-        mostrarToast('Contacto do vendedor não disponível.', 'warning');
+        mostrarToast('Contacto do prestador não disponível.', 'warning');
       }
     });
   }
@@ -160,16 +162,15 @@ function renderizarProduto(p) {
   }
 }
 
-function renderizarProdutoDemo(id) {
+function renderizarServicoDemo(id) {
   const demos = {
-    '1': { nome: 'iPhone 15 Pro Max 256GB', preco: 850000, descricao: 'iPhone 15 Pro Max em estado impecável, com caixa original e todos os acessórios. Comprado na loja oficial Apple. Cor: Titânio Natural.', provincia: 'Luanda', condicao: 'novo' },
-    '2': { nome: 'Samsung Galaxy S24 Ultra', preco: 720000, descricao: 'Samsung Galaxy S24 Ultra com S Pen, 512GB de armazenamento. Câmera AI avançada com 200MP.', provincia: 'Luanda', condicao: 'novo' },
-    '3': { nome: 'MacBook Pro M3 14"', preco: 1250000, descricao: 'MacBook Pro com chip M3 Pro, 18GB RAM, 512GB SSD. Ecrã Liquid Retina XDR.', provincia: 'Benguela', condicao: 'novo' }
+    '7': { nome: 'Serviço de Design Gráfico', preco_base: 75000, duracao_estimada: 'Por Projeto', descricao: 'Criação de logótipos, banners e identidade visual para a sua empresa.', disponivel_online: true, disponivel_presencial: false },
+    '8': { nome: 'Consultoria Empresarial', preco_base: 150000, duracao_estimada: 'Mensal', descricao: 'Consultoria financeira e planeamento estratégico para PMEs.', disponivel_online: true, disponivel_presencial: true }
   };
-  const demo = demos[id] || { nome: 'Produto Demo', preco: 50000, descricao: 'Descrição do produto de demonstração.', provincia: 'Luanda', condicao: 'novo' };
+  const demo = demos[id] || { nome: 'Serviço Demo', preco_base: 50000, duracao_estimada: '1 hora', descricao: 'Descrição do serviço de demonstração.', disponivel_online: true, disponivel_presencial: true };
   demo.id = id;
   demo.criado_em = new Date().toISOString();
-  renderizarProduto(demo);
+  renderizarServico(demo);
 }
 
 function trocarImagem(el, url) {

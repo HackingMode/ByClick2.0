@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Explorar Produtos — ByClick Marketplace</title>
+  <title>Explorar — ByClick Marketplace</title>
   <meta name="description" content="Explore milhares de produtos e serviços no ByClick, o marketplace moderno de Angola.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +34,10 @@
     </div>
 
     <div class="navbar__cta">
+      <a href="../carrinho/" class="btn btn-ghost btn-sm" style="position:relative;" aria-label="Carrinho">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span class="cart-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#C84B1F;color:white;font-size:11px;font-weight:700;width:20px;height:20px;border-radius:50%;align-items:center;justify-content:center;">0</span>
+      </a>
       <a href="../login/" class="btn btn-ghost btn-sm" id="btnLogin">Login</a>
       <a href="../cadastro/" class="btn btn-primary btn-sm" id="btnCadastro">Cadastrar</a>
       <!-- Shown when logged in -->
@@ -45,8 +49,8 @@
 <!-- PAGE HEADER -->
 <section class="page-header">
   <div class="container">
-    <h1>Explorar Produtos</h1>
-    <p>Descubra as melhores ofertas do marketplace angolano</p>
+    <h1>Explorar Ofertas</h1>
+    <p>Descubra os melhores produtos e serviços no marketplace angolano</p>
   </div>
 </section>
 
@@ -63,10 +67,19 @@
   </div>
 </section>
 
+<!-- TYPE FILTER (Produtos/Serviços) -->
+<section class="type-filter" style="background:#f8fafc; padding: 15px 0; border-bottom: 1px solid #e2e8f0; margin-bottom: 20px;">
+  <div class="container cats__inner" id="typeFilterBar" style="justify-content: center; margin: 0; padding: 0;">
+    <button class="cat-pill cat-pill--active" data-type="all">Tudo</button>
+    <button class="cat-pill" data-type="produto">📦 Apenas Produtos</button>
+    <button class="cat-pill" data-type="servico">💼 Apenas Serviços</button>
+  </div>
+</section>
+
 <!-- FILTERS BAR -->
 <section class="filters-bar">
   <div class="container filters__inner">
-    <div class="results-count"><span id="resultsCount">0</span> produtos encontrados</div>
+    <div class="results-count"><span id="resultsCount">0</span> itens encontrados</div>
     <div class="filters-actions">
       <select id="sortSelect" class="filter-select">
         <option value="recentes">Mais Recentes</option>
@@ -85,15 +98,15 @@
       <!-- Loading -->
       <div class="loading-state" id="loadingState">
         <div class="spinner-products"></div>
-        <p>Carregando produtos...</p>
+        <p>A carregar ofertas...</p>
       </div>
     </div>
 
     <!-- Empty State -->
     <div class="empty-products" id="emptyState" style="display:none;">
       <i class="fa-solid fa-box-open"></i>
-      <h3>Nenhum produto encontrado</h3>
-      <p>Tente pesquisar por outro termo ou categoria.</p>
+      <h3>Nenhuma oferta encontrada</h3>
+      <p>Tente pesquisar por outro termo ou ajustar os filtros.</p>
     </div>
   </div>
 </section>
@@ -109,6 +122,7 @@
 
 <script src="../js/api.js"></script>
 <script src="../js/toast.js"></script>
+<script src="../js/carrinho.js"></script>
 <script src="../js/explorar.js"></script>
 </body>
 </html>

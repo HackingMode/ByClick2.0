@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detalhes do Produto — ByClick</title>
-  <meta name="description" content="Detalhes do produto no ByClick Marketplace">
+  <title>Detalhes do Serviço — ByClick</title>
+  <meta name="description" content="Detalhes do serviço no ByClick Marketplace">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="../css/produto.css">
+  <link rel="stylesheet" href="../css/servico.css">
 </head>
 <body>
 
@@ -31,10 +32,6 @@
       <a href="../explorar/">Explorar</a>
     </nav>
     <div class="navbar__cta">
-      <a href="../carrinho/" class="btn btn-ghost btn-sm" style="position:relative;" aria-label="Carrinho">
-        <i class="fa-solid fa-bag-shopping"></i>
-        <span class="cart-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#C84B1F;color:white;font-size:11px;font-weight:700;width:20px;height:20px;border-radius:50%;align-items:center;justify-content:center;">0</span>
-      </a>
       <a href="../login/" class="btn btn-ghost btn-sm" id="btnLogin">Login</a>
       <a href="../cadastro/" class="btn btn-primary btn-sm" id="btnCadastro">Cadastrar</a>
       <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">Meu Painel</a>
@@ -46,7 +43,7 @@
 <div class="breadcrumb container">
   <a href="../">Início</a> <i class="fa-solid fa-chevron-right"></i>
   <a href="../explorar/">Explorar</a> <i class="fa-solid fa-chevron-right"></i>
-  <span data-product-name>Produto</span>
+  <span data-service-name>Serviço</span>
 </div>
 
 <!-- Product Main -->
@@ -54,7 +51,7 @@
   <!-- Loading state -->
   <div class="loading-product" id="loadingState">
     <div class="spinner-products"></div>
-    <p>Carregando produto...</p>
+    <p>Carregando serviço...</p>
   </div>
 
   <!-- Product Content (hidden until loaded) -->
@@ -67,24 +64,24 @@
     </div>
 
     <div class="product-info">
-      <div class="product-badges" id="productBadges"></div>
-      <h1 data-product-title>—</h1>
-      <div class="product-price" data-product-price>—</div>
+      <div class="product-badges" id="serviceBadges"></div>
+      <h1 data-service-title>—</h1>
+      <div class="product-price" data-service-price>—</div>
 
       <div class="product-meta">
-        <div class="meta-chip"><i class="fa-solid fa-location-dot"></i> <span data-product-location>—</span></div>
-        <div class="meta-chip"><i class="fa-solid fa-clock"></i> <span data-product-date>—</span></div>
-        <div class="meta-chip"><i class="fa-solid fa-eye"></i> <span data-product-views>0</span> visualizações</div>
+        <div class="meta-chip" id="chipDuracao"><i class="fa-solid fa-clock"></i> <span data-service-duration>—</span></div>
+        <div class="meta-chip" id="chipOnline" style="display:none;"><i class="fa-solid fa-globe"></i> Disponível Online</div>
+        <div class="meta-chip" id="chipPresencial" style="display:none;"><i class="fa-solid fa-user-group"></i> Disponível Presencialmente</div>
       </div>
 
       <div class="product-description">
-        <h3>Descrição</h3>
-        <p data-product-desc>—</p>
+        <h3>Descrição do Serviço</h3>
+        <p data-service-desc>—</p>
       </div>
 
       <div class="product-actions">
-        <button class="btn btn-primary btn-lg" id="btnComprar"><i class="fa-solid fa-bag-shopping"></i> Adicionar ao Carrinho</button>
-        <button class="btn btn-outline btn-lg" id="btnContactar"><i class="fa-brands fa-whatsapp"></i> Contactar Vendedor</button>
+        <button class="btn btn-primary btn-lg" id="btnContratar"><i class="fa-solid fa-handshake"></i> Contratar Serviço</button>
+        <button class="btn btn-outline btn-lg" id="btnContactar"><i class="fa-brands fa-whatsapp"></i> Falar com o Prestador</button>
         <button class="btn btn-icon" id="btnFavorite" title="Adicionar aos favoritos"><i class="fa-regular fa-heart"></i></button>
       </div>
 
@@ -107,7 +104,6 @@
 
 <script src="../js/api.js"></script>
 <script src="../js/toast.js"></script>
-<script src="../js/carrinho.js"></script>
-<script src="../js/produto.js"></script>
+<script src="../js/servico.js"></script>
 </body>
 </html>

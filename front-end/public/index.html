@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
+
 <head>
 
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>ByClick — Marketplace Moderno</title>
 
@@ -11,91 +12,41 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- FONT AWESOME -->
-  <link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/landing_page.css">
 
 </head>
+
 <body>
 
 
-<!-- =========================================================
+  <!-- =========================================================
      LOADING SCREEN
 ========================================================= -->
 
-<div class="loader">
+  <div class="loader">
 
-  <div class="loader__logo">
+    <div class="loader__logo">
 
-    <div class="loader__icon">
-
-      <svg viewBox="0 0 64 64" fill="none">
-
-        <path d="M18 24H46L43 52H21L18 24Z"
-        fill="currentColor"
-        opacity="0.15"/>
-
-        <path d="M18 24H46L43 52H21L18 24Z"
-        stroke="currentColor"
-        stroke-width="3"
-        stroke-linejoin="round"/>
-
-        <path d="M24 24V18C24 13.5 27.5 10 32 10C36.5 10 40 13.5 40 18V24"
-        stroke="currentColor"
-        stroke-width="3"
-        stroke-linecap="round"/>
-
-        <path d="M30 30L39 42L41.5 36.5L47 34L35 25L34 31L30 30Z"
-        fill="currentColor"/>
-
-      </svg>
-
-    </div>
-
-    <span>ByClick</span>
-
-  </div>
-
-</div>
-
-
-<!-- =========================================================
-     NAVBAR
-========================================================= -->
-
-<header class="navbar">
-
-  <div class="container navbar__inner">
-
-
-    <!-- LOGO -->
-    <a href="#" class="navbar__logo">
-
-      <div class="navbar__logo-icon">
+      <div class="loader__icon">
 
         <svg viewBox="0 0 64 64" fill="none">
 
-          <path d="M18 24H46L43 52H21L18 24Z"
-          fill="currentColor"
-          opacity="0.15"/>
+          <path d="M18 24H46L43 52H21L18 24Z" fill="currentColor" opacity="0.15" />
 
-          <path d="M18 24H46L43 52H21L18 24Z"
-          stroke="currentColor"
-          stroke-width="3"
-          stroke-linejoin="round"/>
+          <path d="M18 24H46L43 52H21L18 24Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
 
-          <path d="M24 24V18C24 13.5 27.5 10 32 10C36.5 10 40 13.5 40 18V24"
-          stroke="currentColor"
-          stroke-width="3"
-          stroke-linecap="round"/>
+          <path d="M24 24V18C24 13.5 27.5 10 32 10C36.5 10 40 13.5 40 18V24" stroke="currentColor" stroke-width="3"
+            stroke-linecap="round" />
 
-          <path d="M30 30L39 42L41.5 36.5L47 34L35 25L34 31L30 30Z"
-          fill="currentColor"/>
+          <path d="M30 30L39 42L41.5 36.5L47 34L35 25L34 31L30 30Z" fill="currentColor" />
 
         </svg>
 
@@ -103,479 +54,127 @@
 
       <span>ByClick</span>
 
-    </a>
-
-
-    <!-- SEARCH -->
-    <div class="navbar__search">
-      <input type="text" id="landingSearch"
-      placeholder="Pesquisar produtos, serviços e empresas...">
-    </div>
-
-
-    <!-- LINKS -->
-    <nav class="navbar__links">
-
-      <a href="explorar/">Explorar</a>
-      <a href="explorar/?categoria=servicos">Serviços</a>
-      <a href="#">Ajuda</a>
-
-    </nav>
-
-
-    <!-- BOTÕES -->
-    <div class="navbar__cta">
-
-      <a href="cadastro/" class="btn btn-ghost btn-sm" id="btnCadastro">
-        Cadastrar
-      </a>
-
-      <a href="login/" class="btn btn-primary btn-sm" id="btnLogin">
-        Login
-      </a>
-
-      <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">
-        Meu Painel
-      </a>
-
     </div>
 
   </div>
 
-</header>
+
+  <!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+  <header class="navbar">
+
+    <div class="container navbar__inner">
 
 
-<!-- =========================================================
+      <!-- LOGO -->
+      <a href="#" class="navbar__logo">
+
+        <div class="navbar__logo-icon">
+
+          <svg viewBox="0 0 64 64" fill="none">
+
+            <path d="M18 24H46L43 52H21L18 24Z" fill="currentColor" opacity="0.15" />
+
+            <path d="M18 24H46L43 52H21L18 24Z" stroke="currentColor" stroke-width="3" stroke-linejoin="round" />
+
+            <path d="M24 24V18C24 13.5 27.5 10 32 10C36.5 10 40 13.5 40 18V24" stroke="currentColor" stroke-width="3"
+              stroke-linecap="round" />
+
+            <path d="M30 30L39 42L41.5 36.5L47 34L35 25L34 31L30 30Z" fill="currentColor" />
+
+          </svg>
+
+        </div>
+
+        <span>ByClick</span>
+
+      </a>
+
+
+      <!-- SEARCH -->
+      <div class="navbar__search">
+        <input type="text" id="landingSearch" placeholder="Pesquisar produtos, serviços e empresas...">
+      </div>
+
+
+      <!-- LINKS -->
+      <nav class="navbar__links">
+
+        <a href="explorar/">Explorar</a>
+        <a href="explorar/?categoria=servicos">Serviços</a>
+        <a href="#">Ajuda</a>
+
+      </nav>
+
+
+      <!-- BOTÕES -->
+      <div class="navbar__cta">
+
+        <a href="carrinho/" class="btn btn-ghost btn-sm" style="position:relative;" aria-label="Carrinho">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:#C84B1F;color:white;font-size:11px;font-weight:700;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;">0</span>
+        </a>
+
+        <a href="cadastro/" class="btn btn-ghost btn-sm" id="btnCadastro">
+          Cadastrar
+        </a>
+
+        <a href="login/" class="btn btn-primary btn-sm" id="btnLogin">
+          Login
+        </a>
+
+        <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">
+          Meu Painel
+        </a>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================================================
      HERO
 ========================================================= -->
 
-<section class="hero">
+  <section class="hero">
 
-  <div class="hero__mesh"></div>
+    <div class="hero__mesh"></div>
 
-  <div class="container hero__container">
-
-
-    <!-- LEFT -->
-    <div class="hero__left">
-
-      <span class="hero__badge">
-        Marketplace moderno angolano
-      </span>
-
-      <h1 class="hero__title">
-        <em>ByClick</em>
-        O mercado mais próximo de sí.
-      </h1>
-
-      <p class="hero__desc">
-
-        A plataforma moderna para comprar produtos,
-        vender itens novos ou em segunda mão
-        e contratar serviços profissionais em Angola.
-
-      </p>
-
-      <div class="hero__actions">
-
-        <a href="cadastro/" class="btn btn-primary btn-lg">
-          Começar Agora
-        </a>
-
-        <a href="explorar/" class="btn btn-ghost btn-lg">
-          Explorar
-        </a>
-
-      </div>
-
-    </div>
+    <div class="container hero__container">
 
 
-    <!-- RIGHT -->
-    <div class="hero__right">
+      <!-- LEFT -->
+      <div class="hero__left">
 
-      <div class="hero__main-photo">
-
-        <img
-        src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop"
-        alt="Pessoa usando smartphone">
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     CATEGORIAS
-========================================================= -->
-
-<section class="cats">
-
-  <div class="container cats__inner">
-
-    <div class="cat-pill cat-pill--active">
-      📱 Smartphones
-    </div>
-
-    <div class="cat-pill">
-      💻 Informática
-    </div>
-
-    <div class="cat-pill">
-      🚗 Veículos
-    </div>
-
-    <div class="cat-pill">
-      🧹 Limpeza
-    </div>
-
-    <div class="cat-pill">
-      💼 Serviços
-    </div>
-
-    <div class="cat-pill">
-      🎮 Consolas
-    </div>
-
-    <div class="cat-pill">
-      🛋️ Móveis
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     PRODUTOS E SERVIÇOS
-========================================================= -->
-
-<section class="featured">
-
-  <div class="container">
-
-
-    <div class="featured__header">
-
-      <div>
-
-        <span class="section-tag">
-          Produtos & Serviços
+        <span class="hero__badge">
+          Marketplace moderno angolano
         </span>
 
-        <h2 class="featured__title">
-          Descobre ofertas
-          <em>perto de ti</em>
-        </h2>
-
-      </div>
-
-    </div>
-
-
-
-    <div class="featured__grid">
-
-
-      <!-- CARD -->
-      <article class="prod-card">
-
-        <button class="prod-card__favorite">
-          <i class="fa-regular fa-heart"></i>
-        </button>
-
-        <div class="prod-card__img">
-
-          <img
-          src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop"
-          alt="iPhone">
-
-        </div>
-
-        <div class="prod-card__body">
-
-          <div class="prod-card__badges">
-
-            <span class="prod-card__badge badge-used">
-              Segunda mão
-            </span>
-
-            <span class="prod-card__badge badge-delivery">
-              Entrega
-            </span>
-
-          </div>
-
-          <h3>iPhone 13 Pro Max</h3>
-
-          <strong class="prod-card__price">
-            450.000 Kz
-          </strong>
-
-          <div class="prod-card__location">
-
-            <i class="fa-solid fa-location-dot"></i>
-            <span>Talatona</span>
-
-          </div>
-
-          <div class="prod-card__seller">
-
-            <img
-            src="https://randomuser.me/api/portraits/men/32.jpg"
-            alt="Carlos">
-
-            <div>
-
-              <strong>Carlos Manuel</strong>
-              <span>Vendedor Individual</span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-
-      <!-- CARD -->
-      <article class="prod-card">
-
-        <button class="prod-card__favorite">
-          <i class="fa-regular fa-heart"></i>
-        </button>
-
-        <div class="prod-card__img">
-
-          <img
-          src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=1200&auto=format&fit=crop"
-          alt="PS5">
-
-        </div>
-
-        <div class="prod-card__body">
-
-          <div class="prod-card__badges">
-
-            <span class="prod-card__badge badge-new">
-              Novo
-            </span>
-
-          </div>
-
-          <h3>PlayStation 5 Digital</h3>
-
-          <strong class="prod-card__price">
-            390.000 Kz
-          </strong>
-
-          <div class="prod-card__location">
-
-            <i class="fa-solid fa-location-dot"></i>
-            <span>Kilamba</span>
-
-          </div>
-
-          <div class="prod-card__seller">
-
-            <img
-            src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=400&auto=format&fit=crop"
-            alt="Empresa">
-
-            <div>
-
-              <strong>Tech Angola</strong>
-              <span>Empresa</span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-
-      <!-- CARD -->
-      <article class="prod-card">
-
-        <button class="prod-card__favorite">
-          <i class="fa-regular fa-heart"></i>
-        </button>
-
-        <div class="prod-card__img">
-
-          <img
-          src="https://images.unsplash.com/photo-1580894908361-967195033215?q=80&w=1200&auto=format&fit=crop"
-          alt="Website">
-
-        </div>
-
-        <div class="prod-card__body">
-
-          <div class="prod-card__badges">
-
-            <span class="prod-card__badge badge-service">
-              Serviço
-            </span>
-
-          </div>
-
-          <h3>Desenvolvimento de Software</h3>
-
-          <strong class="prod-card__price">
-            Desde 150.000 Kz
-          </strong>
-
-          <div class="prod-card__location">
-
-            <i class="fa-solid fa-location-dot"></i>
-            <span>Maianga</span>
-
-          </div>
-
-          <div class="prod-card__seller">
-
-            <img
-            src="https://images.unsplash.com/photo-1556155092-490a1ba16284?q=80&w=400&auto=format&fit=crop"
-            alt="Empresa">
-
-            <div>
-
-              <strong>DevSolutions</strong>
-              <span>Empresa</span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </article>
-
-
-
-      <!-- CARD -->
-      <article class="prod-card">
-
-        <button class="prod-card__favorite">
-          <i class="fa-regular fa-heart"></i>
-        </button>
-
-        <div class="prod-card__img">
-
-          <img
-          src="https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?q=80&w=1200&auto=format&fit=crop"
-          alt="Limpeza">
-
-        </div>
-
-        <div class="prod-card__body">
-
-          <div class="prod-card__badges">
-
-            <span class="prod-card__badge badge-service">
-              Serviço
-            </span>
-
-          </div>
-
-          <h3>Serviço Profissional de Limpeza</h3>
-
-          <strong class="prod-card__price">
-            Desde 35.000 Kz
-          </strong>
-
-          <div class="prod-card__location">
-
-            <i class="fa-solid fa-location-dot"></i>
-            <span>Viana</span>
-
-          </div>
-
-          <div class="prod-card__seller">
-
-            <img
-            src="https://randomuser.me/api/portraits/women/44.jpg"
-            alt="Maria">
-
-            <div>
-
-              <strong>Maria José</strong>
-              <span>Prestadora de Serviço</span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </article>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     FOOTER
-========================================================= -->
-
-<footer class="footer">
-
-  <div class="container">
-
-    <div class="footer__grid">
-
-
-      <!-- BRAND -->
-      <div class="footer__brand">
-
-        <div class="footer__logo">
-
-          <div class="footer__logo-icon">
-
-            <i class="fa-solid fa-bag-shopping"></i>
-
-          </div>
-
-          <span>ByClick</span>
-
-        </div>
-
-        <p>
-
-          Plataforma digital moderna para compra,
-          venda e contratação de serviços em Angola.
+        <h1 class="hero__title">
+          <em>ByClick</em>
+          O mercado mais próximo de sí.
+        </h1>
+
+        <p class="hero__desc">
+
+          A plataforma moderna para comprar produtos,
+          vender itens novos ou em segunda mão
+          e contratar serviços profissionais em Angola.
 
         </p>
 
+        <div class="hero__actions">
 
-        <!-- REDES -->
-        <div class="footer__social">
-
-          <a href="#">
-            <i class="fa-brands fa-facebook-f"></i>
+          <a href="cadastro/" class="btn btn-primary btn-lg">
+            Começar Agora
           </a>
 
-          <a href="#">
-            <i class="fa-brands fa-instagram"></i>
-          </a>
-
-          <a href="#">
-            <i class="fa-brands fa-linkedin-in"></i>
+          <a href="explorar/" class="btn btn-ghost btn-lg">
+            Explorar
           </a>
 
         </div>
@@ -583,88 +182,471 @@
       </div>
 
 
+      <!-- RIGHT -->
+      <div class="hero__right">
 
-      <!-- EMPRESA -->
-      <div class="footer__col">
+        <div class="hero__main-photo">
 
-        <h4>Empresa</h4>
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop"
+            alt="Pessoa usando smartphone">
 
-        <ul>
-
-          <li><a href="#">Sobre Nós</a></li>
-          <li><a href="#">Como Funciona</a></li>
-          <li><a href="#">Segurança</a></li>
-
-        </ul>
-
-      </div>
-
-
-
-      <!-- APOIO -->
-      <div class="footer__col">
-
-        <h4>Apoio</h4>
-
-        <ul>
-
-          <li><a href="#">Ajuda</a></li>
-          <li><a href="#">Denunciar</a></li>
-          <li><a href="#">FAQ</a></li>
-
-        </ul>
-
-      </div>
-
-
-
-      <!-- CONTACTOS -->
-      <div class="footer__col">
-
-        <h4>Contactos</h4>
-
-        <div class="footer__contact-item">
-          📞 +244 928 144 032
         </div>
-
-        <div class="footer__contact-item">
-          ✉ contacto@byclick.com
-        </div>
-
-        <div class="footer__contact-item">
-          📍 Luanda, Angola
-        </div>
-
-
-        <!-- WHATSAPP -->
-        <a href="#" class="footer__whatsapp">
-
-          <i class="fa-brands fa-whatsapp"></i>
-          Conversar no WhatsApp
-
-        </a>
 
       </div>
 
     </div>
 
+  </section>
 
 
-    <!-- FOOTER BOTTOM -->
-    <div class="footer__bottom">
 
-      <p>
-        © 2026 ByClick — Todos os direitos reservados.
-      </p>
+  <!-- =========================================================
+     CATEGORIAS
+========================================================= -->
+
+  <section class="cats">
+
+    <div class="container cats__inner">
+
+      <div class="cat-pill cat-pill--active">
+        📱 Smartphones
+      </div>
+
+      <div class="cat-pill">
+        💻 Informática
+      </div>
+
+      <div class="cat-pill">
+        🚗 Veículos
+      </div>
+
+      <div class="cat-pill">
+        🧹 Limpeza
+      </div>
+
+      <div class="cat-pill">
+        💼 Serviços
+      </div>
+
+      <div class="cat-pill">
+        🎮 Consolas
+      </div>
+
+      <div class="cat-pill">
+        🛋️ Móveis
+      </div>
 
     </div>
 
-  </div>
+  </section>
 
-</footer>
 
-<script src="js/api.js"></script>
-<script src="js/landing_page.js"></script>
+
+  <!-- =========================================================
+     PRODUTOS E SERVIÇOS
+========================================================= -->
+
+  <section class="featured">
+
+    <div class="container">
+
+
+      <div class="featured__header">
+
+        <div>
+
+          <span class="section-tag">
+            Produtos & Serviços
+          </span>
+
+          <h2 class="featured__title">
+            Descobre ofertas
+            <em>perto de ti</em>
+          </h2>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="featured__grid">
+
+
+        <!-- CARD -->
+        <article class="prod-card">
+
+          <button class="prod-card__favorite">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+
+          <div class="prod-card__img">
+
+            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop"
+              alt="iPhone">
+
+          </div>
+
+          <div class="prod-card__body">
+
+            <div class="prod-card__badges">
+
+              <span class="prod-card__badge badge-used">
+                Segunda mão
+              </span>
+
+              <span class="prod-card__badge badge-delivery">
+                Entrega
+              </span>
+
+            </div>
+
+            <h3>iPhone 13 Pro Max</h3>
+
+            <strong class="prod-card__price">
+              450.000 Kz
+            </strong>
+
+            <div class="prod-card__location">
+
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Talatona</span>
+
+            </div>
+
+            <div class="prod-card__seller">
+
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos">
+
+              <div>
+
+                <strong>Carlos Manuel</strong>
+                <span>Vendedor Individual</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- CARD -->
+        <article class="prod-card">
+
+          <button class="prod-card__favorite">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+
+          <div class="prod-card__img">
+
+            <img src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=1200&auto=format&fit=crop"
+              alt="PS5">
+
+          </div>
+
+          <div class="prod-card__body">
+
+            <div class="prod-card__badges">
+
+              <span class="prod-card__badge badge-new">
+                Novo
+              </span>
+
+            </div>
+
+            <h3>PlayStation 5 Digital</h3>
+
+            <strong class="prod-card__price">
+              390.000 Kz
+            </strong>
+
+            <div class="prod-card__location">
+
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Kilamba</span>
+
+            </div>
+
+            <div class="prod-card__seller">
+
+              <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=400&auto=format&fit=crop"
+                alt="Empresa">
+
+              <div>
+
+                <strong>Tech Angola</strong>
+                <span>Empresa</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- CARD -->
+        <article class="prod-card">
+
+          <button class="prod-card__favorite">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+
+          <div class="prod-card__img">
+
+            <img src="https://images.unsplash.com/photo-1580894908361-967195033215?q=80&w=1200&auto=format&fit=crop"
+              alt="Website">
+
+          </div>
+
+          <div class="prod-card__body">
+
+            <div class="prod-card__badges">
+
+              <span class="prod-card__badge badge-service">
+                Serviço
+              </span>
+
+            </div>
+
+            <h3>Desenvolvimento de Software</h3>
+
+            <strong class="prod-card__price">
+              Desde 150.000 Kz
+            </strong>
+
+            <div class="prod-card__location">
+
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Maianga</span>
+
+            </div>
+
+            <div class="prod-card__seller">
+
+              <img src="https://images.unsplash.com/photo-1556155092-490a1ba16284?q=80&w=400&auto=format&fit=crop"
+                alt="Empresa">
+
+              <div>
+
+                <strong>DevSolutions</strong>
+                <span>Empresa</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <!-- CARD -->
+        <article class="prod-card">
+
+          <button class="prod-card__favorite">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+
+          <div class="prod-card__img">
+
+            <img src="https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?q=80&w=1200&auto=format&fit=crop"
+              alt="Limpeza">
+
+          </div>
+
+          <div class="prod-card__body">
+
+            <div class="prod-card__badges">
+
+              <span class="prod-card__badge badge-service">
+                Serviço
+              </span>
+
+            </div>
+
+            <h3>Serviço Profissional de Limpeza</h3>
+
+            <strong class="prod-card__price">
+              Desde 35.000 Kz
+            </strong>
+
+            <div class="prod-card__location">
+
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Viana</span>
+
+            </div>
+
+            <div class="prod-card__seller">
+
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Maria">
+
+              <div>
+
+                <strong>Maria José</strong>
+                <span>Prestadora de Serviço</span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- =========================================================
+     FOOTER
+========================================================= -->
+
+  <footer class="footer">
+
+    <div class="container">
+
+      <div class="footer__grid">
+
+
+        <!-- BRAND -->
+        <div class="footer__brand">
+
+          <div class="footer__logo">
+
+            <div class="footer__logo-icon">
+
+              <i class="fa-solid fa-bag-shopping"></i>
+
+            </div>
+
+            <span>ByClick</span>
+
+          </div>
+
+          <p>
+
+            Plataforma digital moderna para compra,
+            venda e contratação de serviços em Angola.
+
+          </p>
+
+
+          <!-- REDES -->
+          <div class="footer__social">
+
+            <a href="#">
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+
+            <a href="#">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+
+            <a href="#">
+              <i class="fa-brands fa-linkedin-in"></i>
+            </a>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- EMPRESA -->
+        <div class="footer__col">
+
+          <h4>Empresa</h4>
+
+          <ul>
+
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="#">Como Funciona</a></li>
+            <li><a href="#">Segurança</a></li>
+
+          </ul>
+
+        </div>
+
+
+
+        <!-- APOIO -->
+        <div class="footer__col">
+
+          <h4>Apoio</h4>
+
+          <ul>
+
+            <li><a href="#">Ajuda</a></li>
+            <li><a href="#">Denunciar</a></li>
+            <li><a href="#">FAQ</a></li>
+
+          </ul>
+
+        </div>
+
+
+
+        <!-- CONTACTOS -->
+        <div class="footer__col">
+
+          <h4>Contactos</h4>
+
+          <div class="footer__contact-item">
+            📞 +244 928 144 032
+          </div>
+
+          <div class="footer__contact-item">
+            ✉ contacto@byclick.com
+          </div>
+
+          <div class="footer__contact-item">
+            📍 Luanda, Angola
+          </div>
+
+
+          <!-- WHATSAPP -->
+          <a href="#" class="footer__whatsapp">
+
+            <i class="fa-brands fa-whatsapp"></i>
+            Conversar no WhatsApp
+
+          </a>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- FOOTER BOTTOM -->
+      <div class="footer__bottom">
+
+        <p>
+          © 2026 ByClick — Todos os direitos reservados.
+        </p>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/landing_page.js"></script>
 
 </body>
+
 </html>
