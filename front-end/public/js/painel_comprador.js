@@ -85,7 +85,8 @@ async function carregarDadosPainel() {
     ]);
 
     if (user.status === 'fulfilled' && user.value) {
-      atualizarPerfilUsuario(user.value);
+      const userData = user.value.success ? user.value.data : user.value;
+      atualizarPerfilUsuario(userData);
     }
 
     if (reqPedidosProd.status === 'fulfilled') {
@@ -107,11 +108,15 @@ function atualizarPerfilUsuario(usuario) {
   const nome = usuario.nome_completo || usuario.nome_utilizador || 'Comprador';
   const primeiroNome = nome.split(' ')[0];
 
+  // Foto de perfil default
+  const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(nome) + "&background=0D8ABC&color=fff&size=150";
+  const avatarSrc = usuario.foto_perfil_url || defaultAvatar;
+
   // Sidebar
   const sideNameEl = document.querySelector('[data-user-name]');
   const sideFotoEl = document.querySelector('[data-user-photo]');
   if (sideNameEl) sideNameEl.textContent = nome;
-  if (sideFotoEl && usuario.foto_perfil_url) sideFotoEl.src = usuario.foto_perfil_url;
+  if (sideFotoEl) sideFotoEl.src = avatarSrc;
 
   // Greeting
   const greetEl = document.querySelector('[data-greeting]');
@@ -128,7 +133,7 @@ function atualizarPerfilUsuario(usuario) {
   if (profNameEl) profNameEl.textContent = nome;
   if (profEmailEl) profEmailEl.textContent = usuario.email || '—';
   if (profPhoneEl) profPhoneEl.textContent = usuario.numero_telefone || '—';
-  if (profFotoEl && usuario.foto_perfil_url) profFotoEl.src = usuario.foto_perfil_url;
+  if (profFotoEl) profFotoEl.src = avatarSrc;
   if (profVerEl) profVerEl.textContent = usuario.email_verificado ? '✓ Verificado' : 'Não verificado';
   if (membroEl && usuario.criado_em) {
     membroEl.textContent = new Date(usuario.criado_em).toLocaleDateString('pt-AO');
@@ -218,7 +223,119 @@ document.addEventListener('DOMContentLoaded', function() {
       tabProd.classList.remove('active');
       atualizarTabelaPedidos(pedidosServicos, 'servico');
     });
+  }
+
+  // Sidebar links funcionalidade
+  const navItems = document.querySelectorAll('.nav-item');
+  const viewDashboard = document.getElementById('view-dashboard');
+  const viewDefinicoes = document.getElementById('view-definicoes');
+
+  function ativarAba(abaNome) {
+    navItems.forEach(i => i.classList.remove('active'));
+    
+    if (abaNome === 'Página Inicial') {
+      if(viewDashboard) viewDashboard.style.display = 'block';
+      if(viewDefinicoes) viewDefinicoes.style.display = 'none';
+    } else if (abaNome === 'Definições' || abaNome === 'Meu Perfil') {
+      if(viewDashboard) viewDashboard.style.display = 'none';
+      if(viewDefinicoes) viewDefinicoes.style.display = 'block';
     }
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (item.classList.contains('nav-logout')) return; // handled separately
+      
+      const text = item.textContent.trim();
+      
+      if (text === 'Página Inicial') {
+        e.preventDefault();
+        ativarAba(text);
+        item.classList.add('active');
+      } else if (text === 'Meu Perfil') {
+        e.preventDefault();
+        ativarAba(text);
+        if (typeof ativarSubAbaDefinicoes === 'function') ativarSubAbaDefinicoes('perfil');
+        // Ativar o item "Definições" visualmente
+        const defItem = Array.from(navItems).find(i => i.textContent.trim() === 'Definições');
+        if(defItem) defItem.classList.add('active');
+      } else if (text === 'Definições') {
+        e.preventDefault();
+        ativarAba(text);
+        item.classList.add('active');
+      } else if (text === 'Meus Pedidos') {
+        e.preventDefault();
+        ativarAba('Página Inicial');
+        // Manter o click do tab
+        document.querySelector('#tabProdutos')?.click();
+        const tableResp = document.querySelector('.table-responsive');
+        if (tableResp) {
+          window.scrollTo({ top: tableResp.offsetTop - 100, behavior: 'smooth' });
+        }
+      } else if (text === 'Favoritos') {
+        e.preventDefault();
+        showToast('Funcionalidade em desenvolvimento', 'info');
+      }
+    });
+  });
+
+  // Ações Rápidas - botão de Definições
+  document.querySelectorAll('.ab-teal').forEach(btn => {
+    if (btn.textContent.includes('Definições')) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        ativarAba('Definições');
+        const defItem = Array.from(navItems).find(i => i.textContent.trim() === 'Definições');
+        if(defItem) defItem.classList.add('active');
+      });
+    }
+  });
+
+  // Definições Tabs
+  const btnDefPerfil = document.getElementById('btn-def-perfil');
+  const btnDefSeguranca = document.getElementById('btn-def-seguranca');
+  const btnDefNotificacoes = document.getElementById('btn-def-notificacoes');
+
+  const panelPerfil = document.getElementById('panel-perfil-content');
+  const panelSeguranca = document.getElementById('panel-seguranca-content');
+  const panelNotificacoes = document.getElementById('panel-notificacoes-content');
+
+  window.ativarSubAbaDefinicoes = function(aba) {
+    [btnDefPerfil, btnDefSeguranca, btnDefNotificacoes].forEach(btn => {
+      if(btn) {
+        btn.classList.remove('ab-blue');
+        btn.style.background = 'transparent';
+      }
+    });
+    
+    if(panelPerfil) panelPerfil.style.display = 'none';
+    if(panelSeguranca) panelSeguranca.style.display = 'none';
+    if(panelNotificacoes) panelNotificacoes.style.display = 'none';
+
+    if(aba === 'perfil') {
+      if(btnDefPerfil) {
+          btnDefPerfil.classList.add('ab-blue');
+          btnDefPerfil.style.background = '';
+      }
+      if(panelPerfil) panelPerfil.style.display = 'block';
+    } else if(aba === 'seguranca') {
+      if(btnDefSeguranca) {
+          btnDefSeguranca.classList.add('ab-blue');
+          btnDefSeguranca.style.background = '';
+      }
+      if(panelSeguranca) panelSeguranca.style.display = 'block';
+    } else if(aba === 'notificacoes') {
+      if(btnDefNotificacoes) {
+          btnDefNotificacoes.classList.add('ab-blue');
+          btnDefNotificacoes.style.background = '';
+      }
+      if(panelNotificacoes) panelNotificacoes.style.display = 'block';
+    }
+  };
+
+  btnDefPerfil?.addEventListener('click', () => window.ativarSubAbaDefinicoes('perfil'));
+  btnDefSeguranca?.addEventListener('click', () => window.ativarSubAbaDefinicoes('seguranca'));
+  btnDefNotificacoes?.addEventListener('click', () => window.ativarSubAbaDefinicoes('notificacoes'));
 
   setupModalPerfil();
   carregarDadosPainel();

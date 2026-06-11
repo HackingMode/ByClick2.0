@@ -281,6 +281,18 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(200, 75, 31, 0.1);
 }
 
+.input-error {
+  border-color: #dc2626 !important;
+  background-color: #fef2f2 !important;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 13px;
+  margin-top: 6px;
+  display: block;
+}
+
 .input-wrapper {
   position: relative;
   display: flex;

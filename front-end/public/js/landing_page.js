@@ -42,6 +42,14 @@ document.addEventListener('DOMContentLoaded', function() {
     el.classList.add('pre-animate');
     observer.observe(el);
   });
+
+  // Funcionalidade de clique nos produtos
+  document.querySelectorAll('.prod-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.prod-card__favorite')) return;
+      window.location.href = 'produto/';
+    });
+  });
 });
 
 function atualizarNavbarAuth() {

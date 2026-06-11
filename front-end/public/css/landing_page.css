@@ -445,6 +445,7 @@ a{
   box-shadow:var(--shadow-sm);
 
   transition:.3s ease;
+  cursor: pointer;
 }
 
 .prod-card:hover{

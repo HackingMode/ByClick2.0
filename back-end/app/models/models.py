@@ -67,6 +67,35 @@ class CategoriaStatusEnum(str, enum.Enum):
     inativo = "inativo"
 
 
+# ─────────────────────────── LOCALIDADES ───────────────────────────
+
+class Provincia(Base):
+    """
+    Províncias de Angola.
+    """
+    __tablename__ = "provincias"
+
+    id = Column(Integer, primary_key=True, index=True)
+    nome = Column(String(100), unique=True, nullable=False)
+
+    # Relacionamentos
+    municipios = relationship("Municipio", back_populates="provincia", cascade="all, delete-orphan")
+
+
+class Municipio(Base):
+    """
+    Municípios pertencentes às províncias.
+    """
+    __tablename__ = "municipios"
+
+    id = Column(Integer, primary_key=True, index=True)
+    provincia_id = Column(Integer, ForeignKey("provincias.id"), nullable=False)
+    nome = Column(String(100), nullable=False)
+
+    # Relacionamentos
+    provincia = relationship("Provincia", back_populates="municipios")
+
+
 # ─────────────────────────── UTILIZADOR ───────────────────────────
 
 class Utilizador(Base):

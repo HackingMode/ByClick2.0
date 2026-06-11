@@ -60,35 +60,145 @@ function nextStep(current, next) {
   }
 }
 
-function validarEtapa(stepId) {
-  let valido = true;
+function mostrarErroInput(inputElement, mensagem) {
+  inputElement.classList.add('input-error');
   
-  if (stepId === 'cstep1' || stepId === 'vstep1') {
-    const prefix = stepId === 'cstep1' ? 'comp' : 'vend';
-    const nome = document.getElementById(prefix + 'NomeCompleto');
-    const email = document.getElementById(prefix + 'Email');
-    const telefone = document.getElementById(prefix + 'Telefone');
-    const username = document.getElementById(prefix + 'NomeUtilizador');
-    
-    if (nome && nome.value.trim() === '') { mostrarToast('Nome completo é obrigatório', 'error'); valido = false; }
-    else if (username && username.value.trim().length < 3) { mostrarToast('Nome de utilizador (mín. 3) é obrigatório', 'error'); valido = false; }
-    else if (email && !validarEmail(email.value)) { mostrarToast('Email inválido', 'error'); valido = false; }
-    else if (telefone && !validarTelefone(telefone.value)) { mostrarToast('Telefone inválido', 'error'); valido = false; }
-    
-    if (stepId === 'vstep1') {
-      const bi = document.getElementById('vendBi');
-      if (bi && bi.value.trim() === '') { mostrarToast('Número do BI é obrigatório', 'error'); valido = false; }
-    }
+  const container = inputElement.closest('.input-group') || inputElement.parentElement;
+  
+  // Remove erro anterior se existir
+  let oldError = container.querySelector('.error-message');
+  if (oldError) {
+    oldError.remove();
   }
   
+  const errorSpan = document.createElement('span');
+  errorSpan.className = 'error-message';
+  errorSpan.textContent = mensagem;
+  container.appendChild(errorSpan);
+}
+
+function limparErroInput(inputElement) {
+  inputElement.classList.remove('input-error');
+  const container = inputElement.closest('.input-group') || inputElement.parentElement;
+  let errorMsg = container.querySelector('.error-message');
+  if (errorMsg) {
+    errorMsg.remove();
+  }
+}
+
+document.addEventListener('input', function(e) {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+    limparErroInput(e.target);
+  }
+});
+
+function validarEtapa(stepId) {
+  let valido = true;
+  const step = document.getElementById(stepId);
+  if (!step) return false;
+
+  const inputs = step.querySelectorAll('input:not([type="hidden"]):not([type="file"]), select, textarea');
+  let camposVazios = false;
+
+  inputs.forEach(input => {
+    limparErroInput(input);
+    
+    // Ignorar campos desativados ou explicitamente opcionais
+    if (input.disabled || input.classList.contains('optional')) return;
+    
+    // Validar campos obrigatórios vazios
+    // O NIF é muitas vezes opcional, mas vamos forçar preenchimento ou tratar id="vendNif" como opcional se preferir
+    const isOptional = input.id.toLowerCase().includes('nif') || input.id.toLowerCase().includes('website');
+    if (!isOptional && input.value.trim() === '') {
+      mostrarErroInput(input, 'Este campo é obrigatório');
+      camposVazios = true;
+      valido = false;
+    }
+    
+    // Validar números em campos de texto (Apenas nomes de pessoas)
+    const camposSemNumeros = ['NomeCompleto', 'representativeName'];
+    if (camposSemNumeros.some(id => input.id.includes(id))) {
+      if (/\d/.test(input.value)) {
+        mostrarErroInput(input, 'Não é permitido numeros aqui');
+        valido = false;
+      }
+    }
+    
+    // Validar Data de Nascimento (18 anos ou 17 e 10 meses)
+    if (input.type === 'date' && input.id.toLowerCase().includes('nascimento') && input.value) {
+      const dataNasc = new Date(input.value);
+      const hoje = new Date();
+      let idade = hoje.getFullYear() - dataNasc.getFullYear();
+      const m = hoje.getMonth() - dataNasc.getMonth();
+      const d = hoje.getDate() - dataNasc.getDate();
+      
+      if (m < 0 || (m === 0 && d < 0)) {
+        idade--;
+      }
+      
+      // Checar se falta 2 meses ou menos para os 18 anos
+      let faltamMenosDe2Meses = false;
+      if (idade === 17) {
+        // Quantos meses faltam para o mes de aniversario?
+        let mesAniversario = dataNasc.getMonth();
+        let mesAtual = hoje.getMonth();
+        if (mesAniversario <= mesAtual) mesAniversario += 12; 
+        let mesesPara18 = mesAniversario - mesAtual;
+        
+        // Ajuste pelos dias
+        if (d > 0) {
+           mesesPara18--;
+        }
+        
+        if (mesesPara18 <= 2) {
+          faltamMenosDe2Meses = true;
+        }
+      }
+      
+      if (idade < 18 && !faltamMenosDe2Meses) {
+        mostrarErroInput(input, 'Só permitido a maiores de 18');
+        valido = false;
+      }
+    }
+    
+    // Validacao extra para email
+    if (input.type === 'email' && input.value.trim() !== '') {
+      if (!validarEmail(input.value)) {
+        mostrarErroInput(input, 'Email inválido');
+        valido = false;
+      }
+    }
+    
+    // Validacao extra para telefone
+    if (input.type === 'tel' && input.value.trim() !== '') {
+      if (!validarTelefone(input.value)) {
+        mostrarErroInput(input, 'Telefone inválido');
+        valido = false;
+      }
+    }
+  });
+
+  if (camposVazios) {
+    mostrarToast('Preencha todos os campos', 'error');
+  } else if (!valido) {
+    mostrarToast('Corrija os erros destacados', 'error');
+  }
+
+  // Validar campos de ficheiros nas etapas específicas
   if (stepId === 'vstep2') {
     const photo = document.getElementById('biInput');
-    if (photo && photo.files.length === 0) { mostrarToast('Foto do BI é obrigatória', 'error'); valido = false; }
+    if (photo && photo.files.length === 0) { 
+      mostrarToast('Foto do BI é obrigatória', 'error'); 
+      valido = false; 
+    }
   }
   
   if (stepId === 'vstep3') {
     const photoData = document.getElementById('facePhotoData');
-    if (photoData && !photoData.value) { mostrarToast('Tire a foto do rosto antes de continuar', 'error'); valido = false; }
+    if (photoData && !photoData.value) { 
+      mostrarToast('Tire a foto do rosto antes de continuar', 'error'); 
+      valido = false; 
+    }
   }
   
   return valido;
@@ -390,6 +500,14 @@ function validarSenhasBasicas(senha, confirmarSenha, erros) {
   }
 }
 
+function getBase64FromImage(imageId) {
+  const img = document.getElementById(imageId);
+  if (img && img.src && img.src.startsWith('data:image/')) {
+    return img.src;
+  }
+  return null;
+}
+
 function coletarDadosComprador() {
   return {
     nome_completo: valorPorId('compNomeCompleto'),
@@ -403,7 +521,8 @@ function coletarDadosComprador() {
     bairro: valorPorId('compBairro') || null,
     endereco_completo: valorPorId('compRua') || null,
     senha: valorPorId('compSenha'),
-    confirmar_senha: valorPorId('compConfirmarSenha')
+    confirmar_senha: valorPorId('compConfirmarSenha'),
+    foto_perfil: getBase64FromImage('previewImage')
   };
 }
 
@@ -426,7 +545,8 @@ function coletarDadosVendedor() {
     nome_loja: valorPorId('vendNomeUtilizador'), // Fallback to username for now
     senha: valorPorId('vendSenha'),
     confirmar_senha: valorPorId('vendConfirmarSenha'),
-    tipo_loja: 'produtos'
+    tipo_loja: 'produtos',
+    foto_perfil: getBase64FromImage('sellerProfilePreview')
   };
 }
 
@@ -463,7 +583,8 @@ function coletarDadosEmpresa() {
     paypay_referencia: valorPorId('paypalReference') || null,
     senha: valorPorId('companyPassword'),
     confirmar_senha: valorPorId('companyConfirmPassword'),
-    tipo_loja: tipoLojaPorCategoria(categoria)
+    tipo_loja: tipoLojaPorCategoria(categoria),
+    foto_perfil: getBase64FromImage('companyLogoPreview')
   };
 }
 
@@ -718,5 +839,85 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.textContent = textoOriginal;
       }
     });
+  }
+});
+
+// =========================================================
+// CARREGAMENTO DINÂMICO DE PROVÍNCIAS E MUNICÍPIOS
+// =========================================================
+
+async function carregarProvincias() {
+  try {
+    const response = await fetch('http://localhost:8000/api/v1/localidades/provincias');
+    const provincias = await response.json();
+    return provincias;
+  } catch (error) {
+    console.error('Erro ao carregar províncias:', error);
+    return [];
+  }
+}
+
+async function carregarMunicipios(provinciaId) {
+  try {
+    const response = await fetch(`http://localhost:8000/api/v1/localidades/provincias/${provinciaId}/municipios`);
+    const municipios = await response.json();
+    return municipios;
+  } catch (error) {
+    console.error('Erro ao carregar municípios:', error);
+    return [];
+  }
+}
+
+function popularSelectProvincias(selectId, municipioSelectId) {
+  const select = document.getElementById(selectId);
+  const municipioSelect = document.getElementById(municipioSelectId);
+  if (!select) return;
+
+  carregarProvincias().then(provincias => {
+    select.innerHTML = '<option value="">Selecione uma província</option>';
+    provincias.forEach(p => {
+      const option = document.createElement('option');
+      option.value = p.nome; // Mantemos como string pois a BD espera o nome da província
+      option.dataset.id = p.id;
+      option.textContent = p.nome;
+      select.appendChild(option);
+    });
+  });
+
+  if (municipioSelect) {
+    select.addEventListener('change', function(e) {
+      const selectedOption = this.options[this.selectedIndex];
+      const provinciaId = selectedOption.dataset.id;
+      
+      municipioSelect.innerHTML = '<option value="">A carregar...</option>';
+      municipioSelect.disabled = true;
+
+      if (!provinciaId) {
+        municipioSelect.innerHTML = '<option value="">Selecione uma província primeiro</option>';
+        return;
+      }
+
+      carregarMunicipios(provinciaId).then(municipios => {
+        municipioSelect.innerHTML = '<option value="">Selecione um município</option>';
+        municipioSelect.disabled = false;
+        municipios.forEach(m => {
+          const option = document.createElement('option');
+          option.value = m.nome; // Mantemos como string pois a BD espera o nome
+          option.textContent = m.nome;
+          municipioSelect.appendChild(option);
+        });
+      });
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const pathname = window.location.pathname;
+  if (pathname.includes('cadastro_vendedor')) {
+    popularSelectProvincias('vendProvincia', 'vendMunicipio');
+  } else if (pathname.includes('cadastro_comprador')) {
+    popularSelectProvincias('compProvincia', 'compMunicipio');
+  } else if (pathname.includes('cadastro_empresa')) {
+    popularSelectProvincias('companyProvince', 'companyMunicipality');
   }
 });

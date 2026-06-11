@@ -43,11 +43,13 @@
         <div class="topbar-actions">
             <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">0</span></div>
             <div class="topbar-divider"></div>
-            <div class="icon-btn"><i class="fa-solid fa-cart-shopping"></i><span class="badge">0</span></div>
+            <a href="../../carrinho/" class="icon-btn" style="text-decoration: none;"><i class="fa-solid fa-cart-shopping"></i><span class="badge">0</span></a>
         </div>
     </header>
 
     <main class="page">
+        <!-- VISTA DASHBOARD -->
+        <div id="view-dashboard">
         <!-- Welcome Card -->
         <div class="welcome-card">
             <h2 data-greeting>Olá! 👋</h2>
@@ -130,27 +132,6 @@
             </div>
 
             <div class="right-col">
-                <!-- User Profile -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <h3 class="panel-title"><i class="fa-solid fa-user"></i> Meu Perfil</h3>
-                        <button class="btn-edit"><i class="fa-solid fa-pen"></i> Editar</button>
-                    </div>
-                    <div class="user-profile">
-                        <img src="https://via.placeholder.com/64" alt="Foto" class="user-avatar" data-profile-photo>
-                        <div>
-                            <div class="user-name" data-profile-name>Carregando...</div>
-                            <div class="user-email" data-profile-email>—</div>
-                            <span class="user-badge"><i class="fa-solid fa-user"></i> Comprador</span>
-                        </div>
-                    </div>
-                    <div class="user-meta">
-                        <div class="meta-item"><div class="meta-label">Telefone</div><div class="meta-val" data-profile-phone>—</div></div>
-                        <div class="meta-item"><div class="meta-label">Membro desde</div><div class="meta-val" data-member-since>—</div></div>
-                        <div class="meta-item"><div class="meta-label">Email</div><div class="meta-val" data-profile-verified>—</div></div>
-                    </div>
-                </div>
-
                 <!-- Quick Actions -->
                 <div class="panel">
                     <div class="actions-title">Ações Rápidas</div>
@@ -179,6 +160,109 @@
                 </div>
             </div>
         </div>
+        </div> <!-- END VISTA DASHBOARD -->
+
+        <!-- VISTA DEFINIÇÕES -->
+        <div id="view-definicoes" style="display: none;">
+            <div class="header-section">
+                <div class="greeting">
+                    <h1><i class="fa-solid fa-gear"></i> Definições</h1>
+                    <p>Faça a gestão da sua conta, perfil e preferências.</p>
+                </div>
+            </div>
+            
+            <div class="settings-grid">
+                <div class="panel" style="padding: 15px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button class="action-btn ab-blue" style="width: 100%;" id="btn-def-perfil"><i class="fa-solid fa-user"></i> Meu Perfil</button>
+                        <button class="action-btn" style="width: 100%; background: transparent; border: 1px solid var(--border);" id="btn-def-seguranca"><i class="fa-solid fa-lock"></i> Segurança</button>
+                        <button class="action-btn" style="width: 100%; background: transparent; border: 1px solid var(--border);" id="btn-def-notificacoes"><i class="fa-solid fa-bell"></i> Notificações</button>
+                    </div>
+                </div>
+                <div>
+                    <!-- User Profile Panel -->
+                    <div id="panel-perfil-content">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><i class="fa-solid fa-user"></i> Informações do Perfil</h3>
+                                <button class="btn-edit"><i class="fa-solid fa-pen"></i> Editar</button>
+                            </div>
+                            <div class="user-profile">
+                                <img src="https://via.placeholder.com/64" alt="Foto" class="user-avatar" data-profile-photo>
+                                <div>
+                                    <div class="user-name" data-profile-name>Carregando...</div>
+                                    <div class="user-email" data-profile-email>—</div>
+                                    <span class="user-badge"><i class="fa-solid fa-user"></i> Comprador</span>
+                                </div>
+                            </div>
+                            <div class="user-meta" style="margin-top: 20px;">
+                                <div class="meta-item"><div class="meta-label">Telefone</div><div class="meta-val" data-profile-phone>—</div></div>
+                                <div class="meta-item"><div class="meta-label">Membro desde</div><div class="meta-val" data-member-since>—</div></div>
+                                <div class="meta-item"><div class="meta-label">Email Verificado</div><div class="meta-val" data-profile-verified>—</div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Segurança Panel -->
+                    <div id="panel-seguranca-content" style="display: none;">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><i class="fa-solid fa-lock"></i> Segurança e Palavra-passe</h3>
+                            </div>
+                            <form id="formSeguranca">
+                                <div class="form-group">
+                                    <label>Palavra-passe Atual</label>
+                                    <input type="password" placeholder="Digite a sua senha atual" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nova Palavra-passe</label>
+                                    <input type="password" placeholder="Mínimo 8 caracteres" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Confirmar Nova Palavra-passe</label>
+                                    <input type="password" placeholder="Repita a nova senha" required>
+                                </div>
+                                <button type="submit" class="btn-submit" style="width: auto; padding: 10px 20px; margin-top: 10px;">Atualizar Palavra-passe</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Notificações Panel -->
+                    <div id="panel-notificacoes-content" style="display: none;">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><i class="fa-solid fa-bell"></i> Preferências de Notificações</h3>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                                    <div>
+                                        <strong>Atualizações de Pedidos</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Receber notificações sobre o estado das tuas compras.</p>
+                                    </div>
+                                    <input type="checkbox" checked style="width: 18px; height: 18px;">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                                    <div>
+                                        <strong>Promoções e Ofertas</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Mensagens promocionais sobre produtos da plataforma.</p>
+                                    </div>
+                                    <input type="checkbox" style="width: 18px; height: 18px;">
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <strong>Novas Mensagens</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Avisos quando os vendedores entrarem em contacto.</p>
+                                    </div>
+                                    <input type="checkbox" checked style="width: 18px; height: 18px;">
+                                </div>
+                            </div>
+                            <button class="btn-submit" style="width: auto; padding: 10px 20px; margin-top: 20px;" onclick="showToast('Preferências salvas!', 'success')">Salvar Preferências</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div> <!-- END VISTA DEFINIÇÕES -->
     </main>
 </div>
 

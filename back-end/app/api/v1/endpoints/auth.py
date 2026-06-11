@@ -2,6 +2,8 @@
 Endpoints de autenticacao - registo, login e verificacao.
 """
 
+import base64
+import os
 import random
 import re
 import string
@@ -45,6 +47,27 @@ router = APIRouter(prefix="/auth", tags=["Autenticacao"])
 
 def gerar_codigo_otp(tamanho: int = 6) -> str:
     return "".join(random.choices(string.digits, k=tamanho))
+
+
+def salvar_foto_perfil(base64_str: str, tipo_utilizador: str, utilizador_id: int) -> str:
+    if "," in base64_str:
+        header, b64_data = base64_str.split(",", 1)
+        ext = header.split("/")[1].split(";")[0]
+        if ext == "jpeg":
+            ext = "jpg"
+    else:
+        b64_data = base64_str
+        ext = "jpg"
+    
+    # Save relatively in back-end/imagens/<tipo_utilizador>/<utilizador_id>
+    path = os.path.join("imagens", tipo_utilizador, str(utilizador_id))
+    os.makedirs(path, exist_ok=True)
+    file_path = os.path.join(path, f"perfil.{ext}")
+    
+    with open(file_path, "wb") as fh:
+        fh.write(base64.b64decode(b64_data))
+        
+    return f"http://localhost:8000/imagens/{tipo_utilizador}/{utilizador_id}/perfil.{ext}"
 
 
 def gerar_nome_utilizador_empresa(db: Session, nome_empresa: str) -> str:
@@ -236,6 +259,8 @@ def registar_comprador(dados: RegistoCompradorSchema, db: Session = Depends(get_
         )
         criar_endereco(db, utilizador.id, dados)
         criar_codigo_verificacao(db, utilizador.id)
+        if dados.foto_perfil:
+            utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "comprador", utilizador.id)
         db.commit()
         db.refresh(utilizador)
     except Exception:
@@ -277,6 +302,8 @@ def registar_vendedor(dados: RegistoContaVendedorSchema, db: Session = Depends(g
             tipo_loja=dados.tipo_loja,
         )
         criar_codigo_verificacao(db, utilizador.id)
+        if dados.foto_perfil:
+            utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "vendedor", utilizador.id)
         db.commit()
         db.refresh(utilizador)
     except Exception:
@@ -316,6 +343,8 @@ def registar_empresa(dados: RegistoEmpresaSchema, db: Session = Depends(get_db))
             tipo_loja=dados.tipo_loja,
         )
         criar_codigo_verificacao(db, utilizador.id)
+        if dados.foto_perfil:
+            utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "empresa", utilizador.id)
         db.commit()
         db.refresh(utilizador)
     except Exception:

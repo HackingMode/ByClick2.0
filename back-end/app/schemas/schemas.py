@@ -31,6 +31,7 @@ class RegistoBaseSchema(BaseModel):
     bairro: Optional[str] = None
     endereco_completo: Optional[str] = None
     nif: Optional[str] = None
+    foto_perfil: Optional[str] = None
 
     @field_validator("email")
     @classmethod
@@ -331,3 +332,20 @@ class PedidoStatusUpdateSchema(BaseModel):
 
 class PedidoServicoStatusUpdateSchema(BaseModel):
     status: str # pendente, em_andamento, concluido, cancelado
+
+
+# ─────────────────────── LOCALIDADES ───────────────────────
+
+class MunicipioResponseSchema(BaseModel):
+    id: int
+    provincia_id: int
+    nome: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProvinciaResponseSchema(BaseModel):
+    id: int
+    nome: str
+
+    model_config = ConfigDict(from_attributes=True)

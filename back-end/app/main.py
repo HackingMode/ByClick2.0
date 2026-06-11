@@ -2,10 +2,14 @@
 Byclick - Backend API
 """
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, servicos, explorar, pedidos, categorias, avaliacoes
+from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, servicos, explorar, pedidos, categorias, avaliacoes, localidades
+
+os.makedirs("imagens", exist_ok=True)
 
 app = FastAPI(
     title="Byclick API",
@@ -24,6 +28,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/imagens", StaticFiles(directory="imagens"), name="imagens")
+
 # Registar routers
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(vendedor.router, prefix="/api/v1")
@@ -35,6 +41,7 @@ app.include_router(explorar.router, prefix="/api/v1")
 app.include_router(pedidos.router, prefix="/api/v1/pedidos", tags=["Pedidos"])
 app.include_router(categorias.router, prefix="/api/v1")
 app.include_router(avaliacoes.router, prefix="/api/v1")
+app.include_router(localidades.router, prefix="/api/v1/localidades", tags=["Localidades"])
 
 
 @app.get("/", tags=["Root"])
