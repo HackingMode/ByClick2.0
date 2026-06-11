@@ -1,5 +1,5 @@
 /**
- * Landing Page - ByClick
+ * Landing Page - Kitanda
  */
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -1,12 +1,12 @@
 :root {
     --bg-light: #f9fafc;
     --white: #ffffff;
-    --primary: #00c853;
-    --primary-dark: #00a844;
-    --text-dark: #111827;
-    --text-mid: #374151;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
+    --primary: #C84B1F;
+    --primary-dark: #A03A14;
+    --text-dark: #1A1208;
+    --text-mid: #5C4E3A;
+    --text-muted: #5C4E3A;
+    --border: #E8DFD0;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
     --shadow: 0 4px 12px rgba(0,0,0,0.06);
     --radius: 12px;
@@ -56,7 +56,7 @@ body { font-family: var(--font); background: var(--bg-light); color: var(--text-
     transition: all 0.2s; background: #fff;
 }
 .form-group input:focus, .form-group textarea:focus {
-    outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,200,83,0.1);
+    outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(200, 75, 31, 0.1);
 }
 .form-group textarea { resize: vertical; min-height: 100px; }
 
@@ -67,7 +67,7 @@ body { font-family: var(--font); background: var(--bg-light); color: var(--text-
     border-radius: var(--radius); cursor: pointer; transition: all 0.2s;
 }
 .payment-option:hover { border-color: #cbd5e1; }
-.payment-option.selected { border-color: var(--primary); background: rgba(0,200,83,0.03); }
+.payment-option.selected { border-color: var(--primary); background: rgba(200, 75, 31, 0.03); }
 .payment-option input { width: 20px; height: 20px; accent-color: var(--primary); }
 .opt-content { display: flex; align-items: center; gap: 16px; }
 .opt-content i { font-size: 1.8rem; color: var(--primary); width: 30px; text-align: center; }
@@ -100,7 +100,7 @@ body { font-family: var(--font); background: var(--bg-light); color: var(--text-
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
     transition: all 0.2s; font-family: var(--font);
 }
-.btn-checkout:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,200,83,0.3); }
+.btn-checkout:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(200, 75, 31, 0.3); }
 
 .secure-text { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; }
 

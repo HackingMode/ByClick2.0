@@ -1,5 +1,5 @@
 /**
- * Painel do Comprador - ByClick
+ * Painel do Comprador - Kitanda
  */
 
 let pedidosProdutos = [];
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Logout
   document.getElementById('btnLogout')?.addEventListener('click', function(e) {
     e.preventDefault();
-    if (confirm('Tem certeza que deseja terminar a sessão?')) logout();
+    showConfirmModal('Terminar Sessão', 'Tem certeza que deseja terminar a sua sessão?', logout, 'Terminar Sessão');
   });
 
   // Tabs

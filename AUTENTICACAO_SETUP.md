@@ -1,4 +1,4 @@
-# 🚀 Guia de Execução - ByClick Autenticação
+# 🚀 Guia de Execução - Kitanda Autenticação
 
 ## Prerequisitos
 
@@ -9,13 +9,13 @@
 ## 📋 Checklist Antes de Começar
 
 - [ ] PostgreSQL rodando em localhost:5432
-- [ ] Base de dados `byclick_db` criada
+- [ ] Base de dados `kitanda_db` criada
 - [ ] Usuário PostgreSQL `postgres` com senha `Ilevuosnof%40!`
 
 ### Criar Base de Dados (se não existir)
 
 ```bash
-psql -U postgres -c "CREATE DATABASE byclick_db;"
+psql -U postgres -c "CREATE DATABASE kitanda_db;"
 ```
 
 ## 🛠️ Configuração do Backend

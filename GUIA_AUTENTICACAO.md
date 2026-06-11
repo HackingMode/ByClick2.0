@@ -1,8 +1,8 @@
-# Sistema de Autenticação ByClick - Documentação
+# Sistema de Autenticação Kitanda - Documentação
 
 ## Sumário das Implementações
 
-Este documento descreve as melhorias implementadas no sistema de login e cadastro do ByClick Marketplace.
+Este documento descreve as melhorias implementadas no sistema de login e cadastro do Kitanda Marketplace.
 
 ### ✅ Funcionalidades Implementadas
 

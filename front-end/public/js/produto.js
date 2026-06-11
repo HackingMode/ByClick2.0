@@ -1,5 +1,5 @@
 /**
- * Detalhes do Produto — ByClick
+ * Detalhes do Produto — Kitanda
  */
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -59,7 +59,7 @@ async function carregarProduto(id) {
 
 function renderizarProduto(p) {
   // Title
-  document.title = `${p.nome} — ByClick`;
+  document.title = `${p.nome} — Kitanda`;
   const titleEl = document.querySelector('[data-product-title]');
   if (titleEl) titleEl.textContent = p.nome || 'Produto';
 
@@ -114,7 +114,7 @@ function renderizarProduto(p) {
   const sellerNameEl = document.querySelector('[data-seller-name]');
   const sellerMetaEl = document.querySelector('[data-seller-meta]');
   const sellerAvatarEl = document.querySelector('[data-seller-avatar]');
-  if (sellerNameEl) sellerNameEl.textContent = p.vendedor_nome || 'Vendedor ByClick';
+  if (sellerNameEl) sellerNameEl.textContent = p.vendedor_nome || 'Vendedor Kitanda';
   if (sellerMetaEl) sellerMetaEl.textContent = `Membro desde ${p.vendedor_desde ? new Date(p.vendedor_desde).toLocaleDateString('pt-AO') : '—'}`;
   if (sellerAvatarEl) sellerAvatarEl.textContent = (p.vendedor_nome || 'V').charAt(0).toUpperCase();
 
@@ -128,7 +128,7 @@ function renderizarProduto(p) {
           nome: p.nome,
           preco: p.preco_promocional || p.preco,
           imagem_url: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
-          vendedor_nome: p.vendedor_nome || 'Vendedor ByClick',
+          vendedor_nome: p.vendedor_nome || 'Vendedor Kitanda',
           vendedor_id: p.vendedor_id
         });
       } else {
@@ -141,7 +141,7 @@ function renderizarProduto(p) {
   if (contactBtn) {
     contactBtn.addEventListener('click', () => {
       if (p.vendedor_telefone) {
-        window.open(`https://wa.me/${p.vendedor_telefone}?text=Olá! Tenho interesse no produto "${p.nome}" no ByClick.`, '_blank');
+        window.open(`https://wa.me/${p.vendedor_telefone}?text=Olá! Tenho interesse no produto "${p.nome}" no Kitanda.`, '_blank');
       } else {
         mostrarToast('Contacto do vendedor não disponível.', 'warning');
       }

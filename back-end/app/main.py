@@ -1,5 +1,5 @@
 """
-Byclick - Backend API
+Kitanda - Backend API
 """
 
 import os
@@ -12,7 +12,7 @@ from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, s
 os.makedirs("imagens", exist_ok=True)
 
 app = FastAPI(
-    title="Byclick API",
+    title="Kitanda API",
     description="API para compra e venda de produtos e serviços em Angola",
     version="1.0.0",
     docs_url="/docs",
@@ -46,7 +46,7 @@ app.include_router(localidades.router, prefix="/api/v1/localidades", tags=["Loca
 
 @app.get("/", tags=["Root"])
 def root():
-    return {"mensagem": "Byclick API está online 🇦🇴", "versao": "1.0.0"}
+    return {"mensagem": "Kitanda API está online 🇦🇴", "versao": "1.0.0"}
 
 
 @app.get("/health", tags=["Root"])

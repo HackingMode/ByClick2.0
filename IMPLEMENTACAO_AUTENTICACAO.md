@@ -1,8 +1,8 @@
-# Sumário das Alterações - Autenticação ByClick 🔐
+# Sumário das Alterações - Autenticação Kitanda 🔐
 
 ## 📝 Resumo Executivo
 
-Implementação completa de autenticação no projeto ByClick:
+Implementação completa de autenticação no projeto Kitanda:
 - ✅ Página de login com UI/UX consistente
 - ✅ Integração JavaScript com API do backend
 - ✅ Sistema de tokens JWT (access + refresh)

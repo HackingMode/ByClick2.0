@@ -1,9 +1,9 @@
 /**
- * Carrinho de Compras — ByClick
+ * Carrinho de Compras — Kitanda
  * Gestão local (localStorage) dos itens do carrinho.
  */
 
-const CART_KEY = 'byclick_cart';
+const CART_KEY = 'kitanda_cart';
 
 function getCart() {
   try {

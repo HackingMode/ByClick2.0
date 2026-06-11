@@ -1,15 +1,15 @@
 :root {
-    --bg-dark: #0d0d0d;
-    --bg-sidebar: #111111;
-    --bg-light: #f4f6f8;
+    --bg-dark: #1A1208;
+    --bg-sidebar: #1A1208;
+    --bg-light: #FAF7F2;
     --white: #ffffff;
-    --primary: #00c853;
-    --primary-dark: #00a844;
-    --primary-light: #e6faf0;
-    --text-dark: #111827;
-    --text-mid: #374151;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
+    --primary: #C84B1F;
+    --primary-dark: #A03A14;
+    --primary-light: #fff0ea;
+    --text-dark: #1A1208;
+    --text-mid: #5C4E3A;
+    --text-muted: #5C4E3A;
+    --border: #E8DFD0;
     --blue: #3b82f6;
     --blue-light: #eff6ff;
     --orange: #f59e0b;
@@ -98,7 +98,7 @@ nav { flex: 1; padding: 14px 0; }
 .nav-item:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); border-left-color: rgba(255,255,255,0.1); }
 .nav-item.active {
     color: #fff;
-    background: rgba(0, 200, 83, 0.12);
+    background: rgba(200, 75, 31, 0.12);
     border-left-color: var(--primary);
 }
 .nav-item.active i { color: var(--primary); }
@@ -439,4 +439,4 @@ textarea.form-control { resize: vertical; min-height: 80px; }
 .btn-primary { background: var(--primary); color: #fff; border: none; padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: background 0.2s; }
 .btn-primary:hover { background: var(--primary-dark); }
 .btn-secondary { background: var(--bg-light); color: var(--text-dark); border: 1px solid var(--border); padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: background 0.2s; }
-.btn-secondary:hover { background: #e5e7eb; }
+.btn-secondary:hover { background: #E8DFD0; }

@@ -1,5 +1,5 @@
 """
-Modelos da base de dados - Byclick Angola
+Modelos da base de dados - Kitanda Angola
 Baseado nos requisitos definidos pela equipa.
 """
 

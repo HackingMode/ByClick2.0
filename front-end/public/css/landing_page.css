@@ -360,34 +360,55 @@ a{
 
 
 /* =========================================================
-   CATEGORIAS
+   BENEFÍCIOS
 ========================================================= */
 
-.cats{
-  padding:30px 0 70px;
+.features-bar{
+  padding:40px 0 60px;
 }
 
-.cats__inner{
+.features-bar__inner{
   display:flex;
-  gap:14px;
-  overflow:auto;
+  gap:24px;
+  justify-content:space-between;
+  flex-wrap:wrap;
 }
 
-.cat-pill{
-  padding:14px 22px;
-
+.feature-item{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  
   background:white;
-
-  border-radius:999px;
-
-  white-space:nowrap;
-
-  font-weight:600;
+  padding:16px 24px;
+  border-radius:20px;
+  
+  flex:1;
+  min-width:240px;
+  box-shadow:var(--shadow-sm);
+  transition:transform .3s ease, box-shadow .3s ease;
 }
 
-.cat-pill--active{
-  background:var(--terra);
-  color:white;
+.feature-item:hover{
+  transform:translateY(-5px);
+  box-shadow:var(--shadow-md);
+}
+
+.feature-icon{
+  width:44px;
+  height:44px;
+  background:#fff0ea;
+  color:var(--terra);
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.1rem;
+}
+
+.feature-item span{
+  font-weight:600;
+  color:var(--ink);
 }
 
 
@@ -788,15 +809,4 @@ a{
   box-shadow:var(--shadow-sm);
 }
 
-/* Cat pill hover */
-.cat-pill{
-  cursor:pointer;
-  transition:background .25s ease, color .25s ease, transform .2s ease;
-  border:2px solid transparent;
-}
-
-.cat-pill:hover:not(.cat-pill--active){
-  border-color:var(--terra);
-  color:var(--terra);
-  transform:translateY(-2px);
-}
+

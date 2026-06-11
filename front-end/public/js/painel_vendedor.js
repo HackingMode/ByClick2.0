@@ -1,5 +1,5 @@
 /**
- * Painel do Vendedor - ByClick
+ * Painel do Vendedor - Kitanda
  * Carrega dados reais da API e atualiza o dashboard.
  */
 
@@ -246,9 +246,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      if (confirm('Tem certeza que deseja terminar a sessão?')) {
-        logout();
-      }
+      showConfirmModal('Terminar Sessão', 'Tem certeza que deseja terminar a sua sessão?', logout, 'Terminar Sessão');
     });
   }
 

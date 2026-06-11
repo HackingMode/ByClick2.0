@@ -1,5 +1,5 @@
 /**
- * API Client para ByClick.
+ * API Client para Kitanda.
  */
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -566,4 +566,120 @@ async function eliminarServico(servicoId) {
   } catch (error) {
     return respostaErro(error);
   }
+}
+
+// ─────────────────────── UI UTILS ───────────────────────
+
+function showConfirmModal(title, message, onConfirm, btnText = 'Confirmar', iconClass = 'fa-solid fa-arrow-right-from-bracket') {
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
+  overlay.style.backdropFilter = 'blur(4px)';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '99999';
+  overlay.style.opacity = '0';
+  overlay.style.transition = 'opacity 0.25s ease';
+
+  const modal = document.createElement('div');
+  modal.style.backgroundColor = '#fff';
+  modal.style.borderRadius = '24px';
+  modal.style.padding = '32px';
+  modal.style.width = '90%';
+  modal.style.maxWidth = '420px';
+  modal.style.boxShadow = '0 20px 40px rgba(0,0,0,0.12)';
+  modal.style.transform = 'scale(0.95) translateY(10px)';
+  modal.style.transition = 'transform 0.25s ease';
+  modal.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
+  modal.style.color = '#1A1208';
+  modal.style.textAlign = 'center';
+
+  const iconContainer = document.createElement('div');
+  iconContainer.style.width = '64px';
+  iconContainer.style.height = '64px';
+  iconContainer.style.borderRadius = '50%';
+  iconContainer.style.backgroundColor = '#fff0ea';
+  iconContainer.style.color = '#C84B1F';
+  iconContainer.style.display = 'flex';
+  iconContainer.style.alignItems = 'center';
+  iconContainer.style.justifyContent = 'center';
+  iconContainer.style.margin = '0 auto 20px';
+  iconContainer.style.fontSize = '24px';
+  iconContainer.innerHTML = `<i class="${iconClass}"></i>`;
+
+  const titleEl = document.createElement('h3');
+  titleEl.innerText = title;
+  titleEl.style.margin = '0 0 12px 0';
+  titleEl.style.fontSize = '1.35rem';
+  titleEl.style.fontWeight = '700';
+  
+  const msgEl = document.createElement('p');
+  msgEl.innerText = message;
+  msgEl.style.margin = '0 0 28px 0';
+  msgEl.style.color = '#5C4E3A';
+  msgEl.style.lineHeight = '1.6';
+  msgEl.style.fontSize = '0.95rem';
+
+  const actions = document.createElement('div');
+  actions.style.display = 'flex';
+  actions.style.gap = '12px';
+  actions.style.justifyContent = 'center';
+
+  const btnCancel = document.createElement('button');
+  btnCancel.innerText = 'Cancelar';
+  btnCancel.style.padding = '14px 24px';
+  btnCancel.style.border = 'none';
+  btnCancel.style.borderRadius = '999px';
+  btnCancel.style.backgroundColor = '#f4f4f5';
+  btnCancel.style.color = '#1A1208';
+  btnCancel.style.fontWeight = '600';
+  btnCancel.style.cursor = 'pointer';
+  btnCancel.style.transition = 'background 0.2s';
+  btnCancel.style.flex = '1';
+  btnCancel.onmouseover = () => btnCancel.style.backgroundColor = '#e4e4e7';
+  btnCancel.onmouseout = () => btnCancel.style.backgroundColor = '#f4f4f5';
+
+  const btnOk = document.createElement('button');
+  btnOk.innerText = btnText;
+  btnOk.style.padding = '14px 24px';
+  btnOk.style.border = 'none';
+  btnOk.style.borderRadius = '999px';
+  btnOk.style.backgroundColor = '#C84B1F';
+  btnOk.style.color = '#fff';
+  btnOk.style.fontWeight = '600';
+  btnOk.style.cursor = 'pointer';
+  btnOk.style.transition = 'background 0.2s';
+  btnOk.style.flex = '1';
+  btnOk.onmouseover = () => btnOk.style.backgroundColor = '#A03A14';
+  btnOk.onmouseout = () => btnOk.style.backgroundColor = '#C84B1F';
+
+  const closeModal = () => {
+    overlay.style.opacity = '0';
+    modal.style.transform = 'scale(0.95) translateY(10px)';
+    setTimeout(() => overlay.remove(), 250);
+  };
+
+  btnCancel.onclick = closeModal;
+  btnOk.onclick = () => {
+    closeModal();
+    if(onConfirm) onConfirm();
+  };
+
+  actions.appendChild(btnCancel);
+  actions.appendChild(btnOk);
+  
+  modal.appendChild(iconContainer);
+  modal.appendChild(titleEl);
+  modal.appendChild(msgEl);
+  modal.appendChild(actions);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  // Trigger animation
+  requestAnimationFrame(() => {
+    overlay.style.opacity = '1';
+    modal.style.transform = 'scale(1) translateY(0)';
+  });
 }

@@ -1,6 +1,6 @@
-# Back-End — Byclick 2.0
+# Back-End — Kitanda 2.0
 
-Esta pasta será destinada ao desenvolvimento do servidor e da base de dados da plataforma Byclick.
+Esta pasta será destinada ao desenvolvimento do servidor e da base de dados da plataforma Kitanda.
 
 ## Tecnologias previstas
 - **Linguagem:** Python

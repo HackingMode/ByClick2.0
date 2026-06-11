@@ -1,5 +1,5 @@
 /**
- * Painel Empresarial - ByClick
+ * Painel Empresarial - Kitanda
  * Carrega dados reais da API e atualiza o dashboard da empresa.
  */
 
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Logout
   document.getElementById('btnLogout')?.addEventListener('click', function(e) {
     e.preventDefault();
-    if (confirm('Tem certeza que deseja terminar a sessão?')) logout();
+    showConfirmModal('Terminar Sessão', 'Tem certeza que deseja terminar a sua sessão?', logout, 'Terminar Sessão');
   });
 
   // Load data

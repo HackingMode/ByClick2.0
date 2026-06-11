@@ -1,5 +1,5 @@
 /**
- * Explorar Produtos — ByClick
+ * Explorar Produtos — Kitanda
  * Carrega produtos da API e gere filtros/pesquisa.
  */
 
