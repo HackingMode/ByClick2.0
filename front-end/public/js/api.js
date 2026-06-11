@@ -683,3 +683,59 @@ function showConfirmModal(title, message, onConfirm, btnText = 'Confirmar', icon
     modal.style.transform = 'scale(1) translateY(0)';
   });
 }
+
+// ─────────────────────── NOVO: HEADERS & FORMATOS ───────────────────────
+
+function getToken() {
+  return localStorage.getItem('access_token');
+}
+
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${getToken()}`
+  };
+}
+
+function publicHeaders() {
+  return { 'Content-Type': 'application/json' };
+}
+
+function formatarPreco(valor) {
+  return new Intl.NumberFormat('pt-AO').format(valor || 0) + ' Kz';
+}
+
+// ─────────────────────── NOVO: CARRINHO LOCALSTORAGE ───────────────────────
+
+function getCarrinho() {
+  return JSON.parse(localStorage.getItem('kitanda_carrinho') || '{"itens":[]}');
+}
+
+function salvarCarrinho(carrinho) {
+  localStorage.setItem('kitanda_carrinho', JSON.stringify(carrinho));
+  // Dispara evento global para atualizar ícones de carrinho na navbar
+  window.dispatchEvent(new Event('carrinhoAtualizado'));
+}
+
+function adicionarAoCarrinho(item) {
+  const carrinho = getCarrinho();
+  const existente = carrinho.itens.find(i => i.id === item.id && i.tipo === item.tipo);
+  
+  if (existente && item.tipo === 'produto') {
+    existente.quantidade += item.quantidade || 1;
+  } else {
+    carrinho.itens.push({ ...item, quantidade: item.quantidade || 1 });
+  }
+  salvarCarrinho(carrinho);
+}
+
+function removerDoCarrinho(id, tipo) {
+  const carrinho = getCarrinho();
+  carrinho.itens = carrinho.itens.filter(i => !(String(i.id) === String(id) && i.tipo === tipo));
+  salvarCarrinho(carrinho);
+}
+
+function totalCarrinho() {
+  return getCarrinho().itens.reduce((acc, i) => acc + ((i.preco || 0) * (i.quantidade || 1)), 0);
+}
+

@@ -1,0 +1,228 @@
+/* =========================================================
+   AJUDA - KITANDA
+   Cores e variáveis base do landing_page.css
+========================================================= */
+
+body {
+  background-color: var(--cream);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   HERO HELP
+========================================================= */
+
+.help-hero {
+  background: var(--ink);
+  color: #fff;
+  padding: 100px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.help-hero::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: var(--terra);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+}
+
+.help-hero__title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.help-hero__search {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.help-hero__search input {
+  width: 100%;
+  padding: 18px 24px 18px 50px;
+  border-radius: 999px;
+  border: none;
+  font-size: 1.1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  outline: none;
+}
+
+.help-hero__search i {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 1.2rem;
+}
+
+/* =========================================================
+   CATEGORIAS DE AJUDA
+========================================================= */
+
+.help-categories {
+  padding: 60px 0;
+  margin-top: -40px;
+  position: relative;
+  z-index: 3;
+}
+
+.help-categories__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.help-cat-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.help-cat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--terra);
+}
+
+.help-cat-card i {
+  font-size: 2.5rem;
+  color: var(--terra);
+  margin-bottom: 20px;
+}
+
+.help-cat-card h3 {
+  color: var(--ink);
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+}
+
+.help-cat-card p {
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   FAQ
+========================================================= */
+
+.faq-section {
+  padding: 60px 0;
+  background: #fff;
+}
+
+.faq-section__title {
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  color: var(--ink);
+  font-size: 2.2rem;
+  margin-bottom: 40px;
+}
+
+.faq-accordion {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border-bottom: 1px solid #eee;
+}
+
+.faq-question {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 24px 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.faq-question i {
+  color: var(--terra);
+  transition: transform 0.3s ease;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  color: #555;
+  line-height: 1.6;
+}
+
+.faq-answer p {
+  padding-bottom: 24px;
+}
+
+.faq-item.active .faq-question i {
+  transform: rotate(180deg);
+}
+
+.faq-item.active .faq-answer {
+  max-height: 300px; /* valor arbitrário alto para animar */
+}
+
+/* =========================================================
+   CONTACTO DIRECTO
+========================================================= */
+
+.contact-direct {
+  padding: 80px 0;
+  text-align: center;
+}
+
+.contact-direct__box {
+  background: var(--sand);
+  border-radius: 24px;
+  padding: 50px 30px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contact-direct h2 {
+  font-family: 'Fraunces', serif;
+  color: var(--ink);
+  font-size: 2rem;
+  margin-bottom: 16px;
+}
+
+.contact-direct p {
+  color: var(--ink);
+  opacity: 0.8;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.contact-direct .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+}

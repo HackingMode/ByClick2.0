@@ -105,7 +105,7 @@
 
         <a href="explorar/">Explorar</a>
         <a href="explorar/?categoria=servicos">Serviços</a>
-        <a href="#">Ajuda</a>
+        <a href="ajuda/">Ajuda</a>
 
       </nav>
 
@@ -233,271 +233,103 @@
 
   </section>
 
-
-
   <!-- =========================================================
-     PRODUTOS E SERVIÇOS
-========================================================= -->
-
-  <section class="featured">
-
+     PRODUTOS EM DESTAQUE (DINÂMICOS)
+  ========================================================= -->
+  <section class="popular-products" style="padding: 4rem 0;">
     <div class="container">
-
-
-      <div class="featured__header">
-
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
         <div>
-
-          <span class="section-tag">
-            Produtos & Serviços
-          </span>
-
-          <h2 class="featured__title">
-            Descobre ofertas
-            <em>perto de ti</em>
-          </h2>
-
+          <h2 style="font-size: 2rem; font-weight: 800; color: var(--ink);">Novidades & Destaques</h2>
+          <p style="color: var(--ink-soft); margin-top: 0.5rem;">Descubra as melhores ofertas acabadas de chegar à Kitanda.</p>
         </div>
-
+        <a href="explorar/" class="btn btn-outline">Ver tudo <i class="fa-solid fa-arrow-right"></i></a>
       </div>
 
-
-
-      <div class="featured__grid">
-
-
-        <!-- CARD -->
-        <article class="prod-card">
-
-          <button class="prod-card__favorite">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-
-          <div class="prod-card__img">
-
-            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop"
-              alt="iPhone">
-
-          </div>
-
-          <div class="prod-card__body">
-
-            <div class="prod-card__badges">
-
-              <span class="prod-card__badge badge-used">
-                Segunda mão
-              </span>
-
-              <span class="prod-card__badge badge-delivery">
-                Entrega
-              </span>
-
-            </div>
-
-            <h3>iPhone 13 Pro Max</h3>
-
-            <strong class="prod-card__price">
-              450.000 Kz
-            </strong>
-
-            <div class="prod-card__location">
-
-              <i class="fa-solid fa-location-dot"></i>
-              <span>Talatona</span>
-
-            </div>
-
-            <div class="prod-card__seller">
-
-              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos">
-
-              <div>
-
-                <strong>Carlos Manuel</strong>
-                <span>Vendedor Individual</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-
-        <!-- CARD -->
-        <article class="prod-card">
-
-          <button class="prod-card__favorite">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-
-          <div class="prod-card__img">
-
-            <img src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?q=80&w=1200&auto=format&fit=crop"
-              alt="PS5">
-
-          </div>
-
-          <div class="prod-card__body">
-
-            <div class="prod-card__badges">
-
-              <span class="prod-card__badge badge-new">
-                Novo
-              </span>
-
-            </div>
-
-            <h3>PlayStation 5 Digital</h3>
-
-            <strong class="prod-card__price">
-              390.000 Kz
-            </strong>
-
-            <div class="prod-card__location">
-
-              <i class="fa-solid fa-location-dot"></i>
-              <span>Kilamba</span>
-
-            </div>
-
-            <div class="prod-card__seller">
-
-              <img src="https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=400&auto=format&fit=crop"
-                alt="Empresa">
-
-              <div>
-
-                <strong>Tech Angola</strong>
-                <span>Empresa</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-
-        <!-- CARD -->
-        <article class="prod-card">
-
-          <button class="prod-card__favorite">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-
-          <div class="prod-card__img">
-
-            <img src="https://images.unsplash.com/photo-1580894908361-967195033215?q=80&w=1200&auto=format&fit=crop"
-              alt="Website">
-
-          </div>
-
-          <div class="prod-card__body">
-
-            <div class="prod-card__badges">
-
-              <span class="prod-card__badge badge-service">
-                Serviço
-              </span>
-
-            </div>
-
-            <h3>Desenvolvimento de Software</h3>
-
-            <strong class="prod-card__price">
-              Desde 150.000 Kz
-            </strong>
-
-            <div class="prod-card__location">
-
-              <i class="fa-solid fa-location-dot"></i>
-              <span>Maianga</span>
-
-            </div>
-
-            <div class="prod-card__seller">
-
-              <img src="https://images.unsplash.com/photo-1556155092-490a1ba16284?q=80&w=400&auto=format&fit=crop"
-                alt="Empresa">
-
-              <div>
-
-                <strong>DevSolutions</strong>
-                <span>Empresa</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </article>
-
-
-
-        <!-- CARD -->
-        <article class="prod-card">
-
-          <button class="prod-card__favorite">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-
-          <div class="prod-card__img">
-
-            <img src="https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?q=80&w=1200&auto=format&fit=crop"
-              alt="Limpeza">
-
-          </div>
-
-          <div class="prod-card__body">
-
-            <div class="prod-card__badges">
-
-              <span class="prod-card__badge badge-service">
-                Serviço
-              </span>
-
-            </div>
-
-            <h3>Serviço Profissional de Limpeza</h3>
-
-            <strong class="prod-card__price">
-              Desde 35.000 Kz
-            </strong>
-
-            <div class="prod-card__location">
-
-              <i class="fa-solid fa-location-dot"></i>
-              <span>Viana</span>
-
-            </div>
-
-            <div class="prod-card__seller">
-
-              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Maria">
-
-              <div>
-
-                <strong>Maria José</strong>
-                <span>Prestadora de Serviço</span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </article>
-
+      <div id="destaquesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 24px;">
+        <!-- Injectado pelo JS -->
+      </div>
+      
+      <div id="destaquesLoading" style="text-align: center; padding: 2rem; color: var(--ink-soft);">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top: 1rem;">A carregar produtos...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+     COMO FUNCIONA
+========================================================= -->
+
+  <section class="how-it-works">
+    <div class="container">
+
+      <div class="how-it-works__header">
+        <i class="fa-solid fa-list-ul"></i>
+        <h2>Como funciona (3 passos)</h2>
+        
+        <div class="hiw-tabs">
+          <button class="hiw-tab active" data-target="timeline-comprador">Para Comprar</button>
+          <button class="hiw-tab" data-target="timeline-vendedor">Para Vender</button>
+        </div>
+      </div>
+
+      <!-- TIMELINE COMPRADOR -->
+      <div class="timeline active" id="timeline-comprador">
+        <div class="timeline__line"></div>
+
+        <div class="step">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Regista-te</h3>
+          <p class="step__desc">Cria a tua conta grátis em 2 minutos</p>
+        </div>
+
+        <div class="step">
+          <div class="step__number">2</div>
+          <h3 class="step__title">Explora</h3>
+          <p class="step__desc">Filtra por categoria, preço ou localização</p>
+        </div>
+
+        <div class="step">
+          <div class="step__number">3</div>
+          <h3 class="step__title">Compra</h3>
+          <p class="step__desc">Paga com Multicaixa ou Express</p>
+        </div>
+      </div>
+
+      <!-- TIMELINE VENDEDOR -->
+      <div class="timeline" id="timeline-vendedor" style="display: none;">
+        <div class="timeline__line"></div>
+
+        <div class="step">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Cria a tua Loja</h3>
+          <p class="step__desc">Regista-te como vendedor ou empresa</p>
+        </div>
+
+        <div class="step">
+          <div class="step__number">2</div>
+          <h3 class="step__title">Publica</h3>
+          <p class="step__desc">Adiciona os teus produtos ou serviços</p>
+        </div>
+
+        <div class="step">
+          <div class="step__number">3</div>
+          <h3 class="step__title">Fatura</h3>
+          <p class="step__desc">Recebe contactos e aumenta as tuas vendas</p>
+        </div>
+      </div>
+
+      <div class="cta-box">
+        <h3>Pronto para começar?</h3>
+        <p>Junta-te a milhares de angolanos que já usam o Kitanda</p>
+        <div class="cta-box__actions">
+          <a href="cadastro/cadastro_comprador/" class="btn btn-outline">Quero comprar</a>
+          <a href="cadastro/cadastro_vendedor/" class="btn btn-outline">Quero vender</a>
+        </div>
       </div>
 
     </div>
-
   </section>
 
 
@@ -564,9 +396,9 @@
 
           <ul>
 
-            <li><a href="#">Sobre Nós</a></li>
-            <li><a href="#">Como Funciona</a></li>
-            <li><a href="#">Segurança</a></li>
+            <li><a href="sobre-nos/">Sobre Nós</a></li>
+            <li><a href="como-funciona/">Como Funciona</a></li>
+            <li><a href="seguranca/">Segurança</a></li>
 
           </ul>
 
@@ -581,9 +413,9 @@
 
           <ul>
 
-            <li><a href="#">Ajuda</a></li>
-            <li><a href="#">Denunciar</a></li>
-            <li><a href="#">FAQ</a></li>
+            <li><a href="ajuda/">Ajuda</a></li>
+            <li><a href="denunciar/">Denunciar</a></li>
+            <li><a href="ajuda/">FAQ</a></li>
 
           </ul>
 

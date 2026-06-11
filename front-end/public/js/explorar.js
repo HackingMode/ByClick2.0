@@ -66,7 +66,8 @@ function atualizarNavbarAuth() {
       const panelMap = {
         'comprador': '../paineis/painel_comprador/painel_comprador.html',
         'vendedor': '../paineis/painel_vendedor/painel_vendedor.html',
-        'empresa': '../paineis/painel_empresa/painel_empresa.html'
+        'empresa': '../paineis/painel_empresa/painel_empresa.html',
+        'admin': '../paineis/painel_admin/painel_admin.html'
       };
       painelBtn.href = panelMap[tipo] || panelMap['comprador'];
     }

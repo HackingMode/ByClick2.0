@@ -111,6 +111,8 @@ document.addEventListener('DOMContentLoaded', function() {
             redirecionamento = '../paineis/painel_empresa/painel_empresa.html';
           } else if (tipo === 'comprador') {
             redirecionamento = '../paineis/painel_comprador/painel_comprador.html';
+          } else if (tipo === 'admin') {
+            redirecionamento = '../paineis/painel_admin/painel_admin.html';
           }
         }
 

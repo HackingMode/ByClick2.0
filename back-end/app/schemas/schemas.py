@@ -349,3 +349,26 @@ class ProvinciaResponseSchema(BaseModel):
     nome: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class RecuperarSenhaSchema(BaseModel):
+    identificador: str
+
+class RedefinirSenhaSchema(BaseModel):
+    identificador: str
+    codigo: str
+    nova_senha: str
+    confirmar_senha: str
+
+    @field_validator('nova_senha')
+    @classmethod
+    def senha_minima(cls, v):
+        if len(v) < 8:
+            raise ValueError('A senha deve ter pelo menos 8 caracteres')
+        return v
+
+    @model_validator(mode='after')
+    def senhas_iguais(self):
+        if self.nova_senha != self.confirmar_senha:
+            raise ValueError('As senhas nao coincidem')
+        return self

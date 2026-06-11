@@ -119,21 +119,33 @@ function renderizarProduto(p) {
   if (sellerAvatarEl) sellerAvatarEl.textContent = (p.vendedor_nome || 'V').charAt(0).toUpperCase();
 
   const buyBtn = document.getElementById('btnComprar');
+  const buyNowBtn = document.getElementById('btnComprarAgora');
+  
+  const adicionarAoCart = () => {
+    if (typeof adicionarAoCarrinho === 'function') {
+      adicionarAoCarrinho({
+        id: p.id,
+        tipo: 'produto',
+        nome: p.nome,
+        preco: p.preco_promocional || p.preco,
+        imagem_url: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
+        vendedor_nome: p.vendedor_nome || 'Vendedor Kitanda',
+        vendedor_id: p.vendedor_id
+      });
+      mostrarToast(`"${p.nome}" adicionado ao carrinho!`, 'success');
+    } else {
+      mostrarToast('Erro ao adicionar ao carrinho.', 'error');
+    }
+  };
+
   if (buyBtn) {
-    buyBtn.addEventListener('click', () => {
-      if (typeof addToCart === 'function') {
-        addToCart({
-          id: p.id,
-          tipo: 'produto',
-          nome: p.nome,
-          preco: p.preco_promocional || p.preco,
-          imagem_url: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
-          vendedor_nome: p.vendedor_nome || 'Vendedor Kitanda',
-          vendedor_id: p.vendedor_id
-        });
-      } else {
-        mostrarToast('Erro ao adicionar ao carrinho.', 'error');
-      }
+    buyBtn.addEventListener('click', adicionarAoCart);
+  }
+
+  if (buyNowBtn) {
+    buyNowBtn.addEventListener('click', () => {
+      adicionarAoCart();
+      window.location.href = '../checkout/';
     });
   }
 

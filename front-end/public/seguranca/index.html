@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Segurança — Kitanda</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- FONTES -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/landing_page.css">
+  <link rel="stylesheet" href="../css/ajuda.css">
+
+</head>
+
+<body>
+
+  <!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+  <header class="navbar">
+    <div class="container navbar__inner">
+
+      <!-- LOGO -->
+      <a href="../" class="navbar__logo">
+        <div class="navbar__logo-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <span>Kitanda</span>
+      </a>
+
+      <!-- SEARCH -->
+      <div class="navbar__search">
+        <input type="text" id="landingSearch" placeholder="Pesquisar artigos de ajuda...">
+      </div>
+
+      <!-- LINKS -->
+      <nav class="navbar__links">
+        <a href="../explorar/">Explorar</a>
+        <a href="../explorar/?categoria=servicos">Serviços</a>
+        <a href="../ajuda/">Ajuda</a>
+      </nav>
+
+      <!-- BOTÕES -->
+      <div class="navbar__cta">
+        <a href="../carrinho/" class="btn btn-ghost btn-sm" aria-label="Carrinho">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+        <a href="../cadastro/" class="btn btn-ghost btn-sm" id="btnCadastro">Cadastrar</a>
+        <a href="../login/" class="btn btn-primary btn-sm" id="btnLogin">Login</a>
+        <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">Meu Painel</a>
+      </div>
+
+    </div>
+  </header>
+
+    <section class="help-hero" style="padding: 120px 0 60px;">
+    <div class="container">
+      <h1 class="help-hero__title">Segurança</h1>
+      <p style="text-align:center; color:var(--text-light); margin-top:1rem; font-size:1.1rem;">Dicas e políticas para garantir transações seguras.</p>
+    </div>
+  </section>
+
+  <section class="container" style="padding: 60px 0; min-height: 40vh;">
+    <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: var(--shadow-sm);">
+      <h2>Em Construção</h2>
+      <p style="margin-top: 1rem; color: var(--text-light);">Esta página está atualmente a ser desenvolvida e estará disponível na próxima atualização da plataforma.</p>
+      <a href="../" class="btn btn-primary" style="margin-top: 2rem;">Voltar à Página Inicial</a>
+    </div>
+  </section>
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+
+        <!-- BRAND -->
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <div class="footer__logo-icon">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <span>Kitanda</span>
+          </div>
+          <p>
+            Plataforma digital moderna para compra,
+            venda e contratação de serviços em Angola.
+          </p>
+
+          <!-- REDES -->
+          <div class="footer__social">
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <!-- EMPRESA -->
+        <div class="footer__col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="../#como-funciona">Como Funciona</a></li>
+            <li><a href="#">Segurança</a></li>
+          </ul>
+        </div>
+
+        <!-- APOIO -->
+        <div class="footer__col">
+          <h4>Apoio</h4>
+          <ul>
+            <li><a href="../ajuda/">Ajuda</a></li>
+            <li><a href="#">Denunciar</a></li>
+            <li><a href="../ajuda/">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- CONTACTOS -->
+        <div class="footer__col">
+          <h4>Contactos</h4>
+          <div class="footer__contact-item">📞 +244 928 144 032</div>
+          <div class="footer__contact-item">✉ contacto@kitanda.com</div>
+          <div class="footer__contact-item">📍 Luanda, Angola</div>
+          <a href="#" class="footer__whatsapp">
+            <i class="fa-brands fa-whatsapp"></i> Conversar no WhatsApp
+          </a>
+        </div>
+
+      </div>
+
+      <!-- FOOTER BOTTOM -->
+      <div class="footer__bottom">
+        <p>© 2026 Kitanda — Todos os direitos reservados.</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script>
+    // FAQ Accordion Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const faqItems = document.querySelectorAll('.faq-item');
+      
+      faqItems.forEach(item => {
+        const questionBtn = item.querySelector('.faq-question');
+        
+        questionBtn.addEventListener('click', () => {
+          const isActive = item.classList.contains('active');
+          
+          // Fechar todas
+          faqItems.forEach(faq => faq.classList.remove('active'));
+          
+          // Abrir a que foi clicada (se não estava já aberta)
+          if (!isActive) {
+            item.classList.add('active');
+          }
+        });
+      });
+      
+      // Navbar Auth UI (simplified version of landing_page.js logic)
+      const loggedIn = typeof estaAutenticado === 'function' && estaAutenticado();
+      if (loggedIn) {
+        document.getElementById('btnLogin').style.display = 'none';
+        document.getElementById('btnCadastro').style.display = 'none';
+        const painelBtn = document.getElementById('btnPainel');
+        painelBtn.style.display = 'inline-flex';
+        try {
+          const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+          const tipo = userData.tipo_utilizador || 'comprador';
+          const panelMap = {
+            'comprador': '../paineis/painel_comprador/painel_comprador.html',
+            'vendedor': '../paineis/painel_vendedor/painel_vendedor.html',
+            'empresa': '../paineis/painel_empresa/painel_empresa.html'
+          };
+          painelBtn.href = panelMap[tipo] || panelMap['comprador'];
+        } catch (e) {
+          painelBtn.href = '../paineis/painel_comprador/painel_comprador.html';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redefinir Senha | Kitanda Marketplace</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/cadastros.css">
+  <link rel="stylesheet" href="../css/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="left login-image" id="leftImage">
+      <div class="overlay">
+        <h1>Quase lá!</h1>
+        <p>Crie uma nova palavra-passe forte para proteger a sua conta.</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="top-title">
+        <h2>Redefinir Senha</h2>
+        <p>Insira o código que lhe enviámos e a sua nova palavra-passe.</p>
+      </div>
+
+      <form id="resetForm" class="login-form">
+        
+        <div class="form-group">
+          <label for="codigo">Código de Recuperação (OTP)</label>
+          <div class="input-wrapper">
+            <i class="fas fa-key"></i>
+            <input
+              type="text"
+              id="codigo"
+              name="codigo"
+              placeholder="Digite o código de 6 dígitos"
+              maxlength="6"
+              required>
+          </div>
+          <span class="error-message" id="codigoError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="nova_senha">Nova Senha</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="nova_senha"
+              name="nova_senha"
+              placeholder="Min. 8 caracteres"
+              required>
+            <button type="button" class="toggle-password" onclick="togglePassword('nova_senha')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message" id="novaSenhaError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmar_senha">Confirmar Nova Senha</label>
+          <div class="input-wrapper">
+            <i class="fas fa-lock"></i>
+            <input
+              type="password"
+              id="confirmar_senha"
+              name="confirmar_senha"
+              placeholder="Repita a nova senha"
+              required>
+            <button type="button" class="toggle-password" onclick="togglePassword('confirmar_senha')">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <span class="error-message" id="confirmarSenhaError"></span>
+        </div>
+
+        <button type="submit" class="btn-submit">Redefinir Senha</button>
+        <span class="error-message form-error" id="formError"></span>
+      </form>
+
+      <div class="signup-link" style="margin-top: 2rem;">
+        <p>Voltar para o <a href="../login/">Login</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/redefinir-senha.js"></script>
+</body>
+</html>

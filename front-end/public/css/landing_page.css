@@ -810,3 +810,188 @@ a{
 }
 
 
+/* =========================================================
+   COMO FUNCIONA (3 PASSOS)
+========================================================= */
+
+.how-it-works {
+  padding: 80px 0;
+  background: var(--cream);
+}
+
+.how-it-works__header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.how-it-works__header i {
+  font-size: 1.5rem;
+  color: var(--terra);
+  margin-bottom: 12px;
+}
+
+.how-it-works__header h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--ink);
+}
+
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto 60px;
+  background: #2a251f; /* A soft dark color */
+  border-radius: 20px;
+  padding: 40px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline__line {
+  position: absolute;
+  top: 60px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 1;
+}
+
+.step {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+  padding: 0 10px;
+}
+
+.step__number {
+  width: 44px;
+  height: 44px;
+  background: var(--terra);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 auto 16px;
+  box-shadow: 0 0 0 6px #2a251f;
+}
+
+.step__title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.step__desc {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  max-width: 220px;
+  margin: 0 auto;
+}
+
+.cta-box {
+  background: var(--ink);
+  color: #fff;
+  text-align: center;
+  padding: 50px 20px;
+  border-radius: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.cta-box h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+}
+
+.cta-box p {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 30px;
+  font-size: 1.05rem;
+}
+
+.cta-box__actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.btn-outline {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .timeline {
+    flex-direction: column;
+    gap: 40px;
+    padding: 30px 20px;
+  }
+  .timeline__line {
+    top: 30px;
+    bottom: 30px;
+    left: 50%;
+    width: 2px;
+    height: auto;
+    right: auto;
+    transform: translateX(-50%);
+  }
+  .step__desc {
+    max-width: 100%;
+  }
+  .cta-box__actions {
+    flex-direction: column;
+  }
+}
+
+
+/* Tabs para Como Funciona */
+.hiw-tabs {
+  display: inline-flex;
+  background: var(--ink-soft);
+  padding: 6px;
+  border-radius: 999px;
+  margin-top: 20px;
+}
+
+.hiw-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hiw-tab:hover {
+  color: #fff;
+}
+
+.hiw-tab.active {
+  background: var(--terra);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(200, 75, 31, 0.3);
+}

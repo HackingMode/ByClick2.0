@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Central de Ajuda — Kitanda</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- FONTES -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/landing_page.css">
+  <link rel="stylesheet" href="../css/ajuda.css">
+
+</head>
+
+<body>
+
+  <!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+  <header class="navbar">
+    <div class="container navbar__inner">
+
+      <!-- LOGO -->
+      <a href="../" class="navbar__logo">
+        <div class="navbar__logo-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <span>Kitanda</span>
+      </a>
+
+      <!-- SEARCH -->
+      <div class="navbar__search">
+        <input type="text" id="landingSearch" placeholder="Pesquisar artigos de ajuda...">
+      </div>
+
+      <!-- LINKS -->
+      <nav class="navbar__links">
+        <a href="../explorar/">Explorar</a>
+        <a href="../explorar/?categoria=servicos">Serviços</a>
+        <a href="../ajuda/">Ajuda</a>
+      </nav>
+
+      <!-- BOTÕES -->
+      <div class="navbar__cta">
+        <a href="../carrinho/" class="btn btn-ghost btn-sm" aria-label="Carrinho">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+        <a href="../cadastro/" class="btn btn-ghost btn-sm" id="btnCadastro">Cadastrar</a>
+        <a href="../login/" class="btn btn-primary btn-sm" id="btnLogin">Login</a>
+        <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">Meu Painel</a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- =========================================================
+     HERO HELP
+========================================================= -->
+  <section class="help-hero">
+    <div class="container">
+      <h1 class="help-hero__title">Como podemos ajudar?</h1>
+      <div class="help-hero__search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Descreva o seu problema (ex: como devolver um produto)">
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+     CATEGORIAS DE AJUDA
+========================================================= -->
+  <section class="help-categories container">
+    <div class="help-categories__grid">
+
+      <div class="help-cat-card">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <h3>Para Compradores</h3>
+        <p>Tudo sobre compras, devoluções, pagamentos e rastreio de encomendas.</p>
+      </div>
+
+      <div class="help-cat-card">
+        <i class="fa-solid fa-store"></i>
+        <h3>Para Vendedores</h3>
+        <p>Gerir anúncios, processar vendas, faturas e configurar a sua loja online.</p>
+      </div>
+
+      <div class="help-cat-card">
+        <i class="fa-solid fa-user-shield"></i>
+        <h3>A Minha Conta</h3>
+        <p>Gerir dados pessoais, alterar palavra-passe e preferências de segurança.</p>
+      </div>
+
+      <div class="help-cat-card">
+        <i class="fa-solid fa-shield-halved"></i>
+        <h3>Segurança e Fraude</h3>
+        <p>Dicas de segurança, como denunciar atividades suspeitas e proteção de dados.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================
+     FAQ
+========================================================= -->
+  <section class="faq-section">
+    <div class="container">
+      <h2 class="faq-section__title">Perguntas Frequentes</h2>
+
+      <div class="faq-accordion">
+        
+        <div class="faq-item">
+          <button class="faq-question">
+            Como me registo na Kitanda?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Para criar a sua conta, clique em "Cadastrar" no canto superior direito da página principal. Escolha se pretende registar-se como Comprador, Vendedor Individual ou Empresa, e preencha os seus dados básicos (Nome, Email, Senha). É gratuito e demora menos de 2 minutos!</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Os métodos de pagamento são seguros?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Sim. A Kitanda suporta pagamentos por Referência Multicaixa, Transferência e Multicaixa Express. Trabalhamos com parceiros de pagamento certificados para garantir que os seus dados bancários nunca são partilhados e as transações são encriptadas de ponta-a-ponta.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Como contacto um vendedor?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Na página de cada produto ou serviço, encontrará as informações do vendedor e um botão "Contactar Vendedor". Pode enviar uma mensagem diretamente através da nossa plataforma ou usar os contactos disponibilizados pelo próprio vendedor.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Qual é a taxa cobrada aos vendedores?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <p>O registo e a publicação de anúncios são gratuitos na Kitanda. Cobramos apenas uma pequena comissão percentual sobre cada venda concluída com sucesso através da plataforma, que varia consoante a categoria do produto.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+     CONTACTO DIRECTO
+========================================================= -->
+  <section class="contact-direct">
+    <div class="container">
+      <div class="contact-direct__box">
+        <h2>Ainda precisa de ajuda?</h2>
+        <p>A nossa equipa de suporte está disponível 24/7 para responder a todas as suas dúvidas.</p>
+        <a href="mailto:suporte@kitanda.com" class="btn btn-primary">
+          <i class="fa-regular fa-envelope"></i> Falar com o Suporte
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================================
+     FOOTER
+========================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+
+        <!-- BRAND -->
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <div class="footer__logo-icon">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <span>Kitanda</span>
+          </div>
+          <p>
+            Plataforma digital moderna para compra,
+            venda e contratação de serviços em Angola.
+          </p>
+
+          <!-- REDES -->
+          <div class="footer__social">
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <!-- EMPRESA -->
+        <div class="footer__col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="../#como-funciona">Como Funciona</a></li>
+            <li><a href="#">Segurança</a></li>
+          </ul>
+        </div>
+
+        <!-- APOIO -->
+        <div class="footer__col">
+          <h4>Apoio</h4>
+          <ul>
+            <li><a href="../ajuda/">Ajuda</a></li>
+            <li><a href="#">Denunciar</a></li>
+            <li><a href="../ajuda/">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- CONTACTOS -->
+        <div class="footer__col">
+          <h4>Contactos</h4>
+          <div class="footer__contact-item">📞 +244 928 144 032</div>
+          <div class="footer__contact-item">✉ contacto@kitanda.com</div>
+          <div class="footer__contact-item">📍 Luanda, Angola</div>
+          <a href="#" class="footer__whatsapp">
+            <i class="fa-brands fa-whatsapp"></i> Conversar no WhatsApp
+          </a>
+        </div>
+
+      </div>
+
+      <!-- FOOTER BOTTOM -->
+      <div class="footer__bottom">
+        <p>© 2026 Kitanda — Todos os direitos reservados.</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script>
+    // FAQ Accordion Logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const faqItems = document.querySelectorAll('.faq-item');
+      
+      faqItems.forEach(item => {
+        const questionBtn = item.querySelector('.faq-question');
+        
+        questionBtn.addEventListener('click', () => {
+          const isActive = item.classList.contains('active');
+          
+          // Fechar todas
+          faqItems.forEach(faq => faq.classList.remove('active'));
+          
+          // Abrir a que foi clicada (se não estava já aberta)
+          if (!isActive) {
+            item.classList.add('active');
+          }
+        });
+      });
+      
+      // Navbar Auth UI (simplified version of landing_page.js logic)
+      const loggedIn = typeof estaAutenticado === 'function' && estaAutenticado();
+      if (loggedIn) {
+        document.getElementById('btnLogin').style.display = 'none';
+        document.getElementById('btnCadastro').style.display = 'none';
+        const painelBtn = document.getElementById('btnPainel');
+        painelBtn.style.display = 'inline-flex';
+        try {
+          const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+          const tipo = userData.tipo_utilizador || 'comprador';
+          const panelMap = {
+            'comprador': '../paineis/painel_comprador/painel_comprador.html',
+            'vendedor': '../paineis/painel_vendedor/painel_vendedor.html',
+            'empresa': '../paineis/painel_empresa/painel_empresa.html'
+          };
+          painelBtn.href = panelMap[tipo] || panelMap['comprador'];
+        } catch (e) {
+          painelBtn.href = '../paineis/painel_comprador/painel_comprador.html';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints.deps import get_utilizador_atual
 from app.core.database import get_db
+from app.core.email import enviar_otp_recuperacao
 from app.core.phone import normalizar_telefone_angola, parece_telefone, variantes_telefone_angola
 from app.core.security import (
     create_access_token,
@@ -40,6 +41,8 @@ from app.schemas.schemas import (
     TokenSchema,
     UtilizadorResponseSchema,
     VerificarCodigoSchema,
+    RecuperarSenhaSchema,
+    RedefinirSenhaSchema,
 )
 
 router = APIRouter(prefix="/auth", tags=["Autenticacao"])
@@ -434,3 +437,101 @@ def verificar_codigo(dados: VerificarCodigoSchema, db: Session = Depends(get_db)
 def obter_utilizador_atual_endpoint(utilizador: Utilizador = Depends(get_utilizador_atual)):
     """Obter dados do utilizador autenticado pelo token JWT."""
     return utilizador
+
+
+@router.post("/recuperar-senha")
+def recuperar_senha(dados: RecuperarSenhaSchema, db: Session = Depends(get_db)):
+    """Envia código OTP (imprime no terminal) para recuperação de senha."""
+    identificador = dados.identificador.strip().lower()
+    telefone_normalizado = None
+
+    if parece_telefone(identificador):
+        try:
+            telefone_normalizado = normalizar_telefone_angola(identificador)
+        except ValueError:
+            telefone_normalizado = None
+
+    filtros = [Utilizador.email == identificador]
+    if telefone_normalizado:
+        filtros.append(Utilizador.numero_telefone.in_(variantes_telefone_angola(telefone_normalizado)))
+    filtros.append(Utilizador.numero_telefone == dados.identificador)
+
+    utilizador = db.query(Utilizador).filter(or_(*filtros)).first()
+
+    if not utilizador:
+        # Por questoes de segurança, retornamos sucesso sempre.
+        return {"mensagem": "Se a conta existir, foi enviado um código de recuperação."}
+
+    codigo_otp = gerar_codigo_otp()
+    
+    # Invalida codigos de reset anteriores
+    db.query(CodigoVerificacao).filter(
+        CodigoVerificacao.utilizador_id == utilizador.id,
+        CodigoVerificacao.tipo == "reset_senha"
+    ).update({"usado": True})
+
+    db.add(CodigoVerificacao(
+        utilizador_id=utilizador.id,
+        codigo=codigo_otp,
+        tipo="reset_senha",
+        expira_em=datetime.utcnow() + timedelta(minutes=30),
+    ))
+    db.commit()
+
+    # Enviar email se o identificador for um email
+    if "@" in utilizador.email:
+        sucesso_email = enviar_otp_recuperacao(utilizador.email, codigo_otp)
+        if sucesso_email:
+            print(f"\n[EMAIL ENVIADO] Código OTP {codigo_otp} para {utilizador.email}\n")
+        else:
+            print(f"\n[FALLBACK TERMINAL] Código de recuperação (OTP) gerado: {codigo_otp}")
+            print("Configure o servidor SMTP no ficheiro .env para enviar e-mails reais.\n")
+    else:
+        print(f"\n[TERMINAL] SMS Simulator - OTP: {codigo_otp}\n")
+
+    return {"mensagem": "Se a conta existir, foi enviado um código de recuperação."}
+
+
+@router.post("/redefinir-senha")
+def redefinir_senha(dados: RedefinirSenhaSchema, db: Session = Depends(get_db)):
+    """Redefine a senha através do código OTP."""
+    identificador = dados.identificador.strip().lower()
+    telefone_normalizado = None
+
+    if parece_telefone(identificador):
+        try:
+            telefone_normalizado = normalizar_telefone_angola(identificador)
+        except ValueError:
+            pass
+
+    filtros = [Utilizador.email == identificador]
+    if telefone_normalizado:
+        filtros.append(Utilizador.numero_telefone.in_(variantes_telefone_angola(telefone_normalizado)))
+    filtros.append(Utilizador.numero_telefone == dados.identificador)
+
+    utilizador = db.query(Utilizador).filter(or_(*filtros)).first()
+
+    if not utilizador:
+        raise HTTPException(status_code=400, detail="Código inválido ou expirado")
+
+    codigo_db = (
+        db.query(CodigoVerificacao)
+        .filter(
+            CodigoVerificacao.utilizador_id == utilizador.id,
+            CodigoVerificacao.codigo == dados.codigo,
+            CodigoVerificacao.tipo == "reset_senha",
+            CodigoVerificacao.usado == False,
+            CodigoVerificacao.expira_em > datetime.utcnow(),
+        )
+        .first()
+    )
+
+    if not codigo_db:
+        raise HTTPException(status_code=400, detail="Código inválido ou expirado")
+
+    # Atualiza a senha
+    utilizador.senha_hash = hash_password(dados.nova_senha)
+    codigo_db.usado = True
+    db.commit()
+
+    return {"mensagem": "Palavra-passe alterada com sucesso!"}

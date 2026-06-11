@@ -118,23 +118,62 @@ function renderizarServico(p) {
   if (sellerMetaEl) sellerMetaEl.textContent = `Membro desde ${p.vendedor_desde ? new Date(p.vendedor_desde).toLocaleDateString('pt-AO') : '—'}`;
   if (sellerAvatarEl) sellerAvatarEl.textContent = (p.vendedor_nome || 'V').charAt(0).toUpperCase();
 
-  const buyBtn = document.getElementById('btnContratar');
-  if (buyBtn) {
-    buyBtn.addEventListener('click', () => {
-      if (typeof estaAutenticado === 'function' && !estaAutenticado()) {
-        mostrarToast('Faça login para contratar serviços.', 'warning');
-        setTimeout(() => { window.location.href = '../login/?redirect=../checkout/index.html'; }, 1500);
-      } else {
-        const itemCheckout = {
-            tipo: 'servico',
-            id: p.id,
-            nome: p.nome,
-            preco: p.preco_base || p.preco || 0,
-            imagem: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
-            quantidade: 1
-        };
-        sessionStorage.setItem('checkout_item', JSON.stringify(itemCheckout));
-        window.location.href = '../checkout/index.html';
+  // Modal Agendamento Logic
+  const hireBtn = document.getElementById('btnContratar');
+  const modalAgendamento = document.getElementById('modalAgendamento');
+  const btnCancelarAgendamento = document.getElementById('btnCancelarAgendamento');
+  const btnConfirmarAgendamento = document.getElementById('btnConfirmarAgendamento');
+
+  if (hireBtn && modalAgendamento) {
+    hireBtn.addEventListener('click', () => {
+      modalAgendamento.style.display = 'flex';
+      // Definir data mínima como hoje
+      const dataInput = document.getElementById('agendarData');
+      if (dataInput) dataInput.min = new Date().toISOString().split('T')[0];
+    });
+  }
+
+  if (btnCancelarAgendamento && modalAgendamento) {
+    btnCancelarAgendamento.addEventListener('click', () => {
+      modalAgendamento.style.display = 'none';
+    });
+  }
+
+  if (btnConfirmarAgendamento) {
+    btnConfirmarAgendamento.addEventListener('click', () => {
+      const data = document.getElementById('agendarData').value;
+      const hora = document.getElementById('agendarHora').value;
+      const desc = document.getElementById('agendarDesc').value;
+
+      if (!data || !hora) {
+        mostrarToast('Por favor, preencha a data e hora desejadas.', 'error');
+        return;
+      }
+
+      if (typeof adicionarAoCarrinho === 'function') {
+        // Guardamos as informações no carrinho para posterior checkout
+        adicionarAoCarrinho({
+          id: p.id,
+          tipo: 'servico',
+          nome: p.nome,
+          preco: p.preco_promocional || p.preco,
+          imagem_url: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
+          vendedor_nome: p.vendedor_nome || 'Vendedor Kitanda',
+          vendedor_id: p.vendedor_id,
+          // Guardar detalhes do agendamento
+          agendamento_data: data,
+          agendamento_hora: hora,
+          agendamento_desc: desc
+        });
+        
+        modalAgendamento.style.display = 'none';
+        
+        // Redireciona para o checkout ou login se não estiver logado
+        if (estaAutenticado()) {
+            window.location.href = '../checkout/';
+        } else {
+            window.location.href = '../login/?redirect=../checkout/';
+        }
       }
     });
   }

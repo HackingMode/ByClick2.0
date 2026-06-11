@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Administrador | Kitanda</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <meta name="description" content="Painel do Administrador Kitanda — acompanhe métricas, gerir utilizadores e moderar conteúdos.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/painel_comprador.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>Kitanda</span>
+    </div>
+    <div class="profile-section">
+        <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-img" data-user-photo>
+        <div class="profile-info">
+            <h4 data-user-name>Carregando...</h4>
+            <div class="profile-role"><i class="fa-solid fa-user-shield"></i> <span data-user-type>Administrador</span></div>
+        </div>
+    </div>
+    <nav>
+        <div class="nav-label">Menu</div>
+        <a href="#" class="nav-item active" data-tab="visao-geral"><i class="fa-solid fa-chart-pie"></i> Visão Geral</a>
+        <a href="#" class="nav-item" data-tab="utilizadores"><i class="fa-solid fa-users"></i> Utilizadores</a>
+        <a href="#" class="nav-item" data-tab="aprovacoes"><i class="fa-solid fa-clipboard-check"></i> Aprovações</a>
+        <a href="#" class="nav-item" data-tab="denuncias"><i class="fa-solid fa-shield-halved"></i> Denúncias</a>
+        <div class="nav-label">CONTA</div>
+        <a href="#" class="nav-item" data-tab="definicoes"><i class="fa-solid fa-gear"></i> Definições</a>
+        <a href="#" class="nav-item nav-logout" id="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Terminar Sessão</a>
+    </nav>
+</aside>
+
+<div class="main-content">
+    <header class="topbar">
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+        <div class="topbar-logo">Kitanda Admin</div>
+        <div class="topbar-actions">
+            <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">0</span></div>
+        </div>
+    </header>
+
+    <main class="page">
+        <!-- VISTA DASHBOARD -->
+        <div id="view-dashboard">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+              <div class="stat-info">
+                <div class="label">Utilizadores Totais</div>
+                <div class="value">42</div>
+                <div class="sub" style="color: #10b981;">+3 esta semana</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon icon-orange"><i class="fa-solid fa-store"></i></div>
+              <div class="stat-info">
+                <div class="label">Lojas Ativas</div>
+                <div class="value">15</div>
+                <div class="sub">Vendedores verificados</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon icon-purple"><i class="fa-solid fa-boxes-stacked"></i></div>
+              <div class="stat-info">
+                <div class="label">Produtos Listados</div>
+                <div class="value">128</div>
+                <div class="sub">Em toda a plataforma</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="stat-info">
+                <div class="label">Denúncias Pendentes</div>
+                <div class="value">2</div>
+                <div class="sub" style="color: var(--red);">Requer atenção</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="left-col">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3 class="panel-title"><i class="fa-solid fa-user-plus"></i> Novos Registos</h3>
+                </div>
+                <div class="table-responsive">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentUsersTable">
+                      <tr>
+                        <td>João Comprador</td>
+                        <td class="order-id">comprador@teste.com</td>
+                        <td><span class="status s-envio"><span class="dot"></span>Comprador</span></td>
+                        <td>Ativo</td>
+                      </tr>
+                      <tr>
+                        <td>Maria Vendedora</td>
+                        <td class="order-id">vendedor@teste.com</td>
+                        <td><span class="status s-pago"><span class="dot"></span>Vendedor</span></td>
+                        <td>Verificado</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="right-col">
+              <div class="panel">
+                <h3 class="actions-title">Ações Rápidas</h3>
+                <div class="actions-grid">
+                  <button class="action-btn ab-yellow" onclick="document.querySelector('[data-tab=\'aprovacoes\']').click()">
+                    <i class="fa-solid fa-check-double"></i> Aprovar Lojas
+                  </button>
+                  <button class="action-btn ab-green">
+                    <i class="fa-solid fa-bullhorn"></i> Criar Aviso
+                  </button>
+                  <button class="action-btn ab-red" onclick="document.querySelector('[data-tab=\'denuncias\']').click()">
+                    <i class="fa-solid fa-ban"></i> Ver Denúncias
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB UTILIZADORES -->
+        <div id="tab-utilizadores" class="tab-content" style="display: none;">
+          <div class="header-section">
+            <div class="greeting">
+              <h1>Gestão de Utilizadores</h1>
+              <p>Adiciona, bloqueia ou edita utilizadores na plataforma.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="empty-state">
+              <i class="fa-solid fa-users-gear"></i>
+              <h3>Lista de Utilizadores</h3>
+              <p>O módulo de gestão de utilizadores estará disponível na próxima atualização.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB APROVAÇÕES -->
+        <div id="tab-aprovacoes" class="tab-content" style="display: none;">
+          <div class="header-section">
+            <div class="greeting">
+              <h1>Aprovações de Vendedores</h1>
+              <p>Verifica documentos e aprova a criação de novas lojas na Kitanda.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="empty-state">
+              <i class="fa-solid fa-clipboard-check"></i>
+              <h3>Nenhuma aprovação pendente</h3>
+              <p>Todas as lojas atuais já se encontram verificadas.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB DENUNCIAS -->
+        <div id="tab-denuncias" class="tab-content" style="display: none;">
+          <div class="header-section">
+            <div class="greeting">
+              <h1>Central de Denúncias</h1>
+              <p>Gere as queixas efetuadas por utilizadores na plataforma.</p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="empty-state">
+              <i class="fa-solid fa-shield"></i>
+              <h3>Nenhuma denúncia ativa</h3>
+              <p>A plataforma está segura e sem incidentes reportados.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- VISTA DEFINIÇÕES -->
+        <div id="view-definicoes" style="display: none;">
+            <div class="header-section">
+                <div class="greeting">
+                    <h1><i class="fa-solid fa-gear"></i> Definições</h1>
+                    <p>Faça a gestão da sua conta, perfil e preferências.</p>
+                </div>
+            </div>
+            
+            <div class="settings-grid">
+                <div class="panel" style="padding: 15px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button class="action-btn ab-blue" style="width: 100%;" id="btn-def-perfil"><i class="fa-solid fa-user"></i> Meu Perfil</button>
+                        <button class="action-btn" style="width: 100%; background: transparent; border: 1px solid var(--border);" id="btn-def-seguranca"><i class="fa-solid fa-lock"></i> Segurança</button>
+                    </div>
+                </div>
+                <div>
+                    <div id="panel-perfil-content">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3 class="panel-title"><i class="fa-solid fa-user"></i> Informações do Perfil</h3>
+                                <button class="btn-edit"><i class="fa-solid fa-pen"></i> Editar</button>
+                            </div>
+                            <div class="user-profile">
+                                <img src="https://via.placeholder.com/64" alt="Foto" class="user-avatar" data-profile-photo>
+                                <div>
+                                    <div class="user-name" data-profile-name>Carregando...</div>
+                                    <div class="user-email" data-profile-email>—</div>
+                                    <span class="user-badge"><i class="fa-solid fa-user-shield"></i> Administrador</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" id="modalEditarPerfil">
+    <div class="modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2><i class="fa-solid fa-user-pen"></i> Editar Perfil</h2>
+            <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="formEditarPerfil">
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="editNome" placeholder="Seu nome">
+                </div>
+                <button type="submit" class="btn-submit" id="btnSubmitEditPerfil">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Alterações
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../../js/api.js"></script>
+<script src="../../js/toast.js"></script>
+<script src="painel_admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Senha | Kitanda Marketplace</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../css/cadastros.css">
+  <link rel="stylesheet" href="../css/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="left login-image" id="leftImage">
+      <div class="overlay">
+        <h1>Não se preocupe!</h1>
+        <p>Ajudaremos a recuperar o acesso à sua conta rapidamente.</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <a class="back-link" href="../login/">← Voltar para o Login</a>
+
+      <div class="top-title">
+        <h2>Recuperar Senha</h2>
+        <p>Insira o seu email ou número de telefone para enviarmos um código de recuperação.</p>
+      </div>
+
+      <form id="recoverForm" class="login-form">
+        <div class="form-group">
+          <label for="identificador">Email ou Telefone</label>
+          <div class="input-wrapper">
+            <i class="fas fa-user"></i>
+            <input
+              type="text"
+              id="identificador"
+              name="identificador"
+              placeholder="seu@email.com ou +244..."
+              required>
+          </div>
+          <span class="error-message" id="identificadorError"></span>
+        </div>
+
+        <button type="submit" class="btn-submit">Enviar Código</button>
+        <span class="error-message form-error" id="formError"></span>
+      </form>
+
+      <div class="signup-link" style="margin-top: 2rem;">
+        <p>Lembrou-se da senha? <a href="../login/">Inicie Sessão</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/toast.js"></script>
+  <script src="../js/recuperar-senha.js"></script>
+</body>
+</html>

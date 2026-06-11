@@ -118,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function renderCart() {
-  const cart = getCart();
+  const carrinho = getCarrinho();
+  const cart = carrinho.itens;
   const itemsEl = document.getElementById('cartItems');
   const emptyEl = document.getElementById('cartEmpty');
   const layoutEl = document.getElementById('cartLayout');
@@ -162,14 +163,14 @@ function renderCart() {
   `).join('');
 
   // Update summary
-  const total = getCartTotal();
+  const total = totalCarrinho();
   document.getElementById('cartSubtotal').textContent = formatarPreco(total);
   document.getElementById('cartTotal').textContent = formatarPreco(total);
 }
 
 function changeQty(id, tipo, delta) {
-  const cart = getCart();
-  const item = cart.find(c => c.id === id && c.tipo === tipo);
+  const carrinho = getCarrinho();
+  const item = carrinho.itens.find(c => String(c.id) === String(id) && c.tipo === tipo);
   if (item) {
     updateQuantity(id, tipo, item.quantidade + delta);
     renderCart();
@@ -177,7 +178,7 @@ function changeQty(id, tipo, delta) {
 }
 
 function removeItem(id, tipo) {
-  removeFromCart(id, tipo);
+  removerDoCarrinho(id, tipo);
   renderCart();
   if (typeof showToast === 'function') {
     showToast('Item removido do carrinho.', 'info');

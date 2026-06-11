@@ -1,82 +1,12 @@
 /**
  * Carrinho de Compras — Kitanda
- * Gestão local (localStorage) dos itens do carrinho.
+ * Funcionalidades globais de UI do carrinho (badges, etc).
+ * A lógica pesada está agora no js/api.js (getCarrinho, etc).
  */
 
-const CART_KEY = 'kitanda_cart';
-
-function getCart() {
-  try {
-    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  updateCartBadge();
-}
-
-function addToCart(item) {
-  // item = { id, tipo, nome, preco, imagem_url, vendedor_nome, vendedor_id }
-  const cart = getCart();
-  const existing = cart.find(c => c.id === item.id && c.tipo === item.tipo);
-
-  if (existing) {
-    existing.quantidade += 1;
-  } else {
-    cart.push({
-      ...item,
-      quantidade: 1,
-      adicionado_em: new Date().toISOString()
-    });
-  }
-
-  saveCart(cart);
-
-  if (typeof showToast === 'function') {
-    showToast(`"${item.nome}" adicionado ao carrinho!`, 'success');
-  }
-
-  return cart;
-}
-
-function removeFromCart(id, tipo) {
-  let cart = getCart();
-  cart = cart.filter(c => !(c.id === id && c.tipo === tipo));
-  saveCart(cart);
-  return cart;
-}
-
-function updateQuantity(id, tipo, quantidade) {
-  const cart = getCart();
-  const item = cart.find(c => c.id === id && c.tipo === tipo);
-
-  if (item) {
-    if (quantidade <= 0) {
-      return removeFromCart(id, tipo);
-    }
-    item.quantidade = quantidade;
-    saveCart(cart);
-  }
-
-  return cart;
-}
-
-function clearCart() {
-  localStorage.removeItem(CART_KEY);
-  updateCartBadge();
-}
-
-function getCartTotal() {
-  const cart = getCart();
-  return cart.reduce((total, item) => total + (item.preco * item.quantidade), 0);
-}
-
 function getCartCount() {
-  const cart = getCart();
-  return cart.reduce((count, item) => count + item.quantidade, 0);
+  const carrinho = getCarrinho();
+  return carrinho.itens.reduce((count, item) => count + (item.quantidade || 1), 0);
 }
 
 function updateCartBadge() {
@@ -93,13 +23,25 @@ function updateCartBadge() {
   });
 }
 
-// Formatar preço em Kwanzas
-function formatarPreco(valor) {
-  return new Intl.NumberFormat('pt-AO', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(valor) + ' Kz';
+function updateQuantity(id, tipo, novaQuantidade) {
+  const carrinho = getCarrinho();
+  const item = carrinho.itens.find(c => String(c.id) === String(id) && c.tipo === tipo);
+
+  if (item) {
+    if (novaQuantidade <= 0) {
+      removerDoCarrinho(id, tipo);
+    } else {
+      item.quantidade = novaQuantidade;
+      salvarCarrinho(carrinho);
+    }
+  }
 }
 
-// Inicializar badge ao carregar qualquer página
+function clearCart() {
+  localStorage.removeItem('kitanda_carrinho');
+  window.dispatchEvent(new Event('carrinhoAtualizado'));
+}
+
+// Inicializar badge e escutar eventos globais
 document.addEventListener('DOMContentLoaded', updateCartBadge);
+window.addEventListener('carrinhoAtualizado', updateCartBadge);
