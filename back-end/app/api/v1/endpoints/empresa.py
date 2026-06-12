@@ -25,12 +25,9 @@ def get_my_company(
     db: Session = Depends(get_db)
 ):
     """Retorna dados da empresa do utilizador autenticado"""
-    if utilizador.tipo_utilizador != TipoUtilizadorEnum.empresa:
-        raise HTTPException(status_code=403, detail="Não é uma empresa")
-
     perfil = utilizador.perfil_vendedor
-    if not perfil:
-        raise HTTPException(status_code=404, detail="Perfil de empresa não encontrado")
+    if not perfil or perfil.tipo_vendedor.value != "empresa":
+        raise HTTPException(status_code=403, detail="Não é uma empresa")
 
     return perfil
 
@@ -41,12 +38,9 @@ def get_company_stats(
     db: Session = Depends(get_db)
 ):
     """Retorna estatísticas da empresa para o dashboard"""
-    if utilizador.tipo_utilizador != TipoUtilizadorEnum.empresa:
-        raise HTTPException(status_code=403, detail="Não é uma empresa")
-
     perfil = utilizador.perfil_vendedor
-    if not perfil:
-        raise HTTPException(status_code=404, detail="Perfil de empresa não encontrado")
+    if not perfil or perfil.tipo_vendedor.value != "empresa":
+        raise HTTPException(status_code=403, detail="Não é uma empresa")
 
     # Contar produtos ativos
     produtos_count = db.query(func.count(Produto.id)).filter(
@@ -106,12 +100,9 @@ def get_company_orders(
     status: Optional[str] = None
 ):
     """Retorna pedidos recentes da empresa"""
-    if utilizador.tipo_utilizador != TipoUtilizadorEnum.empresa:
-        raise HTTPException(status_code=403, detail="Não é uma empresa")
-
     perfil = utilizador.perfil_vendedor
-    if not perfil:
-        raise HTTPException(status_code=404, detail="Perfil de empresa não encontrado")
+    if not perfil or perfil.tipo_vendedor.value != "empresa":
+        raise HTTPException(status_code=403, detail="Não é uma empresa")
 
     # Buscar pedidos de produtos desta empresa
     query_prod = db.query(Pedido).join(ItemPedido).filter(

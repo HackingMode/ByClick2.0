@@ -13,6 +13,18 @@ function verificarAutenticacao() {
   return true;
 }
 
+function atualizarBadges() {
+    const badges = document.querySelectorAll('.topbar-actions .badge');
+    if (badges.length >= 2) {
+        // Notificações (mock)
+        badges[0].textContent = '1';
+        // Carrinho
+        const carrinho = JSON.parse(localStorage.getItem('kitanda_carrinho') || '{"itens":[]}');
+        const totalCarrinho = carrinho.itens.reduce((acc, curr) => acc + (curr.quantidade || 1), 0);
+        badges[1].textContent = totalCarrinho;
+    }
+}
+
 // ===== MODAL PERFIL =====
 function setupModalPerfil() {
     const btnEdit = document.querySelector('.btn-edit');
@@ -193,6 +205,8 @@ function atualizarEstatisticasGerais() {
 
 document.addEventListener('DOMContentLoaded', function() {
   if (!verificarAutenticacao()) return;
+
+  atualizarBadges();
 
   // Mobile sidebar
   const sidebar = document.getElementById('sidebar');

@@ -15,6 +15,18 @@ function verificarAutenticacao() {
   return true;
 }
 
+function atualizarBadges() {
+    const badges = document.querySelectorAll('.topbar-actions .badge');
+    if (badges.length >= 2) {
+        // Notificações (mock)
+        badges[0].textContent = '1';
+        // Mensagens/Carrinho (mock/carrinho)
+        const carrinho = JSON.parse(localStorage.getItem('kitanda_carrinho') || '{"itens":[]}');
+        const totalCarrinho = carrinho.itens.reduce((acc, curr) => acc + (curr.quantidade || 1), 0);
+        badges[1].textContent = totalCarrinho;
+    }
+}
+
 // ===== DATA LOADING =====
 async function carregarDadosPainel() {
   if (!verificarAutenticacao()) return;
@@ -47,6 +59,7 @@ async function carregarDadosPainel() {
   }
 
   atualizarData();
+  atualizarBadges();
 }
 
 // ===== UPDATE UI =====
@@ -59,8 +72,11 @@ function atualizarPerfilUsuario(usuario) {
   const nome = usuario.nome_completo || usuario.nome_utilizador || 'Vendedor';
   const primeiroNome = nome.split(' ')[0];
 
+  const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(nome) + "&background=C84B1F&color=fff&size=150";
+  const avatarSrc = usuario.foto_perfil_url || defaultAvatar;
+
   if (nomeEl) nomeEl.textContent = nome;
-  if (fotoEl && usuario.foto_perfil_url) fotoEl.src = usuario.foto_perfil_url;
+  if (fotoEl) fotoEl.src = avatarSrc;
   if (tipoEl) tipoEl.textContent = 'Vendedor Individual';
   if (greetEl) greetEl.textContent = `Olá, ${primeiroNome}! 👋`;
 }
@@ -100,6 +116,11 @@ function atualizarDadosLoja(loja) {
 
   if (membroEl && loja.criado_em) {
     membroEl.textContent = new Date(loja.criado_em).toLocaleDateString('pt-AO');
+  }
+
+  const editIban = document.getElementById('editLojaIban');
+  if (editIban && loja.iban) {
+    editIban.value = loja.iban;
   }
 }
 
@@ -221,6 +242,38 @@ function atualizarGraficos() {
   if (charts.categories) charts.categories.update();
 }
 
+async function carregarCategoriasSelects() {
+  try {
+    const produtosSelect = document.getElementById('catProdutoSelect');
+    if (produtosSelect) {
+      const categoriasProd = await apiCall('GET', '/categorias/?tipo=produto');
+      if (categoriasProd) {
+        categoriasProd.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.nome;
+          produtosSelect.appendChild(opt);
+        });
+      }
+    }
+
+    const servicosSelect = document.getElementById('catServicoSelect');
+    if (servicosSelect) {
+      const categoriasServ = await apiCall('GET', '/categorias/?tipo=servico');
+      if (categoriasServ) {
+        categoriasServ.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.nome;
+          servicosSelect.appendChild(opt);
+        });
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao carregar categorias', e);
+  }
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function () {
   if (!verificarAutenticacao()) return;
@@ -228,6 +281,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // Mobile sidebar
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
+
+  carregarCategoriasSelects();
   const toggle = document.getElementById('menuToggle');
   const open = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
   const close = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
@@ -401,29 +456,64 @@ function fecharModal(id) {
 
 async function submeterNovoProduto() {
   const form = document.getElementById('formAddProduto');
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
-  
-  const payload = {
-    nome: form.nome.value,
-    descricao: form.descricao.value,
-    preco: parseFloat(form.preco.value),
-    estoque: parseInt(form.estoque.value),
-    categoria_id: parseInt(form.categoria_id.value)
-  };
+  if (!form.reportValidity()) return;
+
+  const btn = document.querySelector('#modalProduto .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A salvar...';
 
   try {
-    const data = await apiCall('POST', '/produtos/', payload);
-    if (data) {
-      showToast('Produto adicionado com sucesso!', 'success');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // Se houver imagem, processar para base64
+    const fileInput = document.getElementById('imgProduto');
+    if (fileInput && fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+      });
+      data.imagem = base64;
+    }
+
+    const res = await apiCall('POST', '/produtos/', data);
+    if (res) {
+      showToast('Produto criado com sucesso!', 'success');
       fecharModal('modalProduto');
       form.reset();
-      carregarDadosPainel();
+      carregarDadosPainel(); // atualizar stats
     }
-  } catch (e) {
-    showToast('Erro ao adicionar produto', 'error');
+  } catch (error) {
+    showToast('Erro ao criar produto.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar Produto';
+  }
+}
+
+async function submeterEdicaoLoja() {
+  const form = document.getElementById('formEditarLoja');
+  if (!form.reportValidity()) return;
+
+  const btn = document.querySelector('#modalEditarLoja .btn-primary');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A salvar...';
+
+  try {
+    const iban = document.getElementById('editLojaIban').value;
+    const res = await apiCall('PUT', '/vendedor/meu-perfil', { iban: iban });
+    if (res) {
+      showToast('Loja atualizada com sucesso!', 'success');
+      fecharModal('modalEditarLoja');
+      carregarDadosPainel(); 
+    }
+  } catch (error) {
+    showToast('Erro ao atualizar loja.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar Alterações';
   }
 }
 
@@ -442,6 +532,17 @@ async function submeterNovoServico() {
     disponibilidade: form.disponibilidade.value,
     categoria_id: parseInt(form.categoria_id.value)
   };
+
+  const imgInput = document.getElementById('imgServico');
+  if (imgInput && imgInput.files.length > 0) {
+    const file = imgInput.files[0];
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+    payload.imagem = base64;
+  }
 
   try {
     const data = await apiCall('POST', '/servicos/', payload);

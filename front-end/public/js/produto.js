@@ -89,7 +89,7 @@ function renderizarProduto(p) {
 
   // Main image
   const mainImg = document.getElementById('mainImage');
-  const imgUrl = p.imagem_url || p.imagens?.[0]?.url || `https://picsum.photos/seed/${p.id}/600/400`;
+  const imgUrl = p.imagem_url || p.imagens?.[0]?.url || `https://placehold.co/600x400/e2e8f0/64748b?text=Produto`;
   if (mainImg) mainImg.src = imgUrl;
 
   // Thumbnails

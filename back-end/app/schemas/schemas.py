@@ -251,6 +251,7 @@ class PerfilVendedorResponseSchema(BaseModel):
     verificado: bool
     avaliacao_media: float
     total_vendas: int
+    iban: Optional[str] = None
     criado_em: datetime
 
     class Config:
@@ -267,6 +268,7 @@ class ProdutoCreateSchema(BaseModel):
     stock: int = 0
     categoria_id: Optional[int] = None
     sku: Optional[str] = None
+    imagem: Optional[str] = None
 
     @field_validator("preco")
     @classmethod
@@ -276,12 +278,21 @@ class ProdutoCreateSchema(BaseModel):
         return v
 
 
+class ImagemProdutoResponseSchema(BaseModel):
+    id: int
+    url: str
+    principal: bool
+
+    class Config:
+        from_attributes = True
+
 class ProdutoResponseSchema(ProdutoCreateSchema):
     id: int
     vendedor_id: int
     ativo: bool
     avaliacao_media: float
     criado_em: datetime
+    imagens: list[ImagemProdutoResponseSchema] = []
 
     class Config:
         from_attributes = True
@@ -297,7 +308,16 @@ class ServicoCreateSchema(BaseModel):
     disponivel_online: bool = False
     disponivel_presencial: bool = True
     categoria_id: Optional[int] = None
+    imagem: Optional[str] = None
 
+
+class ImagemServicoResponseSchema(BaseModel):
+    id: int
+    url: str
+    principal: bool
+
+    class Config:
+        from_attributes = True
 
 class ServicoResponseSchema(ServicoCreateSchema):
     id: int
@@ -305,6 +325,7 @@ class ServicoResponseSchema(ServicoCreateSchema):
     ativo: bool
     avaliacao_media: float
     criado_em: datetime
+    imagens: list[ImagemServicoResponseSchema] = []
 
     class Config:
         from_attributes = True
@@ -321,11 +342,13 @@ class PedidoCreateSchema(BaseModel):
     endereco_entrega_municipio: Optional[str] = None
     endereco_entrega_bairro: Optional[str] = None
     notas: Optional[str] = None
+    metodo_pagamento: str = "multicaixa"
 
 class PedidoServicoCreateSchema(BaseModel):
     servico_id: int
     data_agendada: Optional[datetime] = None
     descricao_necessidade: Optional[str] = None
+    metodo_pagamento: str = "multicaixa"
 
 class PedidoStatusUpdateSchema(BaseModel):
     status: str # pendente, processando, enviado, entregue, cancelado

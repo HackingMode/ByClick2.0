@@ -58,8 +58,11 @@ function atualizarPerfilUsuario(usuario) {
   const nome = usuario.nome_completo || usuario.nome_utilizador || 'Administrador';
   const primeiroNome = nome.split(' ')[0];
 
+  const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(nome) + "&background=C84B1F&color=fff&size=150";
+  const avatarSrc = usuario.foto_perfil_url || defaultAvatar;
+
   if (nomeEl) nomeEl.textContent = nome;
-  if (fotoEl && usuario.foto_perfil_url) fotoEl.src = usuario.foto_perfil_url;
+  if (fotoEl) fotoEl.src = avatarSrc;
   if (greetEl) greetEl.textContent = `Bem-vindo, ${primeiroNome}! 👋`;
 }
 
@@ -206,6 +209,38 @@ function atualizarGraficos() {
   if (charts.categories) charts.categories.update();
 }
 
+async function carregarCategoriasSelects() {
+  try {
+    const produtosSelect = document.getElementById('catProdutoSelect');
+    if (produtosSelect) {
+      const categoriasProd = await apiCall('GET', '/categorias/?tipo=produto');
+      if (categoriasProd) {
+        categoriasProd.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.nome;
+          produtosSelect.appendChild(opt);
+        });
+      }
+    }
+
+    const servicosSelect = document.getElementById('catServicoSelect');
+    if (servicosSelect) {
+      const categoriasServ = await apiCall('GET', '/categorias/?tipo=servico');
+      if (categoriasServ) {
+        categoriasServ.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.nome;
+          servicosSelect.appendChild(opt);
+        });
+      }
+    }
+  } catch (e) {
+    console.error('Erro ao carregar categorias', e);
+  }
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', function () {
   if (!verificarAutenticacao()) return;
@@ -213,6 +248,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // Mobile sidebar
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('overlay');
+
+  carregarCategoriasSelects();
   const toggle = document.getElementById('menuToggle');
   const open = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
   const close = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
@@ -309,6 +346,17 @@ async function submeterNovoProduto() {
     categoria_id: parseInt(form.categoria_id.value)
   };
 
+  const imgInput = document.getElementById('imgProduto');
+  if (imgInput && imgInput.files.length > 0) {
+    const file = imgInput.files[0];
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+    payload.imagem = base64;
+  }
+
   try {
     const data = await apiCall('POST', '/produtos/', payload);
     if (data) {
@@ -337,6 +385,17 @@ async function submeterNovoServico() {
     disponibilidade: form.disponibilidade.value,
     categoria_id: parseInt(form.categoria_id.value)
   };
+
+  const imgInput = document.getElementById('imgServico');
+  if (imgInput && imgInput.files.length > 0) {
+    const file = imgInput.files[0];
+    const base64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.readAsDataURL(file);
+    });
+    payload.imagem = base64;
+  }
 
   try {
     const data = await apiCall('POST', '/servicos/', payload);

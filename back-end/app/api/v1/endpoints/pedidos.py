@@ -7,12 +7,15 @@ from datetime import datetime
 from app.api.v1.endpoints.deps import get_db, get_utilizador_atual as get_current_user
 from app.models.models import (
     Utilizador, Pedido, ItemPedido, Produto,
-    PedidoServico, Servico, StatusPedidoEnum
+    PedidoServico, Servico, StatusPedidoEnum, Pagamento, PagamentoServico
 )
 from app.schemas.schemas import (
     PedidoCreateSchema, PedidoServicoCreateSchema,
     PedidoStatusUpdateSchema, PedidoServicoStatusUpdateSchema
 )
+import os
+import base64
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 
 router = APIRouter()
 
@@ -131,9 +134,31 @@ def criar_pedido_produto(
         db.add(item_pedido)
 
     novo_pedido.valor_total = valor_total
+
+    # Criar Pagamento associado
+    pagamento = Pagamento(
+        pedido_id=novo_pedido.id,
+        metodo=dados.metodo_pagamento,
+        valor=valor_total,
+        moeda="AOA"
+    )
+    db.add(pagamento)
+
     db.commit()
     db.refresh(novo_pedido)
-    return {"mensagem": "Pedido criado com sucesso", "numero_pedido": novo_pedido.numero_pedido}
+
+    # Obter os IBANs dos vendedores envolvidos
+    vendedores_ibans = set()
+    for item in novo_pedido.itens:
+        if item.produto and item.produto.vendedor and item.produto.vendedor.iban:
+            vendedores_ibans.add(f"{item.produto.vendedor.nome_loja}: {item.produto.vendedor.iban}")
+
+    return {
+        "mensagem": "Pedido criado com sucesso",
+        "numero_pedido": novo_pedido.numero_pedido,
+        "pedido_id": novo_pedido.id,
+        "vendedores_ibans": list(vendedores_ibans)
+    }
 
 
 # ─────────────────────────── CRIAR PEDIDO (SERVIÇO) ───────────────────────────
@@ -159,9 +184,28 @@ def criar_pedido_servico(
         valor_acordado=servico.preco_base
     )
     db.add(novo_pedido_servico)
+    db.flush()
+
+    # Criar Pagamento
+    pagamento = PagamentoServico(
+        pedido_servico_id=novo_pedido_servico.id,
+        metodo=dados.metodo_pagamento,
+        valor=servico.preco_base,
+        moeda="AOA"
+    )
+    db.add(pagamento)
+
     db.commit()
     db.refresh(novo_pedido_servico)
-    return {"mensagem": "Serviço solicitado com sucesso", "numero_pedido": novo_pedido_servico.numero_pedido}
+
+    vendedor_iban = servico.vendedor.iban if servico.vendedor.iban else None
+    
+    return {
+        "mensagem": "Serviço solicitado com sucesso", 
+        "numero_pedido": novo_pedido_servico.numero_pedido,
+        "pedido_id": novo_pedido_servico.id,
+        "vendedores_ibans": [f"{servico.vendedor.nome_loja}: {vendedor_iban}"] if vendedor_iban else []
+    }
 
 
 # ─────────────────────────── ATUALIZAR STATUS ───────────────────────────
@@ -219,3 +263,81 @@ def atualizar_status_pedido_servico(
 
     db.commit()
     return {"mensagem": f"Status do serviço atualizado para {dados.status}."}
+
+
+def salvar_comprovativo_pagamento(base64_str: str, pedido_id: int) -> str:
+    """Guarda a imagem recebida em base64 e retorna o url do comprovativo."""
+    if "," in base64_str:
+        header, encoded = base64_str.split(",", 1)
+        extensao = header.split(";")[0].split("/")[1]
+    else:
+        encoded = base64_str
+        extensao = "jpg"
+        
+    dir_path = f"imagens/pagamentos/{pedido_id}"
+    os.makedirs(dir_path, exist_ok=True)
+    
+    file_name = f"comprovativo.{extensao}"
+    file_path = os.path.join(dir_path, file_name)
+    
+    with open(file_path, "wb") as f:
+        f.write(base64.b64decode(encoded))
+        
+    return f"http://localhost:8000/{dir_path}/{file_name}"
+
+from pydantic import BaseModel
+
+class ComprovativoSchema(BaseModel):
+    imagem_base64: str
+
+@router.post("/{pedido_id}/comprovativo", status_code=status.HTTP_200_OK)
+def upload_comprovativo(
+    pedido_id: int,
+    dados: ComprovativoSchema,
+    db: Session = Depends(get_db),
+    current_user: Utilizador = Depends(get_current_user)
+):
+    """
+    Faz o upload do comprovativo (base64) para um pedido de produto.
+    """
+    pedido = db.query(Pedido).filter(Pedido.id == pedido_id).first()
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+        
+    if pedido.comprador_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Não tem permissões para este pedido.")
+        
+    if not pedido.pagamento:
+        raise HTTPException(status_code=400, detail="O pedido não possui um pagamento registado.")
+        
+    url_comprovativo = salvar_comprovativo_pagamento(dados.imagem_base64, pedido_id)
+    pedido.pagamento.comprovativo_url = url_comprovativo
+    db.commit()
+    
+    return {"mensagem": "Comprovativo recebido com sucesso", "url": url_comprovativo}
+
+@router.post("/servicos/{pedido_id}/comprovativo", status_code=status.HTTP_200_OK)
+def upload_comprovativo_servico(
+    pedido_id: int,
+    dados: ComprovativoSchema,
+    db: Session = Depends(get_db),
+    current_user: Utilizador = Depends(get_current_user)
+):
+    """
+    Faz o upload do comprovativo (base64) para um pedido de serviço.
+    """
+    pedido = db.query(PedidoServico).filter(PedidoServico.id == pedido_id).first()
+    if not pedido:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+        
+    if pedido.comprador_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Não tem permissões para este pedido.")
+        
+    if not pedido.pagamento:
+        raise HTTPException(status_code=400, detail="O pedido não possui um pagamento registado.")
+        
+    url_comprovativo = salvar_comprovativo_pagamento(dados.imagem_base64, f"serv_{pedido_id}")
+    pedido.pagamento.comprovativo_url = url_comprovativo
+    db.commit()
+    
+    return {"mensagem": "Comprovativo recebido com sucesso", "url": url_comprovativo}

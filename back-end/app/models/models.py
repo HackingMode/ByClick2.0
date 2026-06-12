@@ -233,6 +233,7 @@ class PerfilVendedor(Base):
     ativo = Column(Boolean, default=True)
     avaliacao_media = Column(Float, default=0.0)
     total_vendas = Column(Integer, default=0)
+    iban = Column(String(50), nullable=True)
 
     criado_em = Column(DateTime, default=datetime.utcnow)
     atualizado_em = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -452,6 +453,7 @@ class Pagamento(Base):
     valor = Column(Numeric(12, 2), nullable=False)
     moeda = Column(String(5), default="AOA")
     status = Column(Enum(StatusPagamentoEnum), default=StatusPagamentoEnum.pendente)
+    comprovativo_url = Column(String(500), nullable=True)
     criado_em = Column(DateTime, default=datetime.utcnow)
     pago_em = Column(DateTime, nullable=True)
 
@@ -468,6 +470,7 @@ class PagamentoServico(Base):
     valor = Column(Numeric(12, 2), nullable=False)
     moeda = Column(String(5), default="AOA")
     status = Column(Enum(StatusPagamentoEnum), default=StatusPagamentoEnum.pendente)
+    comprovativo_url = Column(String(500), nullable=True)
     criado_em = Column(DateTime, default=datetime.utcnow)
     pago_em = Column(DateTime, nullable=True)
 

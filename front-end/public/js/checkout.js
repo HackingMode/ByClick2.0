@@ -133,6 +133,7 @@ async function submeterPedido() {
 
     try {
         let sucessoGlobal = true;
+        let pedidosCriados = [];
 
         // Processar Pedidos de Produtos (agrupados todos num só envio para simplificar, ou individual se o backend exigir. Vamos enviar todos)
         if (produtos.length > 0) {
@@ -141,8 +142,8 @@ async function submeterPedido() {
                 endereco_entrega_provincia: prov,
                 endereco_entrega_municipio: mun,
                 endereco_entrega_bairro: bairro,
-                endereco_entrega_completo: `${prov}, ${mun}, ${bairro}`,
-                notas: notas
+                notas: notas,
+                metodo_pagamento: metodoPagamento
             };
 
             const reqProd = await fetch(`${API_BASE_URL}/pedidos/`, {
@@ -153,9 +154,7 @@ async function submeterPedido() {
 
             if (reqProd.ok) {
                 const resProd = await reqProd.json();
-                
-                // Pagar e simular confirmação
-                await simularPagamento(resProd.id, metodoPagamento, resProd.valor_total, 'produto');
+                pedidosCriados.push(resProd);
             } else {
                 sucessoGlobal = false;
             }
@@ -165,11 +164,12 @@ async function submeterPedido() {
         for (const servico of servicos) {
             const payloadServico = {
                 servico_id: servico.id,
-                data_agendada: new Date(Date.now() + 86400000 * 2).toISOString(), // Agendamento default para daqui a 2 dias (mock)
-                descricao_necessidade: notas
+                data_agendada: new Date(Date.now() + 86400000 * 2).toISOString(),
+                descricao_necessidade: notas,
+                metodo_pagamento: metodoPagamento
             };
 
-            const reqServ = await fetch(`${API_BASE_URL}/pedidos_servico/`, {
+            const reqServ = await fetch(`${API_BASE_URL}/pedidos/servicos`, {
                 method: 'POST',
                 headers: authHeaders(),
                 body: JSON.stringify(payloadServico)
@@ -177,25 +177,25 @@ async function submeterPedido() {
 
             if (reqServ.ok) {
                 const resServ = await reqServ.json();
-                
-                // Simular pagamento do serviço (se o backend já tiver a rota de pagamento de serviço unificada ou separada)
-                await simularPagamento(resServ.id, metodoPagamento, servico.preco, 'servico');
+                pedidosCriados.push(resServ);
             } else {
                 sucessoGlobal = false;
             }
         }
 
         if (sucessoGlobal) {
-            showToast('Pedido realizado com sucesso!', 'success');
-            
             // Limpar o carrinho e sessão
             localStorage.removeItem('kitanda_carrinho');
             window.dispatchEvent(new Event('carrinhoAtualizado'));
             
-            // Redirect to buyer dashboard
-            setTimeout(() => {
-                window.location.href = '../paineis/painel_comprador/painel_comprador.html';
-            }, 2000);
+            if (metodoPagamento === 'multicaixa') {
+                mostrarPaginaSucessoIBAN(pedidosCriados);
+            } else {
+                showToast('Pedido realizado com sucesso!', 'success');
+                setTimeout(() => {
+                    window.location.href = '../paineis/painel_comprador/painel_comprador.html';
+                }, 2000);
+            }
         } else {
             throw new Error("Falha no processamento de um ou mais itens.");
         }
@@ -207,28 +207,106 @@ async function submeterPedido() {
     }
 }
 
-async function simularPagamento(pedido_id, metodo, valor, tipoPedido) {
-    try {
-        // Envia o pagamento
-        await fetch(`${API_BASE_URL}/pagamentos/`, {
-            method: 'POST',
-            headers: authHeaders(),
-            body: JSON.stringify({
-                pedido_id: pedido_id,
-                metodo: metodo,
-                valor: valor,
-                moeda: "AOA"
-            })
-        });
-
-        // Patch do Status do pedido para confirmado
-        const rotaPatch = tipoPedido === 'produto' ? `/pedidos/${pedido_id}/status` : `/pedidos_servico/${pedido_id}/status`;
-        await fetch(`${API_BASE_URL}${rotaPatch}`, {
-            method: 'PATCH',
-            headers: authHeaders(),
-            body: JSON.stringify({ status: "confirmado" })
-        });
-    } catch (e) {
-        console.error("Erro na simulação de pagamento:", e);
+function mostrarPaginaSucessoIBAN(pedidos) {
+    const container = document.querySelector('.checkout-container');
+    
+    // Coletar todos os IBANs
+    let allIbans = [];
+    pedidos.forEach(p => {
+        if(p.vendedores_ibans) {
+            allIbans.push(...p.vendedores_ibans);
+        }
+    });
+    
+    // Remover duplicados e limpar undefined
+    allIbans = [...new Set(allIbans)].filter(i => i && !i.includes('null'));
+    
+    let ibansHtml = '';
+    if (allIbans.length > 0) {
+        ibansHtml = allIbans.map(ibanStr => `
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e9ecef;">
+                <strong>${ibanStr.split(':')[0]}</strong><br>
+                <span style="font-size: 1.1em; color: var(--blue);">${ibanStr.split(':')[1] || 'IBAN não definido'}</span>
+            </div>
+        `).join('');
+    } else {
+        ibansHtml = `<p>O vendedor não tem IBAN cadastrado. Entre em contacto direto.</p>`;
     }
+    
+    const pedidoIds = pedidos.map(p => p.pedido_id);
+    const tipo = pedidos[0].numero_pedido.startsWith('S') ? 'servico' : 'produto';
+
+    container.innerHTML = `
+        <div class="success-step" style="max-width: 600px; margin: 0 auto; width: 100%; text-align: center; padding: 40px 20px;">
+            <i class="fa-solid fa-circle-check" style="font-size: 60px; color: var(--green); margin-bottom: 20px;"></i>
+            <h2>Pedido Criado com Sucesso!</h2>
+            <p style="margin-bottom: 30px; color: #666;">Para concluir a sua compra via Multicaixa/Transferência, efetue o pagamento para os seguintes IBANs e anexe o comprovativo.</p>
+            
+            <div style="text-align: left; margin-bottom: 30px;">
+                ${ibansHtml}
+            </div>
+            
+            <div style="text-align: left; margin-bottom: 30px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 10px;">Anexar Comprovativo de Pagamento</label>
+                <input type="file" id="comprovativoFile" accept="image/*" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;">
+            </div>
+            
+            <button id="btnUploadComprovativo" class="btn-checkout" style="width: 100%;">
+                <i class="fa-solid fa-upload"></i> Enviar Comprovativo
+            </button>
+            <br><br>
+            <a href="../paineis/painel_comprador/painel_comprador.html" style="color: var(--blue); text-decoration: none; font-weight: 600;">Ignorar e enviar depois</a>
+        </div>
+    `;
+
+    document.getElementById('btnUploadComprovativo').addEventListener('click', async (e) => {
+        const fileInput = document.getElementById('comprovativoFile');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            showToast('Por favor, selecione uma imagem.', 'warning');
+            return;
+        }
+
+        const btn = e.target;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A enviar...';
+
+        try {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64 = reader.result;
+                let uploadSuccess = true;
+                
+                // Upload para todos os pedidos criados
+                for(const pedido of pedidos) {
+                    const typePath = pedido.numero_pedido.startsWith('S') ? 'servicos' : '';
+                    const endpoint = typePath ? `/pedidos/servicos/${pedido.pedido_id}/comprovativo` : `/pedidos/${pedido.pedido_id}/comprovativo`;
+                    
+                    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+                        method: 'POST',
+                        headers: authHeaders(),
+                        body: JSON.stringify({ imagem_base64: base64 })
+                    });
+                    if (!res.ok) uploadSuccess = false;
+                }
+                
+                if (uploadSuccess) {
+                    showToast('Comprovativo enviado com sucesso!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '../paineis/painel_comprador/painel_comprador.html';
+                    }, 2000);
+                } else {
+                    showToast('Erro ao enviar comprovativo.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-upload"></i> Enviar Comprovativo';
+                }
+            };
+        } catch (error) {
+            console.error(error);
+            showToast('Erro ao processar imagem.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-upload"></i> Enviar Comprovativo';
+        }
+    });
 }

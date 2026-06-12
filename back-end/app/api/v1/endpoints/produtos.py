@@ -1,14 +1,34 @@
+import base64
+import os
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from app.core.database import get_db
-from app.models.models import Produto, Utilizador
+from app.models.models import Produto, Utilizador, ImagemProduto
 from app.schemas.schemas import ProdutoCreateSchema, ProdutoResponseSchema
 from app.api.v1.endpoints.deps import get_utilizador_atual
 
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
 
+def salvar_imagem_produto(base64_str: str, produto_id: int) -> str:
+    if "," in base64_str:
+        header, b64_data = base64_str.split(",", 1)
+        ext = header.split("/")[1].split(";")[0]
+        if ext == "jpeg":
+            ext = "jpg"
+    else:
+        b64_data = base64_str
+        ext = "jpg"
+    
+    path = os.path.join("imagens", "produtos", str(produto_id))
+    os.makedirs(path, exist_ok=True)
+    file_path = os.path.join(path, f"capa.{ext}")
+    
+    with open(file_path, "wb") as fh:
+        fh.write(base64.b64decode(b64_data))
+        
+    return f"http://localhost:8000/imagens/produtos/{produto_id}/capa.{ext}"
 
 @router.post("/", response_model=ProdutoResponseSchema, status_code=201)
 def criar_produto(
@@ -19,11 +39,19 @@ def criar_produto(
     if not utilizador.perfil_vendedor:
         raise HTTPException(status_code=403, detail="Precisa de ter uma loja para adicionar produtos")
 
+    produto_data = dados.model_dump(exclude={"imagem"})
     produto = Produto(
         vendedor_id=utilizador.perfil_vendedor.id,
-        **dados.model_dump()
+        **produto_data
     )
     db.add(produto)
+    db.flush()
+    
+    if dados.imagem:
+        img_url = salvar_imagem_produto(dados.imagem, produto.id)
+        img_produto = ImagemProduto(produto_id=produto.id, url=img_url, principal=True)
+        db.add(img_produto)
+        
     db.commit()
     db.refresh(produto)
     return produto

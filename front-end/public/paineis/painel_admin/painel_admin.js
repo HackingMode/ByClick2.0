@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const nomeEls = document.querySelectorAll('[data-user-name]');
       nomeEls.forEach(el => el.textContent = usuario.nome_completo);
       
+      const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(usuario.nome_completo) + "&background=C84B1F&color=fff&size=150";
+      const avatarSrc = usuario.foto_perfil_url || defaultAvatar;
+
+      const fotoEls = document.querySelectorAll('[data-user-photo], [data-profile-photo]');
+      fotoEls.forEach(el => el.src = avatarSrc);
+      
       const emailEls = document.querySelectorAll('[data-profile-email]');
       emailEls.forEach(el => el.textContent = usuario.email);
 

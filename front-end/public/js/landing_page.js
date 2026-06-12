@@ -131,19 +131,26 @@ async function carregarDestaques() {
     const destaques = produtos.slice(0, 4);
     
     grid.innerHTML = destaques.map(p => {
-      const img = p.imagem_url || `https://picsum.photos/seed/${p.id}/400/300`;
       const isServico = p.tipo === 'servico';
+      const imagemPadrao = isServico ? 'https://placehold.co/400x300/8b5cf6/ffffff?text=Servico' : 'https://placehold.co/400x300/e2e8f0/64748b?text=Produto';
+      const img = p.imagem_url || p.imagens?.[0]?.url || imagemPadrao;
+      
       const badgeStr = isServico 
         ? '<span style="background:#8b5cf6; color:white; padding: 2px 8px; border-radius: 12px; font-size:12px; font-weight: bold; position:absolute; top: 10px; left: 10px;">Serviço</span>' 
         : '<span style="background:#C84B1F; color:white; padding: 2px 8px; border-radius: 12px; font-size:12px; font-weight: bold; position:absolute; top: 10px; left: 10px;">Novo</span>';
       const url = isServico ? `servico/?id=${p.id}` : `produto/?id=${p.id}`;
       const precoText = isServico ? `A partir de ${(p.preco || 0).toLocaleString('pt-AO')} Kz` : `${(p.preco || 0).toLocaleString('pt-AO')} Kz`;
 
+      const isFav = isFavorito(p.id, isServico ? 'servico' : 'produto');
+      const favIconClass = isFav ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+      const favStyle = isFav ? 'color: #C84B1F;' : '';
+
       return `
         <a href="${url}" style="background: white; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); text-decoration: none; color: var(--ink); display: flex; flex-direction: column; position: relative; transition: transform 0.2s;">
+          <button onclick="toggleFavorito(event, this, ${p.id}, '${isServico ? 'servico' : 'produto'}')" style="position:absolute; top:10px; right:10px; background:white; border:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.1); z-index:2;"><i class="${favIconClass}" style="${favStyle}"></i></button>
           ${badgeStr}
           <div style="height: 180px; width: 100%; overflow: hidden;">
-            <img src="${img}" alt="${p.nome}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://picsum.photos/seed/${p.id}/400/300'">
+            <img src="${img}" alt="${p.nome}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='${imagemPadrao}'">
           </div>
           <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
             <h3 style="font-size: 1.1rem; margin-bottom: 8px;">${p.nome}</h3>
@@ -159,4 +166,30 @@ async function carregarDestaques() {
     loading.innerHTML = '<p style="color:var(--terra);"><i class="fa-solid fa-circle-exclamation"></i> Erro ao carregar destaques.</p>';
   }
 }
+
+function isFavorito(id, tipo) {
+  const favoritos = JSON.parse(localStorage.getItem('kitanda_favoritos') || '[]');
+  return favoritos.some(f => f.id === id && f.tipo === tipo);
+}
+
+window.toggleFavorito = function(event, btn, id, tipo) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  let favoritos = JSON.parse(localStorage.getItem('kitanda_favoritos') || '[]');
+  const favIndex = favoritos.findIndex(f => f.id === id && f.tipo === tipo);
+  const icon = btn.querySelector('i');
+  
+  if (favIndex > -1) {
+    favoritos.splice(favIndex, 1);
+    icon.className = 'fa-regular fa-heart';
+    icon.style.color = '';
+  } else {
+    favoritos.push({ id, tipo });
+    icon.className = 'fa-solid fa-heart';
+    icon.style.color = '#C84B1F';
+  }
+  
+  localStorage.setItem('kitanda_favoritos', JSON.stringify(favoritos));
+};
 
