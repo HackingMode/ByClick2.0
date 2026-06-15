@@ -146,7 +146,7 @@ async function submeterPedido() {
                 metodo_pagamento: metodoPagamento
             };
 
-            const reqProd = await fetch(`${API_BASE_URL}/pedidos/`, {
+            const reqProd = await fetch(`${API_BASE_URL}/pedidos/produtos`, {
                 method: 'POST',
                 headers: authHeaders(),
                 body: JSON.stringify(payloadProdutos)

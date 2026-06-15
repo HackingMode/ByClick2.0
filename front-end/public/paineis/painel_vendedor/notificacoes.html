@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificações - Dashboard Vendedor</title>
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/painel_vendedor.css">
+    <style>
+        .notificacoes-container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+        }
+        .notif-item-page {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .notif-item-page:last-child {
+            border-bottom: none;
+        }
+        .notif-item-page.nao-lida {
+            background-color: #fff8f5;
+            border-left: 4px solid var(--primary);
+        }
+        .notif-icon-page {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0;
+            background: var(--primary);
+        }
+        .notif-icon-page.sistema { background: var(--blue); }
+        .notif-icon-page.pedido { background: var(--green); }
+        .notif-icon-page.promocao { background: var(--orange); }
+        .notif-icon-page.mensagem { background: var(--purple); }
+        
+        .notif-content { flex: 1; }
+        .notif-title { font-weight: 600; margin-bottom: 0.2rem; color: var(--text-dark); }
+        .notif-desc { color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .notif-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+        .notif-time { color: #9ca3af; }
+        
+        .btn-marcar-lida {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        .btn-marcar-lida:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>Kitanda</span>
+    </div>
+    <div class="profile-section">
+        <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-img" data-user-photo>
+        <div class="profile-info">
+            <h4 data-user-name>Carregando...</h4>
+            <div class="profile-role"><i class="fa-solid fa-circle-check"></i> <span data-user-type>Vendedor</span></div>
+        </div>
+    </div>
+    <nav>
+        <div class="nav-label">Menu</div>
+        <a href="painel_vendedor.html" class="nav-item"><i class="fa-solid fa-house"></i> Página Inicial</a>
+        <a href="meus_produtos.html" class="nav-item"><i class="fa-solid fa-box-open"></i> Meus Produtos</a>
+        <a href="meus_servicos.html" class="nav-item"><i class="fa-solid fa-briefcase"></i> Meus Serviços</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="pagamentos.html" class="nav-item"><i class="fa-solid fa-wallet"></i> Pagamentos</a>
+        <a href="avaliacoes.html" class="nav-item"><i class="fa-solid fa-star"></i> Avaliações</a>
+        <a href="definicoes.html" class="nav-item"><i class="fa-solid fa-gear"></i> Definições</a>
+        <a href="#" class="nav-item nav-logout" id="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Terminar Sessão</a>
+    </nav>
+</aside>
+
+<div class="main-content">
+    <header class="topbar">
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+        <div class="topbar-logo">Kitanda</div>
+        <div class="topbar-actions">
+            <div class="icon-btn active"><i class="fa-solid fa-bell"></i></div>
+            <div class="topbar-divider"></div>
+            <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge" data-msg-count>0</span></div>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="header-section">
+            <div class="greeting">
+                <h1>Notificações</h1>
+                <p>Mantenha-se atualizado com os alertas e mensagens da sua loja.</p>
+            </div>
+        </div>
+
+        <div class="notificacoes-container" id="notificacoesPageList">
+            <div style="text-align:center; padding: 3rem; color: #999;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <p>A carregar notificações...</p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="../../js/api.js"></script>
+<script src="../../js/toast.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!estaAutenticado()) {
+        window.location.href = '../../login/';
+        return;
+    }
+    
+    // Setup Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const toggle = document.getElementById('menuToggle');
+    const open = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+    const close = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+    toggle?.addEventListener('click', () => sidebar.classList.contains('active') ? close() : open());
+    overlay?.addEventListener('click', close);
+
+    const logoutBtn = document.getElementById('btnLogout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    }
+
+    // Load user data basic info
+    try {
+        const user = await apiCall('GET', '/auth/me');
+        if (user) {
+            const nomeEl = document.querySelector('[data-user-name]');
+            const fotoEl = document.querySelector('[data-user-photo]');
+            if(nomeEl) nomeEl.textContent = user.nome_completo;
+            if(fotoEl) fotoEl.src = user.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=C84B1F&color=fff`;
+        }
+    } catch(e) {}
+
+    // Load Notifications
+    await carregarNotificacoesPage();
+});
+
+async function carregarNotificacoesPage() {
+    const container = document.getElementById('notificacoesPageList');
+    try {
+        const notificacoes = await apiCall('GET', '/notificacoes/');
+        if (!notificacoes || notificacoes.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding: 3rem; color: #999;">
+                    <i class="fa-regular fa-bell-slash" style="font-size: 3rem; margin-bottom: 1rem; color: #ddd;"></i>
+                    <p>Não tem nenhuma notificação no momento.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const iconesMap = {
+            'sistema': 'fa-info-circle',
+            'pedido': 'fa-box',
+            'promocao': 'fa-bullhorn',
+            'mensagem': 'fa-envelope'
+        };
+
+        container.innerHTML = notificacoes.map(n => `
+            <div class="notif-item-page ${!n.lida ? 'nao-lida' : ''}" id="notif-${n.id}">
+                <div class="notif-icon-page ${n.tipo}">
+                    <i class="fa-solid ${iconesMap[n.tipo] || 'fa-bell'}"></i>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-title">${n.titulo}</div>
+                    <div class="notif-desc">${n.mensagem}</div>
+                    <div class="notif-meta">
+                        <span class="notif-time"><i class="fa-regular fa-clock"></i> ${new Date(n.criado_em).toLocaleString('pt-AO')}</span>
+                        ${!n.lida ? `<button class="btn-marcar-lida" onclick="marcarComoLida(${n.id})"><i class="fa-solid fa-check-double"></i> Marcar como lida</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+    } catch (e) {
+        container.innerHTML = '<p style="color:red;text-align:center;">Erro ao carregar notificações.</p>';
+    }
+}
+
+async function marcarComoLida(id) {
+    try {
+        const res = await apiCall('PUT', `/notificacoes/${id}/ler`);
+        if (res) {
+            const item = document.getElementById(`notif-${id}`);
+            if (item) {
+                item.classList.remove('nao-lida');
+                const btn = item.querySelector('.btn-marcar-lida');
+                if (btn) btn.remove();
+            }
+        }
+    } catch(e) {
+        showToast('Erro ao atualizar notificação.', 'error');
+    }
+}
+</script>
+</body>
+</html>

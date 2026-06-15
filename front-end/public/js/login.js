@@ -104,11 +104,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (perfilResult.success && perfilResult.data) {
           const tipo = perfilResult.data.tipo_utilizador;
+          const isEmpresa = tipo === 'empresa' || (tipo === 'vendedor' && perfilResult.data.tipo_vendedor === 'empresa');
           localStorage.setItem('usuario', JSON.stringify(perfilResult.data));
-          if (tipo === 'vendedor') {
-            redirecionamento = '../paineis/painel_vendedor/painel_vendedor.html';
-          } else if (tipo === 'empresa') {
+          
+          if (isEmpresa) {
             redirecionamento = '../paineis/painel_empresa/painel_empresa.html';
+          } else if (tipo === 'vendedor') {
+            redirecionamento = '../paineis/painel_vendedor/painel_vendedor.html';
           } else if (tipo === 'comprador') {
             redirecionamento = '../paineis/painel_comprador/painel_comprador.html';
           } else if (tipo === 'admin') {

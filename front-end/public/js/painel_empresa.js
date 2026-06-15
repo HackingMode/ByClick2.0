@@ -320,6 +320,117 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   window.addEventListener('beforeunload', () => { if (autoRefreshInterval) clearInterval(autoRefreshInterval); });
+
+  // ===== LÓGICAS DEFINIÇÕES =====
+  // 1. Preview de Imagem
+  const imgInput = document.getElementById('imgPerfilDefinicoes');
+  const imgPreview = document.getElementById('previewPerfilDefinicoes');
+  if (imgInput && imgPreview) {
+      imgInput.addEventListener('change', function() {
+          if (this.files && this.files[0]) {
+              const reader = new FileReader();
+              reader.onload = function(e) { imgPreview.src = e.target.result; };
+              reader.readAsDataURL(this.files[0]);
+          }
+      });
+  }
+
+  // 2. Preencher form do Representante na carga inicial se estiver em definicoes.html
+  if (document.getElementById('formUserEmpresa')) {
+      obterMeuPerfil().then(res => {
+          if(res && res.success && res.data) {
+              const u = res.data;
+              document.getElementById('userNome').value = u.nome_completo || '';
+              document.getElementById('userEmail').value = u.email || '';
+              document.getElementById('userTelefone').value = u.numero_telefone || '';
+              if (imgPreview) {
+                  imgPreview.src = u.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.nome_completo)}&background=C84B1F&color=fff`;
+              }
+              if (u.perfil_vendedor) {
+                  document.getElementById('lojaNome').value = u.perfil_vendedor.nome_loja || '';
+                  document.getElementById('lojaDescricao').value = u.perfil_vendedor.descricao_loja || '';
+                  document.getElementById('lojaDoc').value = u.perfil_vendedor.documento_identificacao || '';
+              }
+          }
+      });
+  }
+
+  // 3. Submit Informações Pessoais (Representante)
+  const formUser = document.getElementById('formUserEmpresa');
+  if (formUser) {
+      formUser.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = formUser.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+          let base64Img = null;
+          if (imgInput && imgInput.files.length > 0) {
+              base64Img = await new Promise(res => {
+                  const r = new FileReader();
+                  r.onload = ev => res(ev.target.result);
+                  r.readAsDataURL(imgInput.files[0]);
+              });
+          }
+
+          const payload = {
+              nome_completo: document.getElementById('userNome').value,
+              numero_telefone: document.getElementById('userTelefone').value
+          };
+          if (base64Img) payload.foto_perfil = base64Img;
+
+          try {
+              await apiCall('PUT', '/empresa/meu-perfil', payload);
+              showToast('Perfil do Representante atualizado com sucesso!', 'success');
+              setTimeout(() => window.location.reload(), 1500);
+          } catch (error) {
+              showToast(error.message || 'Erro ao atualizar perfil', 'error');
+          } finally {
+              btn.disabled = false;
+              btn.innerHTML = 'Atualizar Perfil';
+          }
+      });
+  }
+
+  // 4. Submit Loja (Empresa)
+  const formLoja = document.getElementById('formLojaEmpresa');
+  if (formLoja) {
+      formLoja.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const payload = {
+              nome_loja: document.getElementById('lojaNome').value,
+              descricao_loja: document.getElementById('lojaDescricao').value
+          };
+
+          try {
+              // Reutiliza o endpoint /vendedor/meus-dados (pois ambos partilham PerfilVendedor)
+              await apiCall('PUT', '/vendedor/meus-dados', payload);
+              showToast('Dados da Empresa atualizados!', 'success');
+          } catch (error) {
+              showToast('Erro ao atualizar empresa', 'error');
+          }
+      });
+  }
+
+  // 5. Submit Segurança
+  const formSeguranca = document.getElementById('formSegurancaEmpresa');
+  if (formSeguranca) {
+      formSeguranca.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const payload = {
+              senha_atual: document.getElementById('senhaAtual').value,
+              nova_senha: document.getElementById('novaSenha').value
+          };
+
+          try {
+              await apiCall('PUT', '/auth/mudar-senha', payload);
+              showToast('Palavra-passe alterada!', 'success');
+              formSeguranca.reset();
+          } catch (error) {
+              showToast(error.message || 'Erro ao alterar palavra-passe', 'error');
+          }
+      });
+  }
 });
 
 // ===== MODAL LOGIC =====

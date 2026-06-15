@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Produtos - Dashboard Vendedor</title>
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../css/painel_vendedor.css">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>Kitanda</span>
+    </div>
+    <div class="profile-section">
+        <img src="https://via.placeholder.com/150" alt="Foto de perfil" class="profile-img" data-user-photo>
+        <div class="profile-info">
+            <h4 data-user-name>Carregando...</h4>
+            <div class="profile-role"><i class="fa-solid fa-circle-check"></i> <span data-user-type>Vendedor</span></div>
+        </div>
+    </div>
+    <nav>
+        <div class="nav-label">Menu</div>
+        <a href="painel_vendedor.html" class="nav-item"><i class="fa-solid fa-house"></i> Página Inicial</a>
+        <a href="meus_produtos.html" class="nav-item active"><i class="fa-solid fa-box-open"></i> Meus Produtos</a>
+        <a href="meus_servicos.html" class="nav-item"><i class="fa-solid fa-briefcase"></i> Meus Serviços</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
+        <a href="pagamentos.html" class="nav-item"><i class="fa-solid fa-wallet"></i> Pagamentos</a>
+        <a href="avaliacoes.html" class="nav-item"><i class="fa-solid fa-star"></i> Avaliações</a>
+        <a href="definicoes.html" class="nav-item"><i class="fa-solid fa-gear"></i> Definições</a>
+        <a href="#" class="nav-item nav-logout" id="btnLogout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Terminar Sessão</a>
+    </nav>
+</aside>
+
+<div class="main-content">
+    <header class="topbar">
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+        <div class="topbar-logo">Kitanda</div>
+        <div class="topbar-actions">
+            <div class="icon-btn" onclick="window.location.href='notificacoes.html'"><i class="fa-solid fa-bell"></i></div>
+            <div class="topbar-divider"></div>
+            <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge" data-msg-count>0</span></div>
+        </div>
+    </header>
+
+    <main class="page">
+        <div class="header-section" style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="greeting">
+                <h1>Meus Produtos</h1>
+                <p>Faça a gestão do seu catálogo de produtos físicos e digitais.</p>
+            </div>
+            <button class="btn-primary" onclick="abrirModal('modalProduto')"><i class="fa-solid fa-plus"></i> Novo Produto</button>
+        </div>
+
+        <div class="panel">
+            <div id="gridProdutos" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem;">
+                <!-- Produtos renderizados aqui via JS -->
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal Adicionar Produto -->
+<div class="modal-overlay" id="modalProduto">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Adicionar Novo Produto</h3>
+            <button class="btn-close-modal" onclick="fecharModal('modalProduto')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="formAddProduto">
+                <div class="form-group">
+                    <label>Nome do Produto</label>
+                    <input type="text" class="form-control" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea class="form-control" name="descricao" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Preço (Kz)</label>
+                    <input type="number" step="0.01" class="form-control" name="preco" required>
+                </div>
+                <div class="form-group">
+                    <label>Stock Disponível</label>
+                    <input type="number" class="form-control" name="estoque" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoria ID (temporário)</label>
+                    <input type="number" class="form-control" name="categoria_id" value="1" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="fecharModal('modalProduto')">Cancelar</button>
+            <button class="btn-primary" onclick="submeterNovoProduto()">Salvar Produto</button>
+        </div>
+    </div>
+</div>
+
+<script src="../../js/api.js"></script>
+<script src="../../js/toast.js"></script>
+<script src="../../js/gestao_loja.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!estaAutenticado()) {
+        window.location.href = '../../login/';
+        return;
+    }
+    
+    // Setup Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const toggle = document.getElementById('menuToggle');
+    const open = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+    const close = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+    toggle?.addEventListener('click', () => sidebar.classList.contains('active') ? close() : open());
+    overlay?.addEventListener('click', close);
+
+    const logoutBtn = document.getElementById('btnLogout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    }
+
+    try {
+        const user = await apiCall('GET', '/auth/me');
+        if (user) {
+            const nomeEl = document.querySelector('[data-user-name]');
+            const fotoEl = document.querySelector('[data-user-photo]');
+            if(nomeEl) nomeEl.textContent = user.nome_completo;
+            if(fotoEl) fotoEl.src = user.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=C84B1F&color=fff`;
+        }
+    } catch(e) {}
+
+    carregarMeusProdutos();
+});
+</script>
+</body>
+</html>

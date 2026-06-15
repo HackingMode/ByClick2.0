@@ -99,18 +99,13 @@ async function carregarProdutos() {
 
     if (todosOsProdutos.length === 0) {
       if (empty) empty.style.display = 'block';
-      // Show demo products when API returns empty
-      todosOsProdutos = gerarProdutosDemo();
     }
 
     aplicarFiltros();
   } catch (erro) {
     console.error('Erro ao carregar produtos:', erro);
     if (loading) loading.style.display = 'none';
-
-    // Fallback: show demo products
-    todosOsProdutos = gerarProdutosDemo();
-    aplicarFiltros();
+    if (empty) empty.style.display = 'block';
   }
 }
 
@@ -257,27 +252,7 @@ function renderizarProdutos(produtos) {
   }).join('');
 }
 
-function gerarProdutosDemo() {
-  const nomes = [
-    'iPhone 15 Pro Max 256GB', 'Samsung Galaxy S24 Ultra', 'MacBook Pro M3 14"',
-    'PlayStation 5 Digital', 'Toyota Hilux 2023', 'Sofá Moderno em L',
-    'Serviço de Design Gráfico', 'Consultoria Empresarial', 'HP Pavilion 15',
-    'AirPods Pro 2ª Geração', 'Monitor LG UltraWide 34"', 'Câmera Canon EOS R6'
-  ];
-  const categorias = ['smartphones','smartphones','informatica','consolas','veiculos','moveis','servicos','servicos','informatica','smartphones','informatica','informatica'];
-  const precos = [850000, 720000, 1250000, 380000, 9500000, 450000, 75000, 150000, 520000, 180000, 640000, 980000];
 
-  return nomes.map((nome, i) => ({
-    id: i + 1,
-    nome,
-    preco: precos[i],
-    categoria: categorias[i],
-    condicao: i === 4 ? 'usado' : (i >= 6 && i <= 7 ? 'servico' : 'novo'),
-    tipo: i >= 6 && i <= 7 ? 'servico' : 'produto',
-    provincia: ['Luanda','Luanda','Benguela','Luanda','Huambo','Luanda','Luanda','Cabinda','Luanda','Luanda','Benguela','Luanda'][i],
-    criado_em: new Date(Date.now() - i * 86400000).toISOString()
-  }));
-}
 
 function isFavorito(id, tipo) {
   const favoritos = JSON.parse(localStorage.getItem('kitanda_favoritos') || '[]');

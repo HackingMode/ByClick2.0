@@ -147,10 +147,35 @@
             </div>
           </div>
           <div class="panel">
-            <div class="empty-state">
-              <i class="fa-solid fa-users-gear"></i>
-              <h3>Lista de Utilizadores</h3>
-              <p>O módulo de gestão de utilizadores estará disponível na próxima atualização.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div style="position: relative; width: 300px;">
+                    <i class="fa-solid fa-search" style="position: absolute; left: 12px; top: 12px; color: #888;"></i>
+                    <input type="text" id="pesquisaUtilizadores" placeholder="Pesquisar por nome ou email..." style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #ddd; border-radius: 6px;">
+                </div>
+                <select id="filtroTipoUtilizador" style="padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    <option value="">Todos os Tipos</option>
+                    <option value="comprador">Compradores</option>
+                    <option value="vendedor">Vendedores</option>
+                    <option value="empresa">Empresas</option>
+                </select>
+            </div>
+            
+            <div class="table-responsive">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="border-bottom: 2px solid #eee; text-align: left;">
+                    <th style="padding: 12px;">ID</th>
+                    <th style="padding: 12px;">Nome</th>
+                    <th style="padding: 12px;">Email</th>
+                    <th style="padding: 12px;">Tipo</th>
+                    <th style="padding: 12px;">Estado</th>
+                    <th style="padding: 12px;">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabelaUtilizadoresAdmin">
+                  <tr><td colspan="6" style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> A carregar utilizadores...</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -179,16 +204,6 @@
               <h1>Central de Denúncias</h1>
               <p>Gere as queixas efetuadas por utilizadores na plataforma.</p>
             </div>
-          </div>
-          <div class="panel">
-            <div class="empty-state">
-              <i class="fa-solid fa-shield"></i>
-              <h3>Nenhuma denúncia ativa</h3>
-              <p>A plataforma está segura e sem incidentes reportados.</p>
-            </div>
-          </div>
-        </div>
-
         <!-- VISTA DEFINIÇÕES -->
         <div id="view-definicoes" style="display: none;">
             <div class="header-section">
@@ -198,29 +213,32 @@
                 </div>
             </div>
             
-            <div class="settings-grid">
-                <div class="panel" style="padding: 15px;">
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <button class="action-btn ab-blue" style="width: 100%;" id="btn-def-perfil"><i class="fa-solid fa-user"></i> Meu Perfil</button>
-                        <button class="action-btn" style="width: 100%; background: transparent; border: 1px solid var(--border);" id="btn-def-seguranca"><i class="fa-solid fa-lock"></i> Segurança</button>
-                    </div>
-                </div>
-                <div>
-                    <div id="panel-perfil-content">
-                        <div class="panel">
-                            <div class="panel-header">
-                                <h3 class="panel-title"><i class="fa-solid fa-user"></i> Informações do Perfil</h3>
-                                <button class="btn-edit"><i class="fa-solid fa-pen"></i> Editar</button>
-                            </div>
-                            <div class="user-profile">
-                                <img src="https://via.placeholder.com/64" alt="Foto" class="user-avatar" data-profile-photo>
-                                <div>
-                                    <div class="user-name" data-profile-name>Carregando...</div>
-                                    <div class="user-email" data-profile-email>—</div>
-                                    <span class="user-badge"><i class="fa-solid fa-user-shield"></i> Administrador</span>
-                                </div>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Perfil no topo -->
+                <div id="panel-perfil-content">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="fa-solid fa-user"></i> Informações do Perfil</h3>
+                            <button class="btn-edit" onclick="document.getElementById('modalEditarPerfil').classList.add('active')"><i class="fa-solid fa-pen"></i> Editar</button>
+                        </div>
+                        <div class="user-profile" style="display: flex; gap: 20px; align-items: center; margin-top: 15px;">
+                            <img src="https://via.placeholder.com/64" alt="Foto" class="user-avatar" data-profile-photo style="width: 64px; height: 64px; border-radius: 50%;">
+                            <div>
+                                <div class="user-name" data-profile-name style="font-weight: 700; font-size: 1.2rem;">Carregando...</div>
+                                <div class="user-email" data-profile-email style="color: var(--ink-soft);">—</div>
+                                <span class="user-badge" style="display: inline-block; background: var(--blue-light); color: var(--blue); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin-top: 5px;"><i class="fa-solid fa-user-shield"></i> Administrador</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Botões de navegação/configuração em baixo -->
+                <div class="panel" style="padding: 15px;">
+                    <h3 class="panel-title" style="margin-bottom: 15px; font-size: 1rem;"><i class="fa-solid fa-sliders"></i> Preferências</h3>
+                    <div style="display: flex; gap: 15px;">
+                        <button class="action-btn" style="flex: 1; justify-content: center; background: transparent; border: 1px solid var(--border);" id="btn-def-seguranca" onclick="document.getElementById('modalMudarSenha').classList.add('active')">
+                            <i class="fa-solid fa-lock"></i> Segurança e Palavra-passe
+                        </button>
                     </div>
                 </div>
             </div>
@@ -233,18 +251,106 @@
     <div class="modal" style="max-width: 500px;">
         <div class="modal-header">
             <h2><i class="fa-solid fa-user-pen"></i> Editar Perfil</h2>
-            <button class="close-modal"><i class="fa-solid fa-xmark"></i></button>
+            <button class="close-modal" onclick="document.getElementById('modalEditarPerfil').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
             <form id="formEditarPerfil">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                    <img src="https://via.placeholder.com/80" id="previewPerfilAdmin" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <label for="imgPerfilAdmin" style="cursor: pointer; padding: 0.5rem 1rem; border-radius: 4px; background: #e5e7eb; font-size: 0.9rem; font-weight: 500;"><i class="fa-solid fa-upload"></i> Mudar Foto</label>
+                        <input type="file" id="imgPerfilAdmin" accept="image/*" style="display: none;">
+                    </div>
+                </div>
                 <div class="form-group">
                     <label>Nome Completo</label>
-                    <input type="text" id="editNome" placeholder="Seu nome">
+                    <input type="text" id="editNome" placeholder="Seu nome" class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
                 </div>
-                <button type="submit" class="btn-submit" id="btnSubmitEditPerfil">
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="text" id="editTelefone" placeholder="Seu telefone" class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
+                </div>
+                <button type="submit" class="btn-submit" id="btnSubmitEditPerfil" style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--blue); color: white; border: none; font-weight: bold; cursor: pointer;">
                     <i class="fa-solid fa-floppy-disk"></i> Guardar Alterações
                 </button>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal-overlay" id="modalMudarSenha">
+    <div class="modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2><i class="fa-solid fa-lock"></i> Mudar Palavra-passe</h2>
+            <button class="close-modal" onclick="document.getElementById('modalMudarSenha').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="formMudarSenha">
+                <div class="form-group">
+                    <label>Palavra-passe Atual</label>
+                    <input type="password" id="senhaAtualAdmin" required class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
+                </div>
+                <div class="form-group">
+                    <label>Nova Palavra-passe</label>
+                    <input type="password" id="novaSenhaAdmin" required minlength="8" class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
+                </div>
+                <button type="submit" class="btn-submit" id="btnSubmitMudarSenha" style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--red); color: white; border: none; font-weight: bold; cursor: pointer;">
+                    <i class="fa-solid fa-key"></i> Atualizar Palavra-passe
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Criar Aviso Modal -->
+<div class="modal-overlay" id="modalCriarAviso">
+    <div class="modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2><i class="fa-solid fa-bullhorn"></i> Criar Aviso Geral</h2>
+            <button class="close-modal" onclick="document.getElementById('modalCriarAviso').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="formCriarAviso">
+                <div class="form-group">
+                    <label>Título do Aviso</label>
+                    <input type="text" id="avisoTitulo" required placeholder="Ex: Manutenção Programada" class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem;">
+                </div>
+                <div class="form-group">
+                    <label>Mensagem</label>
+                    <textarea id="avisoMensagem" required rows="4" placeholder="Detalhes do aviso..." class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1rem; resize: vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Público Alvo</label>
+                    <select id="avisoPublico" class="form-control" style="width: 100%; padding: 0.8rem; border-radius: 6px; border: 1px solid #ddd; margin-bottom: 1.5rem;">
+                        <option value="todos">Todos os Utilizadores</option>
+                        <option value="comprador">Apenas Compradores</option>
+                        <option value="vendedor">Apenas Vendedores e Empresas</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit" id="btnSubmitAviso" style="width: 100%; padding: 0.8rem; border-radius: 6px; background: var(--green); color: white; border: none; font-weight: bold; cursor: pointer;">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar Aviso
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Detalhes Utilizador Modal -->
+<div class="modal-overlay" id="modalDetalhesUtilizador">
+    <div class="modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2><i class="fa-solid fa-id-card"></i> Detalhes do Utilizador</h2>
+            <button class="close-modal" onclick="document.getElementById('modalDetalhesUtilizador').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="conteudoDetalhesUtilizador">
+            <!-- Injectado via JS -->
+            <div style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> A carregar...</div>
+        </div>
+        <div class="modal-footer" style="padding-top: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; margin-top: 10px;">
+            <button id="btnAcaoUtilizador" class="btn-submit" style="flex: 1; padding: 0.8rem; border-radius: 6px; background: var(--red); color: white; border: none; font-weight: bold; cursor: pointer;">
+                Bloquear Utilizador
+            </button>
         </div>
     </div>
 </div>

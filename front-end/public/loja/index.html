@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Loja do Vendedor — Kitanda</title>
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- FONTES -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/landing_page.css">
+  <link rel="stylesheet" href="../css/explorar.css">
+
+</head>
+
+<body>
+
+  <!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+  <header class="navbar">
+    <div class="container navbar__inner">
+
+      <!-- LOGO -->
+      <a href="../" class="navbar__logo">
+        <div class="navbar__logo-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <span>Kitanda</span>
+      </a>
+
+      <!-- SEARCH -->
+      <div class="navbar__search">
+        <input type="text" id="landingSearch" placeholder="Pesquisar na Kitanda...">
+      </div>
+
+      <!-- LINKS -->
+      <nav class="navbar__links">
+        <a href="../explorar/">Explorar</a>
+        <a href="../explorar/?categoria=servicos">Serviços</a>
+        <a href="../ajuda/">Ajuda</a>
+      </nav>
+
+      <!-- BOTÕES -->
+      <div class="navbar__cta">
+        <a href="../carrinho/" class="btn btn-ghost btn-sm" aria-label="Carrinho">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </a>
+        <a href="../cadastro/" class="btn btn-ghost btn-sm" id="btnCadastro">Cadastrar</a>
+        <a href="../login/" class="btn btn-primary btn-sm" id="btnLogin">Login</a>
+        <a href="#" class="btn btn-primary btn-sm" id="btnPainel" style="display:none;">Meu Painel</a>
+      </div>
+
+    </div>
+  </header>
+
+  <section class="container" style="padding: 120px 0 60px; min-height: 40vh;">
+    <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: var(--shadow-sm); text-align: center;">
+      <div style="width: 80px; height: 80px; background: var(--sand); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--ink-soft);">
+        <i class="fa-solid fa-store"></i>
+      </div>
+      <h2 id="lojaNome" style="color: var(--terra); margin-bottom: 0.5rem;">Loja do Vendedor</h2>
+      <p id="lojaLocalizacao" style="color: var(--text-light); margin-bottom: 2rem;">Localização Indisponível</p>
+
+      <h3 style="margin-bottom: 1.5rem; text-align: left;">Produtos e Serviços desta loja</h3>
+      
+      <div id="lojaProdutosGrid" class="produtos__grid">
+        <!-- Produtos injetados aqui -->
+        <p style="color: var(--text-light);">A carregar produtos...</p>
+      </div>
+    </div>
+  </section>
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+
+        <!-- BRAND -->
+        <div class="footer__brand">
+          <div class="footer__logo">
+            <div class="footer__logo-icon">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <span>Kitanda</span>
+          </div>
+          <p>
+            Plataforma digital moderna para compra,
+            venda e contratação de serviços em Angola.
+          </p>
+
+          <!-- REDES -->
+          <div class="footer__social">
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <!-- EMPRESA -->
+        <div class="footer__col">
+          <h4>Empresa</h4>
+          <ul>
+            <li><a href="../sobre-nos/">Sobre Nós</a></li>
+            <li><a href="../como-funciona/">Como Funciona</a></li>
+            <li><a href="../seguranca/">Segurança</a></li>
+            <li><a href="../termos/">Termos de Serviço</a></li>
+          </ul>
+        </div>
+
+        <!-- APOIO -->
+        <div class="footer__col">
+          <h4>Apoio</h4>
+          <ul>
+            <li><a href="../ajuda/">Ajuda</a></li>
+            <li><a href="../denunciar/">Denunciar</a></li>
+            <li><a href="../ajuda/">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- CONTACTOS -->
+        <div class="footer__col">
+          <h4>Contactos</h4>
+          <div class="footer__contact-item">📞 +244 928 144 032</div>
+          <div class="footer__contact-item">✉ contacto@kitanda.com</div>
+          <div class="footer__contact-item">📍 Luanda, Angola</div>
+          <a href="#" class="footer__whatsapp">
+            <i class="fa-brands fa-whatsapp"></i> Conversar no WhatsApp
+          </a>
+        </div>
+
+      </div>
+
+      <!-- FOOTER BOTTOM -->
+      <div class="footer__bottom">
+        <p>© 2026 Kitanda — Todos os direitos reservados.</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="../js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Navbar Auth UI
+      const loggedIn = typeof estaAutenticado === 'function' && estaAutenticado();
+      if (loggedIn) {
+        document.getElementById('btnLogin').style.display = 'none';
+        document.getElementById('btnCadastro').style.display = 'none';
+        const painelBtn = document.getElementById('btnPainel');
+        painelBtn.style.display = 'inline-flex';
+        try {
+          const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+          const tipo = userData.tipo_utilizador || 'comprador';
+          const isEmpresa = tipo === 'empresa' || (tipo === 'vendedor' && userData.tipo_vendedor === 'empresa');
+          const panelMap = {
+            'comprador': '../paineis/painel_comprador/painel_comprador.html',
+            'vendedor': '../paineis/painel_vendedor/painel_vendedor.html',
+            'empresa': '../paineis/painel_empresa/painel_empresa.html'
+          };
+          painelBtn.href = isEmpresa ? panelMap['empresa'] : (panelMap[tipo] || panelMap['comprador']);
+        } catch (e) {
+          painelBtn.href = '../paineis/painel_comprador/painel_comprador.html';
+        }
+      }
+
+      // Load store products
+      const params = new URLSearchParams(window.location.search);
+      const vendedorId = params.get('id');
+
+      if (!vendedorId) {
+        document.getElementById('lojaProdutosGrid').innerHTML = '<p>Loja não encontrada.</p>';
+        return;
+      }
+
+      try {
+        const req = await fetch(`${API_BASE_URL}/produtos/vendedor/${vendedorId}`);
+        const result = await req.json();
+
+        if (result.success && result.data && result.data.length > 0) {
+          // Set store info based on the first product's seller info if available
+          const firstProd = result.data[0];
+          if (firstProd.vendedor) {
+            document.getElementById('lojaNome').textContent = firstProd.vendedor.nome || 'Loja do Vendedor';
+            document.getElementById('lojaLocalizacao').textContent = firstProd.vendedor.provincia || 'Angola';
+          }
+
+          document.getElementById('lojaProdutosGrid').innerHTML = result.data.map(p => `
+            <div class="produto-card">
+              <a href="../${p.tipo === 'servico' ? 'servico' : 'produto'}/?id=${p.id}" style="text-decoration:none; color:inherit; display:block;">
+                <div class="produto-card__img">
+                  <img src="${p.imagens && p.imagens.length > 0 ? API_BASE_URL + p.imagens[0].url : '../images/placeholder.jpg'}" alt="${p.nome}">
+                  <span class="produto-card__badge ${p.condicao === 'novo' ? 'badge-novo' : 'badge-usado'}">${p.condicao.toUpperCase()}</span>
+                </div>
+                <div class="produto-card__info">
+                  <h3 class="produto-card__title">${p.nome}</h3>
+                  <div class="produto-card__price">${Number(p.preco).toLocaleString('pt-AO')} Kz</div>
+                  <div class="produto-card__location"><i class="fa-solid fa-location-dot"></i> ${p.provincia || 'Angola'}</div>
+                </div>
+              </a>
+            </div>
+          `).join('');
+        } else {
+          document.getElementById('lojaProdutosGrid').innerHTML = '<p>Esta loja não possui produtos ou serviços.</p>';
+        }
+      } catch (err) {
+        console.error('Erro ao buscar loja:', err);
+        document.getElementById('lojaProdutosGrid').innerHTML = '<p>Erro ao carregar a loja.</p>';
+      }
+    });
+  </script>
+</body>
+</html>

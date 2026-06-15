@@ -13,8 +13,9 @@ from app.models.models import (
     Utilizador, PerfilVendedor, TipoUtilizadorEnum,
     Produto, Pedido, ItemPedido, Servico, PedidoServico
 )
-from app.schemas.schemas import PerfilVendedorResponseSchema
+from app.schemas.schemas import PerfilVendedorResponseSchema, UtilizadorUpdateSchema
 from app.api.v1.endpoints.deps import get_utilizador_atual
+from app.api.v1.endpoints.auth import salvar_foto_perfil
 
 router = APIRouter(prefix="/empresa", tags=["Empresa"])
 
@@ -30,6 +31,30 @@ def get_my_company(
         raise HTTPException(status_code=403, detail="Não é uma empresa")
 
     return perfil
+
+
+@router.put("/meu-perfil")
+def atualizar_meu_perfil_utilizador(
+    dados: UtilizadorUpdateSchema,
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Atualiza dados pessoais do representante da empresa (Utilizador)"""
+    perfil = utilizador.perfil_vendedor
+    if not perfil or perfil.tipo_vendedor.value != "empresa":
+        raise HTTPException(status_code=403, detail="Não é uma empresa")
+
+    if dados.nome_completo:
+        utilizador.nome_completo = dados.nome_completo
+    if dados.numero_telefone:
+        utilizador.numero_telefone = dados.numero_telefone
+    if dados.foto_perfil:
+        utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "empresa", utilizador.id)
+
+    db.commit()
+    db.refresh(utilizador)
+    return {"mensagem": "Perfil do representante atualizado com sucesso"}
+
 
 
 @router.get("/minhas-estatisticas/dashboard")

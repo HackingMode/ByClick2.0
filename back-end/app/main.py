@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, servicos, explorar, pedidos, categorias, avaliacoes, localidades
+from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, servicos, explorar, pedidos, categorias, avaliacoes, localidades, notificacoes, admin
 
 os.makedirs("imagens", exist_ok=True)
 
@@ -42,6 +42,8 @@ app.include_router(pedidos.router, prefix="/api/v1/pedidos", tags=["Pedidos"])
 app.include_router(categorias.router, prefix="/api/v1")
 app.include_router(avaliacoes.router, prefix="/api/v1")
 app.include_router(localidades.router, prefix="/api/v1/localidades", tags=["Localidades"])
+app.include_router(notificacoes.router, prefix="/api/v1")
+app.include_router(admin.router, prefix="/api/v1")
 
 
 @app.get("/", tags=["Root"])

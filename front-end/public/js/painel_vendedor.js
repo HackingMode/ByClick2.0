@@ -45,6 +45,7 @@ async function carregarDadosPainel() {
 
     if (loja.status === 'fulfilled' && loja.value.success) {
       atualizarDadosLoja(loja.value.data);
+      verificarStatusPromocao();
     }
 
     if (stats.status === 'fulfilled' && stats.value.success) {
@@ -118,9 +119,22 @@ function atualizarDadosLoja(loja) {
     membroEl.textContent = new Date(loja.criado_em).toLocaleDateString('pt-AO');
   }
 
+  // Preencher modal de edição
+  const editNome = document.getElementById('editLojaNome');
+  const editDesc = document.getElementById('editLojaDescricao');
   const editIban = document.getElementById('editLojaIban');
-  if (editIban && loja.iban) {
-    editIban.value = loja.iban;
+  if (editNome && loja.nome_loja) editNome.value = loja.nome_loja;
+  if (editDesc && loja.descricao_loja) editDesc.value = loja.descricao_loja;
+  if (editIban && loja.iban) editIban.value = loja.iban;
+
+  // Lógica botão inscrição
+  const btnInscricao = document.getElementById('btnPedidoInscricao');
+  if (btnInscricao) {
+      if (loja.verificado) {
+          btnInscricao.style.display = 'none';
+      } else {
+          btnInscricao.style.display = 'inline-block';
+      }
   }
 }
 
@@ -329,6 +343,46 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Botões de Acão Rápida
+  const btnInscricao = document.getElementById('btnPedidoInscricao');
+  if (btnInscricao) {
+      btnInscricao.addEventListener('click', async () => {
+          try {
+              btnInscricao.disabled = true;
+              btnInscricao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A enviar...';
+              const res = await apiCall('POST', '/vendedor/inscricao');
+              if (res && res.success) {
+                  showToast('Pedido de inscrição enviado!', 'success');
+                  btnInscricao.innerHTML = '<i class="fa-solid fa-check"></i> Pedido Enviado';
+              }
+          } catch (e) {
+              showToast(e.message || 'Erro ao enviar pedido.', 'error');
+              btnInscricao.innerHTML = '<i class="fa-solid fa-file-signature"></i> Pedidos de Inscrição';
+              btnInscricao.disabled = false;
+          }
+      });
+  }
+
+  const btnPromocao = document.getElementById('btnPromocoes');
+  if (btnPromocao) {
+      btnPromocao.addEventListener('click', async () => {
+          try {
+              btnPromocao.disabled = true;
+              btnPromocao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A processar...';
+              const payload = { mensagem_solicitacao: "Desejo promover a minha loja." };
+              const res = await apiCall('POST', '/vendedor/promocao', payload);
+              if (res) {
+                  showToast('Pedido de promoção enviado com sucesso!', 'success');
+                  btnPromocao.style.display = 'none';
+              }
+          } catch (e) {
+              showToast(e.message || 'Erro ao pedir promoção.', 'error');
+              btnPromocao.innerHTML = '<i class="fa-solid fa-bullhorn"></i> Promoções';
+              btnPromocao.disabled = false;
+          }
+      });
+  }
+
   // ===== MAIN SALES CHART =====
   const salesCtx = document.getElementById('salesChart');
   if (salesCtx) {
@@ -445,6 +499,22 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+async function verificarStatusPromocao() {
+    try {
+        const res = await apiCall('GET', '/vendedor/promocao/status');
+        const btnPromocao = document.getElementById('btnPromocoes');
+        if (btnPromocao && res) {
+            if (!res.pode_solicitar) {
+                btnPromocao.style.display = 'none';
+            } else {
+                btnPromocao.style.display = 'inline-block';
+            }
+        }
+    } catch(e) {
+        console.error("Erro ao verificar status da promoção", e);
+    }
+}
+
 // ===== MODAL LOGIC =====
 function abrirModal(id) {
   document.getElementById(id).classList.add('active');
@@ -502,15 +572,24 @@ async function submeterEdicaoLoja() {
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A salvar...';
 
   try {
+    const nome_loja = document.getElementById('editLojaNome').value;
+    const descricao_loja = document.getElementById('editLojaDescricao').value;
     const iban = document.getElementById('editLojaIban').value;
-    const res = await apiCall('PUT', '/vendedor/meu-perfil', { iban: iban });
+    
+    const payload = {
+        nome_loja: nome_loja,
+        descricao_loja: descricao_loja,
+        iban: iban
+    };
+
+    const res = await apiCall('PUT', '/vendedor/meu-perfil', payload);
     if (res) {
       showToast('Loja atualizada com sucesso!', 'success');
       fecharModal('modalEditarLoja');
       carregarDadosPainel(); 
     }
   } catch (error) {
-    showToast('Erro ao atualizar loja.', 'error');
+    showToast(error.message || 'Erro ao atualizar loja.', 'error');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Salvar Alterações';

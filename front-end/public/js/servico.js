@@ -5,6 +5,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
   atualizarNavbarAuth();
 
+  const params = new URLSearchParams(window.location.search);
   const servicoId = params.get('id');
 
   if (!servicoId) {
@@ -117,6 +118,10 @@ function renderizarServico(p) {
   if (sellerNameEl) sellerNameEl.textContent = p.vendedor_nome || 'Vendedor Kitanda';
   if (sellerMetaEl) sellerMetaEl.textContent = `Membro desde ${p.vendedor_desde ? new Date(p.vendedor_desde).toLocaleDateString('pt-AO') : '—'}`;
   if (sellerAvatarEl) sellerAvatarEl.textContent = (p.vendedor_nome || 'V').charAt(0).toUpperCase();
+  const btnVerLoja = document.getElementById('btnVerLoja');
+  if (btnVerLoja && p.vendedor_id) {
+    btnVerLoja.href = `../loja/?id=${p.vendedor_id}`;
+  }
 
   // Modal Agendamento Logic
   const hireBtn = document.getElementById('btnContratar');

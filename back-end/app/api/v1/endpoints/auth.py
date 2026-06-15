@@ -43,6 +43,7 @@ from app.schemas.schemas import (
     VerificarCodigoSchema,
     RecuperarSenhaSchema,
     RedefinirSenhaSchema,
+    MudarSenhaSchema,
 )
 
 router = APIRouter(prefix="/auth", tags=["Autenticacao"])
@@ -532,6 +533,22 @@ def redefinir_senha(dados: RedefinirSenhaSchema, db: Session = Depends(get_db)):
     # Atualiza a senha
     utilizador.senha_hash = hash_password(dados.nova_senha)
     codigo_db.usado = True
+    db.commit()
+
+    return {"mensagem": "Palavra-passe alterada com sucesso!"}
+
+
+@router.put("/mudar-senha")
+def mudar_senha(
+    dados: MudarSenhaSchema,
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Muda a palavra-passe do utilizador autenticado."""
+    if not verify_password(dados.senha_atual, utilizador.senha_hash):
+        raise HTTPException(status_code=400, detail="A palavra-passe atual está incorreta")
+
+    utilizador.senha_hash = hash_password(dados.nova_senha)
     db.commit()
 
     return {"mensagem": "Palavra-passe alterada com sucesso!"}

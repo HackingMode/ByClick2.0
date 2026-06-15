@@ -29,8 +29,8 @@
     <nav>
         <div class="nav-label">Menu</div>
         <a href="painel_vendedor.html" class="nav-item"><i class="fa-solid fa-house"></i> Página Inicial</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-box-open"></i> Meus Produtos</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-briefcase"></i> Meus Serviços</a>
+        <a href="meus_produtos.html" class="nav-item"><i class="fa-solid fa-box-open"></i> Meus Produtos</a>
+        <a href="meus_servicos.html" class="nav-item"><i class="fa-solid fa-briefcase"></i> Meus Serviços</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
         <a href="#" class="nav-item" style="display:none;"><i class="fa-solid fa-chart-line"></i> Estatísticas</a>
         <a href="#" class="nav-item" style="display:none;"><i class="fa-solid fa-handshake"></i> Patrocínios</a>
@@ -46,7 +46,7 @@
         <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
         <div class="topbar-logo">Kitanda</div>
         <div class="topbar-actions">
-            <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge" data-notif-count>0</span></div>
+            <div class="icon-btn" onclick="window.location.href='notificacoes.html'"><i class="fa-regular fa-bell"></i><span class="badge" data-notif-count>0</span></div>
             <div class="topbar-divider"></div>
             <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge" data-msg-count>0</span></div>
             <div class="topbar-divider"></div>
@@ -54,98 +54,233 @@
         </div>
     </header>
 
-    <main class="page" style="display:flex; justify-content:center; align-items:center; min-height: 80vh;">
-        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: var(--shadow-sm); text-align: center; max-width: 500px;">
-            <div style="font-size: 3rem; color: var(--blue); margin-bottom: 20px;"><i class="fa-solid fa-gear"></i></div>
-            <h2>Definições</h2>
-            <p style="margin-top: 1rem; color: var(--text-light);">Esta página está em desenvolvimento. As funcionalidades estarão disponíveis em breve.</p>
-            <a href="painel_vendedor.html" class="btn-primary" style="display:inline-block; margin-top: 2rem; text-decoration:none; padding: 10px 20px;">Voltar ao Dashboard</a>
+    <main class="page">
+        <div class="header-section">
+            <div class="greeting">
+                <h1>Definições da Conta</h1>
+                <p>Faça a gestão dos dados da sua conta e da sua loja.</p>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <!-- Definições de Utilizador -->
+            <div class="panel">
+                <div class="panel-header" style="margin-bottom: 1.5rem;">
+                    <h3 class="panel-title">Informações Pessoais</h3>
+                </div>
+                <form id="formUser">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <img src="https://via.placeholder.com/80" id="previewPerfilDefinicoes" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                        <div>
+                            <label for="imgPerfilDefinicoes" class="btn-secondary" style="cursor: pointer; padding: 0.5rem 1rem; border-radius: 4px;"><i class="fa-solid fa-upload"></i> Mudar Foto</label>
+                            <input type="file" id="imgPerfilDefinicoes" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome Completo</label>
+                        <input type="text" class="form-control" name="nome_completo" id="userNome">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="email" id="userEmail" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="text" class="form-control" name="telefone" id="userTelefone">
+                    </div>
+                    <button type="submit" class="btn-primary">Atualizar Perfil</button>
+                </form>
+            </div>
+
+            <!-- Definições da Loja -->
+            <div class="panel">
+                <div class="panel-header" style="margin-bottom: 1.5rem;">
+                    <h3 class="panel-title">Definições da Loja</h3>
+                </div>
+                <form id="formLoja">
+                    <div class="form-group">
+                        <label>Nome da Loja</label>
+                        <input type="text" class="form-control" name="nome_loja" id="lojaNome">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea class="form-control" name="descricao" id="lojaDescricao" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>NIF / Documento</label>
+                        <input type="text" class="form-control" name="documento_identificacao" id="lojaDoc" disabled>
+                    </div>
+                    <button type="submit" class="btn-primary">Atualizar Loja</button>
+                </form>
+            </div>
+
+            <!-- Segurança (Mudar Senha) -->
+            <div class="panel" style="grid-column: span 2;">
+                <div class="panel-header" style="margin-bottom: 1.5rem;">
+                    <h3 class="panel-title">Segurança</h3>
+                </div>
+                <form id="formSeguranca">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label>Palavra-passe Atual</label>
+                            <input type="password" class="form-control" id="senhaAtual" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nova Palavra-passe</label>
+                            <input type="password" class="form-control" id="novaSenha" required minlength="8">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary" style="background-color: var(--red);">Atualizar Palavra-passe</button>
+                </form>
+            </div>
         </div>
     </main>
 </div>
 
-<!-- Modal Overlay e Modal Adicionar Produto -->
-<div class="modal-overlay" id="modalProduto">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">Adicionar Novo Produto</h3>
-            <button class="btn-close-modal" onclick="fecharModal('modalProduto')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="formAddProduto">
-                <div class="form-group">
-                    <label>Nome do Produto</label>
-                    <input type="text" class="form-control" name="nome" required>
-                </div>
-                <div class="form-group">
-                    <label>Descrição</label>
-                    <textarea class="form-control" name="descricao" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Preço (Kz)</label>
-                    <input type="number" step="0.01" class="form-control" name="preco" required>
-                </div>
-                <div class="form-group">
-                    <label>Stock Disponível</label>
-                    <input type="number" class="form-control" name="estoque" required>
-                </div>
-                <div class="form-group">
-                    <label>Categoria ID</label>
-                    <input type="number" class="form-control" name="categoria_id" required>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" onclick="fecharModal('modalProduto')">Cancelar</button>
-            <button class="btn-primary" onclick="submeterNovoProduto()">Salvar Produto</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Adicionar Serviço -->
-<div class="modal-overlay" id="modalServico">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">Adicionar Novo Serviço</h3>
-            <button class="btn-close-modal" onclick="fecharModal('modalServico')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="formAddServico">
-                <div class="form-group">
-                    <label>Nome do Serviço</label>
-                    <input type="text" class="form-control" name="nome" required>
-                </div>
-                <div class="form-group">
-                    <label>Descrição</label>
-                    <textarea class="form-control" name="descricao" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Preço Base (Kz)</label>
-                    <input type="number" step="0.01" class="form-control" name="preco_base" required>
-                </div>
-                <div class="form-group">
-                    <label>Duração Estimada (ex: 2h)</label>
-                    <input type="text" class="form-control" name="duracao_estimada">
-                </div>
-                <div class="form-group">
-                    <label>Disponibilidade (ex: online, presencial)</label>
-                    <input type="text" class="form-control" name="disponibilidade">
-                </div>
-                <div class="form-group">
-                    <label>Categoria ID</label>
-                    <input type="number" class="form-control" name="categoria_id" required>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" onclick="fecharModal('modalServico')">Cancelar</button>
-            <button class="btn-primary" onclick="submeterNovoServico()">Salvar Serviço</button>
-        </div>
-    </div>
-</div>
-
 <script src="../../js/api.js"></script>
 <script src="../../js/toast.js"></script>
-<script src="../../js/painel_vendedor.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!estaAutenticado()) {
+        window.location.href = '../../login/';
+        return;
+    }
+    
+    // Setup Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const toggle = document.getElementById('menuToggle');
+    const open = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+    const close = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+    toggle?.addEventListener('click', () => sidebar.classList.contains('active') ? close() : open());
+    overlay?.addEventListener('click', close);
+
+    const logoutBtn = document.getElementById('btnLogout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    }
+
+    try {
+        const user = await apiCall('GET', '/auth/me');
+        if (user) {
+            const nomeEl = document.querySelector('[data-user-name]');
+            const fotoEl = document.querySelector('[data-user-photo]');
+            if(nomeEl) nomeEl.textContent = user.nome_completo;
+            if(fotoEl) {
+                fotoEl.src = user.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=C84B1F&color=fff`;
+            }
+            
+            const pPerfil = document.getElementById('previewPerfilDefinicoes');
+            if (pPerfil) {
+                pPerfil.src = user.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=C84B1F&color=fff`;
+            }
+            
+            // Populate user form
+            document.getElementById('userNome').value = user.nome_completo || '';
+            document.getElementById('userEmail').value = user.email || '';
+            document.getElementById('userTelefone').value = user.numero_telefone || '';
+            
+            if(user.perfil_vendedor) {
+                document.getElementById('lojaNome').value = user.perfil_vendedor.nome_loja || '';
+                document.getElementById('lojaDescricao').value = user.perfil_vendedor.descricao_loja || '';
+                document.getElementById('lojaDoc').value = user.perfil_vendedor.documento_identificacao || '';
+            }
+        }
+    } catch(e) {}
+
+    // Preview de Imagem
+    const imgInput = document.getElementById('imgPerfilDefinicoes');
+    const imgPreview = document.getElementById('previewPerfilDefinicoes');
+    if (imgInput && imgPreview) {
+        imgInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { imgPreview.src = e.target.result; };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+
+    // Submit Informações Pessoais
+    const formUser = document.getElementById('formUser');
+    if (formUser) {
+        formUser.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = formUser.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+            let base64Img = null;
+            if (imgInput && imgInput.files.length > 0) {
+                base64Img = await new Promise(res => {
+                    const r = new FileReader();
+                    r.onload = ev => res(ev.target.result);
+                    r.readAsDataURL(imgInput.files[0]);
+                });
+            }
+
+            const payload = {
+                nome_completo: document.getElementById('userNome').value,
+                numero_telefone: document.getElementById('userTelefone').value
+            };
+            if (base64Img) payload.foto_perfil = base64Img;
+
+            try {
+                await apiCall('PUT', '/vendedor/meu-perfil', payload);
+                showToast('Perfil atualizado com sucesso!', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            } catch (error) {
+                showToast(error.message || 'Erro ao atualizar perfil', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Atualizar Perfil';
+            }
+        });
+    }
+
+    // Submit Loja
+    const formLoja = document.getElementById('formLoja');
+    if (formLoja) {
+        formLoja.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                nome_loja: document.getElementById('lojaNome').value,
+                descricao_loja: document.getElementById('lojaDescricao').value
+            };
+
+            try {
+                await apiCall('PUT', '/vendedor/meus-dados', payload);
+                showToast('Dados da loja atualizados!', 'success');
+            } catch (error) {
+                showToast('Erro ao atualizar loja', 'error');
+            }
+        });
+    }
+
+    // Submit Segurança
+    const formSeguranca = document.getElementById('formSeguranca');
+    if (formSeguranca) {
+        formSeguranca.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                senha_atual: document.getElementById('senhaAtual').value,
+                nova_senha: document.getElementById('novaSenha').value
+            };
+
+            try {
+                await apiCall('PUT', '/auth/mudar-senha', payload);
+                showToast('Palavra-passe alterada!', 'success');
+                formSeguranca.reset();
+            } catch (error) {
+                showToast(error.message || 'Erro ao alterar palavra-passe', 'error');
+            }
+        });
+    }
+});
+</script>
+
 </body>
 </html>

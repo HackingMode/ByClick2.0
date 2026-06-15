@@ -11,10 +11,16 @@ from typing import Optional, List
 from app.core.database import get_db
 from app.models.models import (
     Utilizador, PerfilVendedor, TipoUtilizadorEnum,
-    Produto, Pedido, ItemPedido, Servico, PedidoServico
+    Produto, Pedido, ItemPedido, Servico, PedidoServico,
+    PedidoPromocao, Notificacao, StatusPedidoPromocaoEnum, TipoNotificacaoEnum
 )
-from app.schemas.schemas import RegistoVendedorSchema, PerfilVendedorResponseSchema
+from app.schemas.schemas import (
+    RegistoVendedorSchema, PerfilVendedorResponseSchema, PerfilVendedorUpdateSchema,
+    PedidoPromocaoCreateSchema, PedidoPromocaoResponseSchema, ProdutoResponseSchema, ServicoResponseSchema
+)
 from app.api.v1.endpoints.deps import get_utilizador_atual
+from app.schemas.schemas import UtilizadorUpdateSchema
+from app.api.v1.endpoints.auth import salvar_foto_perfil
 
 router = APIRouter(prefix="/vendedor", tags=["Vendedor"])
 
@@ -61,15 +67,34 @@ def ver_minha_loja(
     return utilizador.perfil_vendedor
 
 
-@router.get("/{nome_loja}", response_model=PerfilVendedorResponseSchema)
-def ver_loja_publica(nome_loja: str, db: Session = Depends(get_db)):
-    loja = db.query(PerfilVendedor).filter(
-        PerfilVendedor.nome_loja == nome_loja,
-        PerfilVendedor.ativo == True
-    ).first()
-    if not loja:
-        raise HTTPException(status_code=404, detail="Loja não encontrada")
-    return loja
+@router.get("/meus-produtos", response_model=List[ProdutoResponseSchema])
+def get_meus_produtos(
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Retorna a lista de produtos criados pelo vendedor logado."""
+    if not utilizador.perfil_vendedor:
+        raise HTTPException(status_code=404, detail="Sem loja registada")
+    produtos = db.query(Produto).filter(
+        Produto.vendedor_id == utilizador.perfil_vendedor.id,
+        Produto.ativo == True
+    ).order_by(Produto.criado_em.desc()).all()
+    return produtos
+
+
+@router.get("/meus-servicos", response_model=List[ServicoResponseSchema])
+def get_meus_servicos(
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Retorna a lista de serviços criados pelo vendedor logado."""
+    if not utilizador.perfil_vendedor:
+        raise HTTPException(status_code=404, detail="Sem loja registada")
+    servicos = db.query(Servico).filter(
+        Servico.vendedor_id == utilizador.perfil_vendedor.id,
+        Servico.ativo == True
+    ).order_by(Servico.criado_em.desc()).all()
+    return servicos
 
 
 @router.get("/minhas-estatisticas/dashboard")
@@ -195,3 +220,137 @@ def get_my_orders(
     # Ordenar por data mais recente
     resultados.sort(key=lambda x: x["criado_em"], reverse=True)
     return resultados[:limit]
+
+
+@router.put("/meus-dados", response_model=PerfilVendedorResponseSchema)
+def atualizar_meus_dados_loja(
+    dados: PerfilVendedorUpdateSchema,
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Atualiza dados do perfil de vendedor"""
+    if not utilizador.perfil_vendedor:
+        raise HTTPException(status_code=404, detail="Sem loja registada")
+
+    perfil = utilizador.perfil_vendedor
+
+    if dados.nome_loja:
+        perfil.nome_loja = dados.nome_loja
+    if dados.descricao_loja is not None:
+        perfil.descricao_loja = dados.descricao_loja
+    if dados.iban is not None:
+        perfil.iban = dados.iban
+
+    db.commit()
+    db.refresh(perfil)
+    return perfil
+
+
+@router.put("/meu-perfil")
+def atualizar_meu_perfil_utilizador(
+    dados: UtilizadorUpdateSchema,
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Atualiza dados pessoais do vendedor (Utilizador)"""
+    if dados.nome_completo:
+        utilizador.nome_completo = dados.nome_completo
+    if dados.numero_telefone:
+        utilizador.numero_telefone = dados.numero_telefone
+    if dados.foto_perfil:
+        utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "vendedor", utilizador.id)
+
+    # Nota: endereço e outros detalhes podem ser geridos aqui futuramente
+    db.commit()
+    db.refresh(utilizador)
+    return {"mensagem": "Perfil pessoal atualizado com sucesso"}
+
+
+
+@router.post("/inscricao")
+def pedir_inscricao(
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Envia um pedido ao administrador para verificar a loja do vendedor."""
+    if not utilizador.perfil_vendedor:
+        raise HTTPException(status_code=404, detail="Sem loja registada")
+    
+    if utilizador.perfil_vendedor.verificado:
+        raise HTTPException(status_code=400, detail="Loja já verificada")
+
+    # Criar uma notificação de sistema a confirmar a receção do pedido
+    notificacao = Notificacao(
+        utilizador_id=utilizador.id,
+        titulo="Pedido de Inscrição Recebido",
+        mensagem="Recebemos o seu pedido de verificação da loja. A nossa equipa analisará em breve.",
+        tipo=TipoNotificacaoEnum.sistema
+    )
+    db.add(notificacao)
+    db.commit()
+    
+    return {"success": True, "message": "Pedido de inscrição enviado com sucesso."}
+
+
+@router.post("/promocao", response_model=PedidoPromocaoResponseSchema)
+def solicitar_promocao(
+    dados: PedidoPromocaoCreateSchema,
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """O vendedor solicita promoção para a sua loja."""
+    if not utilizador.perfil_vendedor:
+        raise HTTPException(status_code=404, detail="Sem loja registada")
+        
+    perfil_id = utilizador.perfil_vendedor.id
+    
+    # Verificar se já existe um pedido pendente ou aprovado recentemente
+    pedido_existente = db.query(PedidoPromocao).filter(
+        PedidoPromocao.vendedor_id == perfil_id,
+        PedidoPromocao.status.in_([StatusPedidoPromocaoEnum.pendente, StatusPedidoPromocaoEnum.aprovado])
+    ).first()
+    
+    if pedido_existente:
+        raise HTTPException(status_code=400, detail="Já possui um pedido de promoção pendente ou ativo.")
+
+    novo_pedido = PedidoPromocao(
+        vendedor_id=perfil_id,
+        mensagem_solicitacao=dados.mensagem_solicitacao
+    )
+    db.add(novo_pedido)
+    db.commit()
+    db.refresh(novo_pedido)
+    return novo_pedido
+
+
+@router.get("/promocao/status")
+def status_promocao(
+    utilizador: Utilizador = Depends(get_utilizador_atual),
+    db: Session = Depends(get_db)
+):
+    """Verifica se o botão de promoções deve ser ocultado."""
+    if not utilizador.perfil_vendedor:
+        return {"pode_solicitar": False}
+
+    pedido = db.query(PedidoPromocao).filter(
+        PedidoPromocao.vendedor_id == utilizador.perfil_vendedor.id,
+        PedidoPromocao.status.in_([StatusPedidoPromocaoEnum.pendente, StatusPedidoPromocaoEnum.aprovado])
+    ).first()
+
+    if pedido:
+        return {
+            "pode_solicitar": False, 
+            "status": pedido.status.value, 
+            "mensagem": "Promoção solicitada ou ativa."
+        }
+    return {"pode_solicitar": True, "status": "nenhum"}
+
+@router.get("/{nome_loja}", response_model=PerfilVendedorResponseSchema)
+def ver_loja_publica(nome_loja: str, db: Session = Depends(get_db)):
+    loja = db.query(PerfilVendedor).filter(
+        PerfilVendedor.nome_loja == nome_loja,
+        PerfilVendedor.ativo == True
+    ).first()
+    if not loja:
+        raise HTTPException(status_code=404, detail="Loja não encontrada")
+    return loja

@@ -29,8 +29,8 @@
     <nav>
         <div class="nav-label">Menu</div>
         <a href="painel_vendedor.html" class="nav-item"><i class="fa-solid fa-house"></i> Página Inicial</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-box-open"></i> Meus Produtos</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-briefcase"></i> Meus Serviços</a>
+        <a href="meus_produtos.html" class="nav-item"><i class="fa-solid fa-box-open"></i> Meus Produtos</a>
+        <a href="meus_servicos.html" class="nav-item"><i class="fa-solid fa-briefcase"></i> Meus Serviços</a>
         <a href="#" class="nav-item"><i class="fa-solid fa-clipboard-list"></i> Pedidos</a>
         <a href="#" class="nav-item" style="display:none;"><i class="fa-solid fa-chart-line"></i> Estatísticas</a>
         <a href="#" class="nav-item" style="display:none;"><i class="fa-solid fa-handshake"></i> Patrocínios</a>
@@ -46,7 +46,7 @@
         <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
         <div class="topbar-logo">Kitanda</div>
         <div class="topbar-actions">
-            <div class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge" data-notif-count>0</span></div>
+            <div class="icon-btn" onclick="window.location.href='notificacoes.html'"><i class="fa-regular fa-bell"></i><span class="badge" data-notif-count>0</span></div>
             <div class="topbar-divider"></div>
             <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge" data-msg-count>0</span></div>
             <div class="topbar-divider"></div>
@@ -54,98 +54,111 @@
         </div>
     </header>
 
-    <main class="page" style="display:flex; justify-content:center; align-items:center; min-height: 80vh;">
-        <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: var(--shadow-sm); text-align: center; max-width: 500px;">
-            <div style="font-size: 3rem; color: var(--blue); margin-bottom: 20px;"><i class="fa-solid fa-wallet"></i></div>
-            <h2>Pagamentos</h2>
-            <p style="margin-top: 1rem; color: var(--text-light);">Esta página está em desenvolvimento. As funcionalidades estarão disponíveis em breve.</p>
-            <a href="painel_vendedor.html" class="btn-primary" style="display:inline-block; margin-top: 2rem; text-decoration:none; padding: 10px 20px;">Voltar ao Dashboard</a>
+    <main class="page">
+        <div class="header-section">
+            <div class="greeting">
+                <h1>Pagamentos e Saldo</h1>
+                <p>Acompanhe as suas receitas, os pagamentos recebidos e as próximas transferências.</p>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="panel" style="text-align:center; padding: 2rem;">
+                <h3 style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">Saldo Disponível</h3>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">145.500 Kz</div>
+            </div>
+            <div class="panel" style="text-align:center; padding: 2rem;">
+                <h3 style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">A Receber</h3>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--blue);">32.000 Kz</div>
+            </div>
+            <div class="panel" style="text-align:center; padding: 2rem;">
+                <h3 style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem;">Total Faturado</h3>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--green);">500.000 Kz</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header" style="margin-bottom: 1.5rem;">
+                <h3 class="panel-title">Histórico de Transações</h3>
+                <button class="btn-primary" style="padding: 0.5rem 1rem;" onclick="alert('Funcionalidade de Saque em desenvolvimento')">Pedir Saque</button>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="background: #f9fafb; border-bottom: 2px solid var(--border);">
+                            <th style="padding: 1rem;">Data</th>
+                            <th style="padding: 1rem;">Descrição</th>
+                            <th style="padding: 1rem;">Valor</th>
+                            <th style="padding: 1rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;">12/06/2026</td>
+                            <td style="padding: 1rem;">Pedido #1005 (Produto X)</td>
+                            <td style="padding: 1rem; color: var(--green);">+ 15.000 Kz</td>
+                            <td style="padding: 1rem;"><span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Concluído</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;">10/06/2026</td>
+                            <td style="padding: 1rem;">Saque Bancário (IBAN final ...1234)</td>
+                            <td style="padding: 1rem; color: var(--red);">- 50.000 Kz</td>
+                            <td style="padding: 1rem;"><span style="background:#dcfce7; color:#166534; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Transferido</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 1rem;">09/06/2026</td>
+                            <td style="padding: 1rem;">Pedido #1002 (Serviço Y)</td>
+                            <td style="padding: 1rem; color: var(--green);">+ 32.000 Kz</td>
+                            <td style="padding: 1rem;"><span style="background:#e0f2fe; color:#0284c7; padding:4px 8px; border-radius:4px; font-size:0.8rem;">Em Espera</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="text-align:center; color: var(--text-light); margin-top: 1rem; font-size: 0.9rem;">
+                *Interface de demonstração. A API de pagamentos reais será implementada em futuras versões.
+            </p>
         </div>
     </main>
 </div>
 
-<!-- Modal Overlay e Modal Adicionar Produto -->
-<div class="modal-overlay" id="modalProduto">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">Adicionar Novo Produto</h3>
-            <button class="btn-close-modal" onclick="fecharModal('modalProduto')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="formAddProduto">
-                <div class="form-group">
-                    <label>Nome do Produto</label>
-                    <input type="text" class="form-control" name="nome" required>
-                </div>
-                <div class="form-group">
-                    <label>Descrição</label>
-                    <textarea class="form-control" name="descricao" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Preço (Kz)</label>
-                    <input type="number" step="0.01" class="form-control" name="preco" required>
-                </div>
-                <div class="form-group">
-                    <label>Stock Disponível</label>
-                    <input type="number" class="form-control" name="estoque" required>
-                </div>
-                <div class="form-group">
-                    <label>Categoria ID</label>
-                    <input type="number" class="form-control" name="categoria_id" required>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" onclick="fecharModal('modalProduto')">Cancelar</button>
-            <button class="btn-primary" onclick="submeterNovoProduto()">Salvar Produto</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Adicionar Serviço -->
-<div class="modal-overlay" id="modalServico">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 class="modal-title">Adicionar Novo Serviço</h3>
-            <button class="btn-close-modal" onclick="fecharModal('modalServico')"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="formAddServico">
-                <div class="form-group">
-                    <label>Nome do Serviço</label>
-                    <input type="text" class="form-control" name="nome" required>
-                </div>
-                <div class="form-group">
-                    <label>Descrição</label>
-                    <textarea class="form-control" name="descricao" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Preço Base (Kz)</label>
-                    <input type="number" step="0.01" class="form-control" name="preco_base" required>
-                </div>
-                <div class="form-group">
-                    <label>Duração Estimada (ex: 2h)</label>
-                    <input type="text" class="form-control" name="duracao_estimada">
-                </div>
-                <div class="form-group">
-                    <label>Disponibilidade (ex: online, presencial)</label>
-                    <input type="text" class="form-control" name="disponibilidade">
-                </div>
-                <div class="form-group">
-                    <label>Categoria ID</label>
-                    <input type="number" class="form-control" name="categoria_id" required>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secondary" onclick="fecharModal('modalServico')">Cancelar</button>
-            <button class="btn-primary" onclick="submeterNovoServico()">Salvar Serviço</button>
-        </div>
-    </div>
-</div>
-
 <script src="../../js/api.js"></script>
 <script src="../../js/toast.js"></script>
-<script src="../../js/painel_vendedor.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!estaAutenticado()) {
+        window.location.href = '../../login/';
+        return;
+    }
+    
+    // Setup Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const toggle = document.getElementById('menuToggle');
+    const open = () => { sidebar.classList.add('active'); overlay.classList.add('active'); };
+    const close = () => { sidebar.classList.remove('active'); overlay.classList.remove('active'); };
+    toggle?.addEventListener('click', () => sidebar.classList.contains('active') ? close() : open());
+    overlay?.addEventListener('click', close);
+
+    const logoutBtn = document.getElementById('btnLogout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+    }
+
+    try {
+        const user = await apiCall('GET', '/auth/me');
+        if (user) {
+            const nomeEl = document.querySelector('[data-user-name]');
+            const fotoEl = document.querySelector('[data-user-photo]');
+            if(nomeEl) nomeEl.textContent = user.nome_completo;
+            if(fotoEl) fotoEl.src = user.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo)}&background=C84B1F&color=fff`;
+        }
+    } catch(e) {}
+});
+</script>
+
 </body>
 </html>

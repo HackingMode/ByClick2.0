@@ -67,6 +67,19 @@ class CategoriaStatusEnum(str, enum.Enum):
     inativo = "inativo"
 
 
+class StatusPedidoPromocaoEnum(str, enum.Enum):
+    pendente = "pendente"
+    aprovado = "aprovado"
+    rejeitado = "rejeitado"
+
+
+class TipoNotificacaoEnum(str, enum.Enum):
+    sistema = "sistema"
+    pedido = "pedido"
+    promocao = "promocao"
+    mensagem = "mensagem"
+
+
 # ─────────────────────────── LOCALIDADES ───────────────────────────
 
 class Provincia(Base):
@@ -135,6 +148,7 @@ class Utilizador(Base):
     pedidos_comprador = relationship("Pedido", foreign_keys="Pedido.comprador_id", back_populates="comprador")
     avaliacoes_dadas = relationship("Avaliacao", foreign_keys="Avaliacao.avaliador_id", back_populates="avaliador")
     codigos_verificacao = relationship("CodigoVerificacao", back_populates="utilizador", cascade="all, delete-orphan")
+    notificacoes = relationship("Notificacao", back_populates="utilizador", cascade="all, delete-orphan")
 
 
 # ─────────────────────────── ENDEREÇO ───────────────────────────
@@ -243,6 +257,7 @@ class PerfilVendedor(Base):
     produtos = relationship("Produto", back_populates="vendedor", cascade="all, delete-orphan")
     servicos = relationship("Servico", back_populates="vendedor", cascade="all, delete-orphan")
     avaliacoes_recebidas = relationship("Avaliacao", foreign_keys="Avaliacao.vendedor_id", back_populates="vendedor")
+    pedidos_promocao = relationship("PedidoPromocao", back_populates="vendedor", cascade="all, delete-orphan")
 
 
 # ─────────────────────────── CATEGORIAS ───────────────────────────
@@ -497,3 +512,47 @@ class Avaliacao(Base):
 
     avaliador = relationship("Utilizador", foreign_keys=[avaliador_id], back_populates="avaliacoes_dadas")
     vendedor = relationship("PerfilVendedor", foreign_keys=[vendedor_id], back_populates="avaliacoes_recebidas")
+
+
+# ─────────────────────────── NOTIFICAÇÕES ───────────────────────────
+
+class Notificacao(Base):
+    """
+    Notificações do sistema para os utilizadores.
+    """
+    __tablename__ = "notificacoes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    utilizador_id = Column(Integer, ForeignKey("utilizadores.id"), nullable=False)
+    
+    titulo = Column(String(150), nullable=False)
+    mensagem = Column(Text, nullable=False)
+    lida = Column(Boolean, default=False)
+    tipo = Column(Enum(TipoNotificacaoEnum), default=TipoNotificacaoEnum.sistema)
+    
+    criado_em = Column(DateTime, default=datetime.utcnow)
+
+    # Relacionamentos
+    utilizador = relationship("Utilizador", back_populates="notificacoes")
+
+
+# ─────────────────────────── PEDIDO DE PROMOÇÃO ───────────────────────────
+
+class PedidoPromocao(Base):
+    """
+    Pedidos feitos por vendedores para promoverem a sua loja.
+    """
+    __tablename__ = "pedidos_promocao"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendedor_id = Column(Integer, ForeignKey("perfis_vendedor.id"), nullable=False)
+    
+    mensagem_solicitacao = Column(Text, nullable=True)
+    status = Column(Enum(StatusPedidoPromocaoEnum), default=StatusPedidoPromocaoEnum.pendente)
+    observacoes_admin = Column(Text, nullable=True)
+    
+    criado_em = Column(DateTime, default=datetime.utcnow)
+    atualizado_em = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relacionamentos
+    vendedor = relationship("PerfilVendedor", back_populates="pedidos_promocao")

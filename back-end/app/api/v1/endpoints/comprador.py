@@ -8,6 +8,7 @@ from app.core.database import get_db
 from app.models.models import Utilizador, Pedido, PedidoServico, Endereco
 from app.api.v1.endpoints.deps import get_utilizador_atual
 from app.schemas.schemas import UtilizadorUpdateSchema
+from app.api.v1.endpoints.auth import salvar_foto_perfil
 
 router = APIRouter(prefix="/comprador", tags=["Comprador"])
 
@@ -61,6 +62,8 @@ def atualizar_meu_perfil(
         user.nome_completo = dados.nome_completo
     if dados.numero_telefone is not None:
         user.numero_telefone = dados.numero_telefone
+    if dados.foto_perfil is not None:
+        user.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "comprador", user.id)
 
     # Update address
     if any([dados.provincia, dados.municipio, dados.bairro]):

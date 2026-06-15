@@ -145,6 +145,18 @@ class LoginSchema(BaseModel):
     senha: str
 
 
+class MudarSenhaSchema(BaseModel):
+    senha_atual: str
+    nova_senha: str
+
+    @field_validator("nova_senha")
+    @classmethod
+    def nova_senha_minima(cls, v):
+        if len(v) < 8:
+            raise ValueError("A nova senha deve ter pelo menos 8 caracteres")
+        return v
+
+
 class TokenSchema(BaseModel):
     access_token: str
     refresh_token: str
@@ -229,6 +241,11 @@ class UtilizadorUpdateSchema(BaseModel):
     nome_completo: Optional[str] = None
     data_nascimento: Optional[date] = None
     genero: Optional[GeneroEnum] = None
+    numero_telefone: Optional[str] = None
+    provincia: Optional[str] = None
+    municipio: Optional[str] = None
+    bairro: Optional[str] = None
+    foto_perfil: Optional[str] = None
 
 
 # ─────────────────────── VENDEDOR ───────────────────────
@@ -256,6 +273,11 @@ class PerfilVendedorResponseSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PerfilVendedorUpdateSchema(BaseModel):
+    nome_loja: Optional[str] = None
+    descricao_loja: Optional[str] = None
+    iban: Optional[str] = None
 
 
 # ─────────────────────── PRODUTO ───────────────────────
@@ -395,3 +417,35 @@ class RedefinirSenhaSchema(BaseModel):
         if self.nova_senha != self.confirmar_senha:
             raise ValueError('As senhas nao coincidem')
         return self
+
+
+# ─────────────────────── NOTIFICAÇÕES ───────────────────────
+
+class NotificacaoResponseSchema(BaseModel):
+    id: int
+    titulo: str
+    mensagem: str
+    lida: bool
+    tipo: str
+    criado_em: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ─────────────────────── PEDIDO DE PROMOÇÃO ───────────────────────
+
+class PedidoPromocaoCreateSchema(BaseModel):
+    mensagem_solicitacao: Optional[str] = None
+
+class PedidoPromocaoResponseSchema(BaseModel):
+    id: int
+    vendedor_id: int
+    mensagem_solicitacao: Optional[str] = None
+    status: str
+    observacoes_admin: Optional[str] = None
+    criado_em: datetime
+    atualizado_em: datetime
+
+    class Config:
+        from_attributes = True

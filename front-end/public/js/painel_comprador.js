@@ -45,6 +45,8 @@ function setupModalPerfil() {
                     document.getElementById('editMunicipio').value = user.endereco.municipio || '';
                     document.getElementById('editBairro').value = user.endereco.bairro || '';
                 }
+                document.getElementById('previewFotoEdit').src = user.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo || 'User')}&background=0D8ABC&color=fff`;
+                document.getElementById('editFotoPerfil').value = '';
                 modal.classList.add('active');
             }
         } catch(e) {
@@ -55,6 +57,20 @@ function setupModalPerfil() {
     closeBtn.addEventListener('click', () => {
         modal.classList.remove('active');
     });
+
+    const fileInput = document.getElementById('editFotoPerfil');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewFotoEdit').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -69,6 +85,23 @@ function setupModalPerfil() {
             municipio: document.getElementById('editMunicipio').value,
             bairro: document.getElementById('editBairro').value
         };
+
+        if (fileInput && fileInput.files.length > 0) {
+            try {
+                const base64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsDataURL(fileInput.files[0]);
+                });
+                payload.foto_perfil = base64;
+            } catch(e) {
+                showToast("Erro ao processar a imagem.", "error");
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Alterações';
+                return;
+            }
+        }
 
         try {
             const res = await apiCall('PUT', '/comprador/meu-perfil', payload);
@@ -243,16 +276,25 @@ document.addEventListener('DOMContentLoaded', function() {
   const navItems = document.querySelectorAll('.nav-item');
   const viewDashboard = document.getElementById('view-dashboard');
   const viewDefinicoes = document.getElementById('view-definicoes');
+  const viewPedidos = document.getElementById('view-pedidos');
+  const viewFavoritos = document.getElementById('view-favoritos');
 
   function ativarAba(abaNome) {
     navItems.forEach(i => i.classList.remove('active'));
     
+    if(viewDashboard) viewDashboard.style.display = 'none';
+    if(viewDefinicoes) viewDefinicoes.style.display = 'none';
+    if(viewPedidos) viewPedidos.style.display = 'none';
+    if(viewFavoritos) viewFavoritos.style.display = 'none';
+
     if (abaNome === 'Página Inicial') {
       if(viewDashboard) viewDashboard.style.display = 'block';
-      if(viewDefinicoes) viewDefinicoes.style.display = 'none';
     } else if (abaNome === 'Definições' || abaNome === 'Meu Perfil') {
-      if(viewDashboard) viewDashboard.style.display = 'none';
       if(viewDefinicoes) viewDefinicoes.style.display = 'block';
+    } else if (abaNome === 'Meus Pedidos') {
+      if(viewPedidos) viewPedidos.style.display = 'block';
+    } else if (abaNome === 'Favoritos') {
+      if(viewFavoritos) viewFavoritos.style.display = 'block';
     }
   }
 
@@ -279,16 +321,13 @@ document.addEventListener('DOMContentLoaded', function() {
         item.classList.add('active');
       } else if (text === 'Meus Pedidos') {
         e.preventDefault();
-        ativarAba('Página Inicial');
-        // Manter o click do tab
+        ativarAba(text);
+        item.classList.add('active');
         document.querySelector('#tabProdutos')?.click();
-        const tableResp = document.querySelector('.table-responsive');
-        if (tableResp) {
-          window.scrollTo({ top: tableResp.offsetTop - 100, behavior: 'smooth' });
-        }
       } else if (text === 'Favoritos') {
         e.preventDefault();
-        showToast('Funcionalidade em desenvolvimento', 'info');
+        ativarAba(text);
+        item.classList.add('active');
       }
     });
   });
@@ -350,6 +389,41 @@ document.addEventListener('DOMContentLoaded', function() {
   btnDefPerfil?.addEventListener('click', () => window.ativarSubAbaDefinicoes('perfil'));
   btnDefSeguranca?.addEventListener('click', () => window.ativarSubAbaDefinicoes('seguranca'));
   btnDefNotificacoes?.addEventListener('click', () => window.ativarSubAbaDefinicoes('notificacoes'));
+
+  // Submit Segurança Comprador
+  const formSeguranca = document.getElementById('formSeguranca');
+  if (formSeguranca) {
+      formSeguranca.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const inputs = formSeguranca.querySelectorAll('input');
+          const senhaAtual = inputs[0].value;
+          const novaSenha = inputs[1].value;
+          const confirmarSenha = inputs[2].value;
+
+          if(novaSenha !== confirmarSenha) {
+              showToast('A nova palavra-passe e a confirmação não coincidem!', 'error');
+              return;
+          }
+
+          const btn = formSeguranca.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando...';
+
+          try {
+              await apiCall('PUT', '/auth/mudar-senha', {
+                  senha_atual: senhaAtual,
+                  nova_senha: novaSenha
+              });
+              showToast('Palavra-passe alterada com sucesso!', 'success');
+              formSeguranca.reset();
+          } catch (error) {
+              showToast(error.message || 'Erro ao alterar palavra-passe', 'error');
+          } finally {
+              btn.disabled = false;
+              btn.innerHTML = 'Atualizar Palavra-passe';
+          }
+      });
+  }
 
   setupModalPerfil();
   carregarDadosPainel();
