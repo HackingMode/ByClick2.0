@@ -5,6 +5,7 @@
 
 let autoRefreshInterval = null;
 let charts = {};
+let currentStats = null;
 
 // ===== AUTH CHECK =====
 function verificarAutenticacao() {
@@ -49,7 +50,9 @@ async function carregarDadosPainel() {
     }
 
     if (stats.status === 'fulfilled' && stats.value.success) {
+      currentStats = stats.value.data;
       atualizarEstatisticas(stats.value.data);
+      atualizarGraficos();
     }
 
     if (pedidos.status === 'fulfilled' && pedidos.value.success) {
@@ -152,6 +155,17 @@ function atualizarEstatisticas(stats) {
   if (receitaEl) receitaEl.textContent = `${(stats.receita_mes || 0).toLocaleString('pt-AO')} Kz`;
   if (ratingEl) ratingEl.textContent = (stats.avaliacao_media || 0).toFixed(1);
   if (totalEl) totalEl.textContent = stats.total_vendas || 0;
+
+  const ordPerDayEl = document.querySelector('[data-orders-per-day]');
+  const catCountEl = document.querySelector('[data-categories-count]');
+  
+  if (ordPerDayEl && stats.grafico_pedidos) {
+      const avg = (stats.grafico_pedidos.reduce((a, b) => a + b, 0) / 7).toFixed(1);
+      ordPerDayEl.textContent = `${avg} / dia`;
+  }
+  if (catCountEl && stats.grafico_categorias) {
+      catCountEl.textContent = `${stats.grafico_categorias.labels.length} Categorias`;
+  }
 }
 
 function atualizarTabelaPedidos(pedidos) {
@@ -248,12 +262,26 @@ function obterUltimos9Dias() {
 }
 
 function atualizarGraficos() {
-  if (charts.sales) {
+  if (charts.sales && currentStats) {
     charts.sales.data.labels = obterUltimos9Dias();
+    if (currentStats.grafico_vendas) {
+      charts.sales.data.datasets[0].data = currentStats.grafico_vendas;
+    }
     charts.sales.update();
   }
-  if (charts.orders) charts.orders.update();
-  if (charts.categories) charts.categories.update();
+  if (charts.orders && currentStats) {
+    if (currentStats.grafico_pedidos) {
+      charts.orders.data.datasets[0].data = currentStats.grafico_pedidos;
+    }
+    charts.orders.update();
+  }
+  if (charts.categories && currentStats) {
+    if (currentStats.grafico_categorias) {
+      charts.categories.data.labels = currentStats.grafico_categorias.labels;
+      charts.categories.data.datasets[0].data = currentStats.grafico_categorias.data;
+    }
+    charts.categories.update();
+  }
 }
 
 async function carregarCategoriasSelects() {

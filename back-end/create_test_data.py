@@ -70,7 +70,18 @@ def create_users(db: Session):
         email_verificado=True
     )
 
-    db.add_all([comprador, vendedor_ind, empresa])
+    # 4. Administrador
+    admin = Utilizador(
+        nome_completo="Administrador Kitanda",
+        nome_utilizador="admin_geral",
+        email="admin@kitanda.com",
+        numero_telefone="+244940000004",
+        senha_hash=senha_hash,
+        tipo_utilizador=TipoUtilizadorEnum.admin,
+        email_verificado=True
+    )
+
+    db.add_all([comprador, vendedor_ind, empresa, admin])
     db.commit()
 
     # Adicionar Endereços
@@ -140,6 +151,7 @@ def main():
         print(f"1. COMPRADOR: {c.email}")
         print(f"2. VENDEDOR (Individual): {v.email}")
         print(f"3. EMPRESA: {e.email}")
+        print(f"4. ADMIN: admin@kitanda.com")
         print("="*50 + "\n")
         
     except Exception as e:

@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.models.models import (
     Utilizador, PerfilVendedor, TipoUtilizadorEnum,
     Produto, Pedido, ItemPedido, Servico, PedidoServico,
-    PedidoPromocao, Notificacao, StatusPedidoPromocaoEnum, TipoNotificacaoEnum
+    PedidoPromocao, Notificacao, StatusPedidoPromocaoEnum, TipoNotificacaoEnum, Categoria
 )
 from app.schemas.schemas import (
     RegistoVendedorSchema, PerfilVendedorResponseSchema, PerfilVendedorUpdateSchema,
@@ -148,13 +148,77 @@ def get_my_stats(
 
     receita_mes = float(receita_produtos) + float(receita_servicos)
 
+    from datetime import timedelta
+    data_limite_9_dias = hoje - timedelta(days=8)
+    data_limite_9_dias = data_limite_9_dias.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    vendas_diarias = [0.0] * 9
+    pedidos_diarios = [0] * 7
+
+    pedidos_prod_recentes = db.query(Pedido).join(ItemPedido).filter(
+        ItemPedido.vendedor_id == perfil.id,
+        Pedido.criado_em >= data_limite_9_dias
+    ).all()
+
+    pedidos_serv_recentes = db.query(PedidoServico).join(Servico).filter(
+        Servico.vendedor_id == perfil.id,
+        PedidoServico.criado_em >= data_limite_9_dias
+    ).all()
+
+    for p in pedidos_prod_recentes:
+        if p.criado_em:
+            dias_atras = (hoje.date() - p.criado_em.date()).days
+            if 0 <= dias_atras <= 8:
+                idx = 8 - dias_atras
+                valor = sum(item.subtotal for item in p.itens if item.vendedor_id == perfil.id)
+                vendas_diarias[idx] += float(valor)
+            if 0 <= dias_atras <= 6:
+                idx = 6 - dias_atras
+                pedidos_diarios[idx] += 1
+
+    for s in pedidos_serv_recentes:
+        if s.criado_em:
+            dias_atras = (hoje.date() - s.criado_em.date()).days
+            if 0 <= dias_atras <= 8:
+                idx = 8 - dias_atras
+                vendas_diarias[idx] += float(s.valor_total)
+            if 0 <= dias_atras <= 6:
+                idx = 6 - dias_atras
+                pedidos_diarios[idx] += 1
+
+    cat_produtos = db.query(Categoria.nome, func.count(Produto.id)).join(Produto).filter(
+        Produto.vendedor_id == perfil.id, Produto.ativo == True
+    ).group_by(Categoria.nome).all()
+
+    cat_servicos = db.query(Categoria.nome, func.count(Servico.id)).join(Servico).filter(
+        Servico.vendedor_id == perfil.id, Servico.ativo == True
+    ).group_by(Categoria.nome).all()
+
+    categorias_dict = {}
+    for nome, count in cat_produtos:
+        categorias_dict[nome] = categorias_dict.get(nome, 0) + count
+    for nome, count in cat_servicos:
+        categorias_dict[nome] = categorias_dict.get(nome, 0) + count
+
+    cat_labels = list(categorias_dict.keys())
+    cat_data = list(categorias_dict.values())
+    if not cat_labels:
+        cat_labels = ["Sem categorias"]
+        cat_data = [1]
+
     return {
         "produtos_count": int(produtos_count),
         "servicos_count": int(servicos_count),
         "pedidos_mes": int(pedidos_mes) + int(pedidos_servico_mes),
         "receita_mes": float(receita_mes),
         "avaliacao_media": float(perfil.avaliacao_media) if perfil.avaliacao_media else 0.0,
-        "total_vendas": perfil.total_vendas or 0
+        "total_vendas": perfil.total_vendas or 0,
+        "grafico_vendas": vendas_diarias,
+        "grafico_pedidos": pedidos_diarios,
+        "grafico_categorias": {
+            "labels": cat_labels,
+            "data": cat_data
+        }
     }
 
 
@@ -202,7 +266,12 @@ def get_my_orders(
             "valor_total": float(p.valor_total or 0),
             "status": p.status,
             "criado_em": p.criado_em.isoformat() if p.criado_em else None,
-            "atualizado_em": p.atualizado_em.isoformat() if p.atualizado_em else None
+            "atualizado_em": p.atualizado_em.isoformat() if p.atualizado_em else None,
+            "itens": [{
+                "nome_produto": item.produto.nome,
+                "quantidade_comprada": item.quantidade,
+                "stock_atual": item.produto.stock
+            } for item in p.itens if item.vendedor_id == perfil.id and item.produto]
         })
 
     for s in pedidos_servicos:

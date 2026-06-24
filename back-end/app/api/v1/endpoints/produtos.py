@@ -113,8 +113,16 @@ def editar_produto(
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não encontrado ou sem permissão")
 
-    for key, value in dados.model_dump(exclude_unset=True).items():
+    produto_data = dados.model_dump(exclude_unset=True, exclude={"imagem"})
+    for key, value in produto_data.items():
         setattr(produto, key, value)
+
+    if dados.imagem:
+        img_url = salvar_imagem_produto(dados.imagem, produto.id)
+        # Remover imagens antigas principais se necessário, mas por agora limpa tudo e recria
+        db.query(ImagemProduto).filter(ImagemProduto.produto_id == produto.id).delete()
+        img_produto = ImagemProduto(produto_id=produto.id, url=img_url, principal=True)
+        db.add(img_produto)
 
     db.commit()
     db.refresh(produto)

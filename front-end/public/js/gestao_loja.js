@@ -39,13 +39,13 @@ function renderProdutos(produtos) {
     container.innerHTML = produtos.map(p => `
         <div class="product-card">
             <div style="height: 150px; background: #eee; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
-                <img src="${p.imagens && p.imagens.length > 0 ? p.imagens[0].url : 'https://via.placeholder.com/300x150?text=Sem+Imagem'}" style="width: 100%; height: 100%; object-fit: cover;" alt="Capa">
+                <img src="${(p.imagens && p.imagens.length > 0) ? p.imagens[0].url : (p.imagem ? p.imagem : 'https://via.placeholder.com/300x150?text=Sem+Imagem')}" style="width: 100%; height: 100%; object-fit: cover;" alt="Capa">
             </div>
             <h4>${p.nome}</h4>
             <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.descricao}</p>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
                 <span style="font-weight: bold; color: var(--primary);">${parseFloat(p.preco).toFixed(2)} Kz</span>
-                <span style="font-size: 0.8rem; background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">Stock: ${p.estoque}</span>
+                <span style="font-size: 0.8rem; background: #f3f4f6; padding: 2px 6px; border-radius: 4px;">Stock: ${p.stock !== undefined ? p.stock : 0}</span>
             </div>
             <div style="display:flex; gap: 0.5rem;">
                 <button class="btn-secondary" style="flex: 1; padding: 0.5rem;" onclick="abrirModalEditarProduto(${p.id})"><i class="fa-solid fa-pen"></i> Editar</button>
@@ -67,7 +67,7 @@ async function submeterNovoProduto() {
         nome: form.nome.value,
         descricao: form.descricao.value,
         preco: parseFloat(form.preco.value),
-        estoque: parseInt(form.estoque.value),
+        stock: parseInt(form.estoque.value),
         categoria_id: parseInt(form.categoria_id.value),
         ativo: true
     };
@@ -100,7 +100,7 @@ async function apagarProduto(id) {
 
 // Funções de Edição para simplificar o plano
 function abrirModalEditarProduto(id) {
-    showToast("A funcionalidade de edição detalhada está em desenvolvimento", "info");
+    window.location.href = `editar_produto.html?id=${id}`;
 }
 
 // ==============================
@@ -138,6 +138,9 @@ function renderServicos(servicos) {
 
     container.innerHTML = servicos.map(s => `
         <div class="product-card">
+            <div style="height: 150px; background: #eee; border-radius: 8px; margin-bottom: 10px; overflow: hidden;">
+                <img src="${(s.imagens && s.imagens.length > 0) ? s.imagens[0].url : (s.imagem ? s.imagem : 'https://via.placeholder.com/300x150?text=Sem+Imagem')}" style="width: 100%; height: 100%; object-fit: cover;" alt="Capa">
+            </div>
             <h4>${s.nome}</h4>
             <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.descricao}</p>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
@@ -251,7 +254,9 @@ function renderPedidos(pedidos) {
         <tr style="border-bottom: 1px solid var(--border);">
             <td style="padding: 1rem;">#${p.numero_pedido}</td>
             <td style="padding: 1rem;">${p.cliente_nome}</td>
-            <td style="padding: 1rem; text-transform: capitalize;">${p.tipo}</td>
+            <td style="padding: 1rem;">
+                ${p.tipo === 'produto' && p.itens ? p.itens.map(i => `<div style="font-size: 0.9rem; margin-bottom: 4px;"><strong>${i.nome_produto}</strong><br><span style="color: var(--text-light); font-size: 0.8rem;">Qtd: ${i.quantidade_comprada} | Stock: ${i.stock_atual}</span></div>`).join('') : 'Serviço'}
+            </td>
             <td style="padding: 1rem;">${new Date(p.criado_em).toLocaleDateString('pt-AO')}</td>
             <td style="padding: 1rem;">${mapStatus[p.status.toLowerCase()] || p.status}</td>
             <td style="padding: 1rem;">
