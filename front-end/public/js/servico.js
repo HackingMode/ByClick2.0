@@ -174,11 +174,12 @@ function renderizarServico(p) {
         modalAgendamento.style.display = 'none';
         
         // Redireciona para o checkout ou login se não estiver logado
-        if (estaAutenticado()) {
-            window.location.href = '../checkout/';
-        } else {
-            window.location.href = '../login/?redirect=../checkout/';
-        }
+        // if (estaAutenticado()) {
+        //     window.location.href = '../checkout/';
+        // } else {
+        //     window.location.href = '../login/?redirect=../checkout/';
+        // }
+        window.location.href = '../checkout/';
       }
     });
   }

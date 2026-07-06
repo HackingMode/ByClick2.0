@@ -3,10 +3,10 @@
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
-    if (!estaAutenticado()) {
-        window.location.href = '../../login/';
-        return;
-    }
+    // if (!estaAutenticado()) {
+    //     window.location.href = '../../login/';
+    //     return;
+    // }
 
     // Setup Sidebar
     const sidebar = document.getElementById('sidebar');

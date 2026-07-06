@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Verificar se o user está logado
-    const token = getToken();
-    if (!token) {
-        window.location.href = '../login/?redirect=../checkout/';
-        return;
-    }
+    // const token = getToken();
+    // if (!token) {
+    //     window.location.href = '../login/?redirect=../checkout/';
+    //     return;
+    // }
 
     carregarItensCheckout();
     configurarRadios();

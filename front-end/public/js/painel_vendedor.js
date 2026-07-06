@@ -9,10 +9,10 @@ let currentStats = null;
 
 // ===== AUTH CHECK =====
 function verificarAutenticacao() {
-  if (!estaAutenticado()) {
-    window.location.href = '../../login/';
-    return false;
-  }
+  // if (!estaAutenticado()) {
+  //   window.location.href = '../../login/';
+  //   return false;
+  // }
   return true;
 }
 
