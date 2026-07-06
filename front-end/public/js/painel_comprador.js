@@ -1,5 +1,5 @@
 /**
- * Painel do Comprador - Kitanda
+ * Painel do Comprador - ByClick
  */
 
 let pedidosProdutos = [];
@@ -19,7 +19,7 @@ function atualizarBadges() {
         // Notificações (mock)
         badges[0].textContent = '1';
         // Carrinho
-        const carrinho = JSON.parse(localStorage.getItem('kitanda_carrinho') || '{"itens":[]}');
+        const carrinho = JSON.parse(localStorage.getItem('byclick_carrinho') || '{"itens":[]}');
         const totalCarrinho = carrinho.itens.reduce((acc, curr) => acc + (curr.quantidade || 1), 0);
         badges[1].textContent = totalCarrinho;
     }

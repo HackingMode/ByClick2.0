@@ -1,5 +1,5 @@
 /**
- * Carrinho de Compras — Kitanda
+ * Carrinho de Compras — ByClick
  * Funcionalidades globais de UI do carrinho (badges, etc).
  * A lógica pesada está agora no js/api.js (getCarrinho, etc).
  */
@@ -38,7 +38,7 @@ function updateQuantity(id, tipo, novaQuantidade) {
 }
 
 function clearCart() {
-  localStorage.removeItem('kitanda_carrinho');
+  localStorage.removeItem('byclick_carrinho');
   window.dispatchEvent(new Event('carrinhoAtualizado'));
 }
 

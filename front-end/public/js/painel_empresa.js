@@ -1,5 +1,5 @@
 /**
- * Painel Empresarial - Kitanda
+ * Painel Empresarial - ByClick
  * Carrega dados reais da API e atualiza o dashboard da empresa.
  */
 

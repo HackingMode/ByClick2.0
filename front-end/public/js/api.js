@@ -1,5 +1,5 @@
 /**
- * API Client para Kitanda.
+ * API Client para ByClick.
  */
 
 const API_BASE_URL = 'http://localhost:8000/api/v1';
@@ -708,11 +708,11 @@ function formatarPreco(valor) {
 // ─────────────────────── NOVO: CARRINHO LOCALSTORAGE ───────────────────────
 
 function getCarrinho() {
-  return JSON.parse(localStorage.getItem('kitanda_carrinho') || '{"itens":[]}');
+  return JSON.parse(localStorage.getItem('byclick_carrinho') || '{"itens":[]}');
 }
 
 function salvarCarrinho(carrinho) {
-  localStorage.setItem('kitanda_carrinho', JSON.stringify(carrinho));
+  localStorage.setItem('byclick_carrinho', JSON.stringify(carrinho));
   // Dispara evento global para atualizar ícones de carrinho na navbar
   window.dispatchEvent(new Event('carrinhoAtualizado'));
 }

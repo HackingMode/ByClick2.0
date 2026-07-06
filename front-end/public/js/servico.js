@@ -1,5 +1,5 @@
 /**
- * Detalhes do Produto — Kitanda
+ * Detalhes do Produto — ByClick
  */
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -59,7 +59,7 @@ async function carregarServico(id) {
 
 function renderizarServico(p) {
   // Title
-  document.title = `${p.nome} — Kitanda`;
+  document.title = `${p.nome} — ByClick`;
   const titleEl = document.querySelector('[data-service-title]');
   if (titleEl) titleEl.textContent = p.nome || 'Serviço';
 
@@ -115,7 +115,7 @@ function renderizarServico(p) {
   const sellerNameEl = document.querySelector('[data-seller-name]');
   const sellerMetaEl = document.querySelector('[data-seller-meta]');
   const sellerAvatarEl = document.querySelector('[data-seller-avatar]');
-  if (sellerNameEl) sellerNameEl.textContent = p.vendedor_nome || 'Vendedor Kitanda';
+  if (sellerNameEl) sellerNameEl.textContent = p.vendedor_nome || 'Vendedor ByClick';
   if (sellerMetaEl) sellerMetaEl.textContent = `Membro desde ${p.vendedor_desde ? new Date(p.vendedor_desde).toLocaleDateString('pt-AO') : '—'}`;
   if (sellerAvatarEl) sellerAvatarEl.textContent = (p.vendedor_nome || 'V').charAt(0).toUpperCase();
   const btnVerLoja = document.getElementById('btnVerLoja');
@@ -163,7 +163,7 @@ function renderizarServico(p) {
           nome: p.nome,
           preco: p.preco_promocional || p.preco,
           imagem_url: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
-          vendedor_nome: p.vendedor_nome || 'Vendedor Kitanda',
+          vendedor_nome: p.vendedor_nome || 'Vendedor ByClick',
           vendedor_id: p.vendedor_id,
           // Guardar detalhes do agendamento
           agendamento_data: data,
@@ -187,7 +187,7 @@ function renderizarServico(p) {
   if (contactBtn) {
     contactBtn.addEventListener('click', () => {
       if (p.vendedor_telefone) {
-        window.open(`https://wa.me/${p.vendedor_telefone}?text=Olá! Tenho interesse no seu serviço "${p.nome}" no Kitanda.`, '_blank');
+        window.open(`https://wa.me/${p.vendedor_telefone}?text=Olá! Tenho interesse no seu serviço "${p.nome}" no ByClick.`, '_blank');
       } else {
         mostrarToast('Contacto do prestador não disponível.', 'warning');
       }

@@ -1,5 +1,5 @@
 /**
- * Landing Page - Kitanda
+ * Landing Page - ByClick
  */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -168,7 +168,7 @@ async function carregarDestaques() {
 }
 
 function isFavorito(id, tipo) {
-  const favoritos = JSON.parse(localStorage.getItem('kitanda_favoritos') || '[]');
+  const favoritos = JSON.parse(localStorage.getItem('byclick_favoritos') || '[]');
   return favoritos.some(f => f.id === id && f.tipo === tipo);
 }
 
@@ -176,7 +176,7 @@ window.toggleFavorito = function(event, btn, id, tipo) {
   event.preventDefault();
   event.stopPropagation();
   
-  let favoritos = JSON.parse(localStorage.getItem('kitanda_favoritos') || '[]');
+  let favoritos = JSON.parse(localStorage.getItem('byclick_favoritos') || '[]');
   const favIndex = favoritos.findIndex(f => f.id === id && f.tipo === tipo);
   const icon = btn.querySelector('i');
   
@@ -190,6 +190,6 @@ window.toggleFavorito = function(event, btn, id, tipo) {
     icon.style.color = '#C84B1F';
   }
   
-  localStorage.setItem('kitanda_favoritos', JSON.stringify(favoritos));
+  localStorage.setItem('byclick_favoritos', JSON.stringify(favoritos));
 };
 
