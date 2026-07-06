@@ -66,17 +66,26 @@ REFRESH_TOKEN_EXPIRE_DAYS=7
 ```
 *(Substitui `<TEU_USER>`, `<TUA_PASSWORD>` e `<NOME_DA_TUA_BD>` pelos dados reais do teu PostgreSQL).*
 
-### 2.4. Criar as tabelas na Base de Dados (Migrações)
-Executa o Alembic para aplicar todas as migrações e criar as tabelas automaticamente na base de dados:
+### 2.4. Criar as tabelas na Base de Dados
+Como o repositório já contém um ficheiro `schema.sql`, podes criar a estrutura da base de dados de duas formas:
 
+**Opção A: Usar o `schema.sql` (Recomendado para setup rápido)**
+Podes importar/executar o ficheiro `schema.sql` (disponível na raiz do projeto ou na pasta `back-end`) diretamente no teu PostgreSQL (via pgAdmin ou terminal) para criar todas as tabelas imediatamente.
+
+**Opção B: Usar as Migrações (Alembic)**
+Alternativamente, podes executar o Alembic para aplicar as migrações automaticamente pelo terminal:
 ```bash
 alembic upgrade head
 ```
 
-### 2.5. (Opcional) Popular a Base de Dados
-Caso necessites de dados iniciais (províncias, etc.), podes executar os scripts de "seed" existentes:
+### 2.5. Popular a Base de Dados com os Seeds Iniciais
+O projeto já possui *seeds* prontos na pasta `back-end` (`seed_data.py`, `seed_angola.py`, `seed_localidades.py`, `create_test_data.py`). Estes ficheiros servem para preencher a base de dados com informações predefinidas para que não comeces com a aplicação vazia.
+
+Podes executá-los em sequência (dentro do teu terminal na pasta `back-end`):
 ```bash
 python seed_angola.py
+python seed_localidades.py
+python seed_data.py
 ```
 
 ### 2.6. Iniciar o Servidor FastAPI
