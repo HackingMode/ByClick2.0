@@ -81,6 +81,10 @@ def create_users(db: Session):
                 email_verificado=True
             )
             db.add(user)
+        else:
+            # Force update the password and active status so we can always log in
+            user.senha_hash = senha_hash
+            user.ativo = True
         users[u_data["email"]] = user
     
     db.commit()

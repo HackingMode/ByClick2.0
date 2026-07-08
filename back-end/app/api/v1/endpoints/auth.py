@@ -380,7 +380,10 @@ def login(dados: LoginSchema, db: Session = Depends(get_db)):
         except ValueError:
             telefone_normalizado = None
 
-    filtros = [Utilizador.email == identificador]
+    filtros = [
+        Utilizador.email == identificador,
+        Utilizador.nome_utilizador == identificador
+    ]
     if telefone_normalizado:
         filtros.append(Utilizador.numero_telefone.in_(variantes_telefone_angola(telefone_normalizado)))
     filtros.append(Utilizador.numero_telefone == dados.identificador)
