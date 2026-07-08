@@ -2,7 +2,7 @@
  * API Client para ByClick.
  */
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'https://byclick2-0.onrender.com/api/v1';
 
 function normalizarTelefone(telefone) {
   const digitos = String(telefone || '').replace(/\D/g, '').replace(/^00/, '');
@@ -433,8 +433,7 @@ function logout() {
 }
 
 function estaAutenticado() {
-  // return !!localStorage.getItem('access_token');
-  return true;
+  return !!localStorage.getItem('access_token');
 }
 
 function obterToken() {

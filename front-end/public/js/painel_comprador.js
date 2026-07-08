@@ -6,10 +6,10 @@ let pedidosProdutos = [];
 let pedidosServicos = [];
 
 function verificarAutenticacao() {
-  // if (!estaAutenticado()) {
-  //   window.location.href = '../../login/';
-  //   return false;
-  // }
+  if (!estaAutenticado()) {
+    window.location.href = '../../login/';
+    return false;
+  }
   return true;
 }
 
