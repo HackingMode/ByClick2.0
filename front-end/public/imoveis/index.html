@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitanda - Imóveis</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="imoveis.css">
+</head>
+<body>
+  
+  <!-- Navbar será injetada aqui -->
+  <div id="navbar-container"></div>
+
+  <main class="imoveis-page">
+    <header class="imoveis-hero">
+      <div class="hero-content">
+        <h1>Encontre o Imóvel dos seus sonhos</h1>
+        <p>A maior plataforma de compra e aluguer de imóveis em Angola.</p>
+        
+        <div class="search-bar">
+          <select id="filtroFinalidade">
+            <option value="">Comprar ou Alugar?</option>
+            <option value="venda">Comprar</option>
+            <option value="aluguer">Alugar</option>
+          </select>
+          <select id="filtroTipo">
+            <option value="">Tipo de Imóvel</option>
+            <option value="apartamento">Apartamento</option>
+            <option value="moradia">Moradia</option>
+            <option value="terreno">Terreno</option>
+            <option value="escritorio">Escritório</option>
+          </select>
+          <button id="btnSearch" class="btn-primary"><i class="fa-solid fa-search"></i> Pesquisar</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="imoveis-grid-section container">
+      <div class="section-header">
+        <h2>Imóveis Disponíveis</h2>
+        <div class="sort-options">
+          <label for="ordenar">Ordenar por:</label>
+          <select id="ordenar">
+            <option value="recentes">Mais recentes</option>
+            <option value="preco-asc">Preço: Menor ao Maior</option>
+            <option value="preco-desc">Preço: Maior ao Menor</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="imoveisContainer" class="imoveis-grid">
+        <!-- Esqueleto de Carregamento -->
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+      
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <i class="fa-solid fa-house-circle-xmark"></i>
+        <h3>Nenhum imóvel encontrado</h3>
+        <p>Tente ajustar os seus filtros de pesquisa.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer será injetado aqui -->
+  <div id="footer-container"></div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="imoveis.js"></script>
+</body>
+</html>

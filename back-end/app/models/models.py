@@ -35,7 +35,31 @@ class TipoVendedorEnum(str, enum.Enum):
 class TipoLojaEnum(str, enum.Enum):
     produtos = "produtos"
     servicos = "servicos"
+    imobiliaria = "imobiliaria"
     ambos = "ambos"
+
+
+class TipoImovelEnum(str, enum.Enum):
+    apartamento = "apartamento"
+    moradia = "moradia"
+    terreno = "terreno"
+    loja = "loja"
+    escritorio = "escritorio"
+    armazem = "armazem"
+    outro = "outro"
+
+
+class FinalidadeImovelEnum(str, enum.Enum):
+    venda = "venda"
+    aluguer = "aluguer"
+
+
+class StatusPropostaImovelEnum(str, enum.Enum):
+    pendente = "pendente"
+    em_negociacao = "em_negociacao"
+    aceita = "aceita"
+    rejeitada = "rejeitada"
+    concluida = "concluida"
 
 
 class StatusVerificacaoEnum(str, enum.Enum):
@@ -260,6 +284,7 @@ class PerfilVendedor(Base):
     servicos = relationship("Servico", back_populates="vendedor", cascade="all, delete-orphan")
     avaliacoes_recebidas = relationship("Avaliacao", foreign_keys="Avaliacao.vendedor_id", back_populates="vendedor")
     pedidos_promocao = relationship("PedidoPromocao", back_populates="vendedor", cascade="all, delete-orphan")
+    imoveis = relationship("Imovel", back_populates="vendedor", cascade="all, delete-orphan")
 
 
 # ─────────────────────────── CATEGORIAS ───────────────────────────
@@ -558,3 +583,81 @@ class PedidoPromocao(Base):
 
     # Relacionamentos
     vendedor = relationship("PerfilVendedor", back_populates="pedidos_promocao")
+
+
+# ─────────────────────────── IMÓVEIS ───────────────────────────
+
+class Imovel(Base):
+    """
+    Imóveis disponíveis para venda ou aluguer.
+    """
+    __tablename__ = "imoveis"
+
+    id = Column(Integer, primary_key=True, index=True)
+    vendedor_id = Column(Integer, ForeignKey("perfis_vendedor.id"), nullable=False)
+
+    titulo = Column(String(200), nullable=False, index=True)
+    descricao = Column(Text, nullable=True)
+    preco = Column(Numeric(15, 2), nullable=False)  # Preços de imóveis podem ser grandes
+    moeda = Column(String(5), default="AOA")
+    
+    finalidade = Column(Enum(FinalidadeImovelEnum), default=FinalidadeImovelEnum.venda)
+    tipo_imovel = Column(Enum(TipoImovelEnum), nullable=False)
+    tipologia = Column(String(50), nullable=True)  # T1, T2, T3...
+    quartos = Column(Integer, nullable=True)
+    casas_de_banho = Column(Integer, nullable=True)
+    area_m2 = Column(Float, nullable=True)
+
+    provincia = Column(String(100), nullable=True)
+    municipio = Column(String(100), nullable=True)
+    bairro = Column(String(150), nullable=True)
+    endereco_completo = Column(Text, nullable=True)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+
+    ativo = Column(Boolean, default=True)
+    destaque = Column(Boolean, default=False)
+    avaliacao_media = Column(Float, default=0.0)
+    total_avaliacoes = Column(Integer, default=0)
+
+    criado_em = Column(DateTime, default=datetime.utcnow)
+    atualizado_em = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relacionamentos
+    vendedor = relationship("PerfilVendedor", back_populates="imoveis")
+    imagens = relationship("ImagemImovel", back_populates="imovel", cascade="all, delete-orphan")
+    propostas = relationship("PropostaImovel", back_populates="imovel", cascade="all, delete-orphan")
+
+
+class ImagemImovel(Base):
+    __tablename__ = "imagens_imovel"
+
+    id = Column(Integer, primary_key=True, index=True)
+    imovel_id = Column(Integer, ForeignKey("imoveis.id"), nullable=False)
+    url = Column(String(500), nullable=False)
+    principal = Column(Boolean, default=False)
+    ordem = Column(Integer, default=0)
+
+    imovel = relationship("Imovel", back_populates="imagens")
+
+
+class PropostaImovel(Base):
+    """
+    Proposta/Contacto enviado por um comprador para um imóvel.
+    """
+    __tablename__ = "propostas_imovel"
+
+    id = Column(Integer, primary_key=True, index=True)
+    imovel_id = Column(Integer, ForeignKey("imoveis.id"), nullable=False)
+    comprador_id = Column(Integer, ForeignKey("utilizadores.id"), nullable=False)
+
+    mensagem = Column(Text, nullable=False)
+    valor_proposto = Column(Numeric(15, 2), nullable=True)
+    
+    status = Column(Enum(StatusPropostaImovelEnum), default=StatusPropostaImovelEnum.pendente)
+    
+    criado_em = Column(DateTime, default=datetime.utcnow)
+    atualizado_em = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    imovel = relationship("Imovel", back_populates="propostas")
+    comprador = relationship("Utilizador")

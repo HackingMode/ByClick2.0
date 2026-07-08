@@ -739,3 +739,52 @@ function totalCarrinho() {
   return getCarrinho().itens.reduce((acc, i) => acc + ((i.preco || 0) * (i.quantidade || 1)), 0);
 }
 
+// ─────────────────────── IMOVEIS (REAL ESTATE) ───────────────────────
+
+async function listarImoveis(filtros = {}) {
+  try {
+    const queryParams = new URLSearchParams();
+    if (filtros.vendedor_id) queryParams.append('vendedor_id', filtros.vendedor_id);
+    if (filtros.tipo_negocio) queryParams.append('tipo_negocio', filtros.tipo_negocio);
+    if (filtros.tipo_imovel) queryParams.append('tipo_imovel', filtros.tipo_imovel);
+    
+    const queryString = queryParams.toString();
+    const url = `/imoveis/${queryString ? '?' + queryString : ''}`;
+    
+    return await apiCall('GET', url);
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function obterImovel(id) {
+  try {
+    return await apiCall('GET', `/imoveis/${id}`);
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function criarImovel(dados) {
+  try {
+    return await apiCall('POST', '/imoveis/', dados, true);
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function enviarPropostaImovel(imovelId, dados) {
+  try {
+    return await apiCall('POST', `/imoveis/${imovelId}/propostas`, dados, true);
+  } catch (error) {
+    return respostaErro(error);
+  }
+}
+
+async function listarPropostasImovel(imovelId) {
+  try {
+    return await apiCall('GET', `/imoveis/${imovelId}/propostas`, null, true);
+  } catch (error) {
+    return respostaErro(error);
+  }
+}

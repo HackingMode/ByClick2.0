@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, servicos, explorar, pedidos, categorias, avaliacoes, localidades, notificacoes, admin
+from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, servicos, explorar, pedidos, categorias, avaliacoes, localidades, notificacoes, admin, imoveis
 
 os.makedirs("imagens", exist_ok=True)
 
@@ -44,7 +44,7 @@ app.include_router(avaliacoes.router, prefix="/api/v1")
 app.include_router(localidades.router, prefix="/api/v1/localidades", tags=["Localidades"])
 app.include_router(notificacoes.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
-
+app.include_router(imoveis.router, prefix="/api/v1/imoveis", tags=["Imóveis"])
 
 @app.get("/", tags=["Root"])
 def root():
@@ -54,3 +54,13 @@ def root():
 @app.get("/health", tags=["Root"])
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/seed-db", tags=["Root"])
+def seed_database():
+    try:
+        from seed_render import main as run_seed
+        run_seed()
+        return {"mensagem": "Base de dados populada e senhas redefinidas com sucesso! Já podes iniciar sessão com a password123"}
+    except Exception as e:
+        return {"erro": str(e), "mensagem": "Falha ao gerar os dados."}

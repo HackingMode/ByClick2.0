@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitanda - Detalhe do Imóvel</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet para Mapas -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="imovel.css">
+</head>
+<body>
+  
+  <div id="navbar-container"></div>
+
+  <main class="container">
+    <div id="imovelLoading" class="loading-spinner">
+      <i class="fa-solid fa-spinner fa-spin fa-3x"></i>
+    </div>
+
+    <div id="imovelContent" class="imovel-detail-grid" style="display: none;">
+      
+      <!-- Lado Esquerdo: Galeria e Descrição -->
+      <div class="imovel-main">
+        <div class="imovel-gallery">
+          <img id="mainImage" src="" alt="Imagem Principal" class="main-image">
+          <div id="thumbnailContainer" class="thumbnail-list"></div>
+        </div>
+
+        <div class="imovel-info-card">
+          <span id="badgeFinalidade" class="badge"></span>
+          <h1 id="imovelTitulo">...</h1>
+          <p id="imovelLocalizacao" class="location-text"><i class="fa-solid fa-location-dot"></i> ...</p>
+          
+          <div class="key-features">
+            <div class="kf-item">
+              <i class="fa-solid fa-bed"></i>
+              <span id="imovelQuartos">-</span> Quartos
+            </div>
+            <div class="kf-item">
+              <i class="fa-solid fa-bath"></i>
+              <span id="imovelWC">-</span> WC
+            </div>
+            <div class="kf-item">
+              <i class="fa-solid fa-vector-square"></i>
+              <span id="imovelArea">-</span>
+            </div>
+            <div class="kf-item">
+              <i class="fa-solid fa-house"></i>
+              <span id="imovelTipo">-</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2>Descrição</h2>
+          <p id="imovelDescricao" class="descricao-text">...</p>
+        </div>
+        
+        <div class="imovel-info-card">
+          <h2>Localização no Mapa</h2>
+          <div id="mapaImovel" class="mapa-container"></div>
+        </div>
+      </div>
+
+      <!-- Lado Direito: Preço e Formulário de Proposta -->
+      <div class="imovel-sidebar">
+        <div class="price-card">
+          <h2 id="imovelPreco" class="price">...</h2>
+          <p class="moeda" id="imovelMoeda"></p>
+        </div>
+
+        <div class="seller-card">
+          <h3>Vendedor / Imobiliária</h3>
+          <div class="seller-info">
+            <div class="seller-avatar">
+              <i class="fa-solid fa-building"></i>
+            </div>
+            <div>
+              <h4 id="vendedorNome">...</h4>
+              <p id="vendedorTelefone">...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="proposal-card">
+          <h3>Tem interesse?</h3>
+          <p>Envie uma mensagem ou proposta diretamente ao vendedor.</p>
+          
+          <form id="formProposta">
+            <div class="input-group">
+              <label for="propMensagem">Sua Mensagem</label>
+              <textarea id="propMensagem" rows="4" placeholder="Gostaria de agendar uma visita..." required></textarea>
+            </div>
+            <div class="input-group">
+              <label for="propValor">Oferta (Opcional - Kz)</label>
+              <input type="number" id="propValor" placeholder="Ex: 5000000">
+            </div>
+            <button type="submit" class="btn-primary w-100" id="btnEnviarProposta">
+              Enviar Proposta <i class="fa-regular fa-paper-plane"></i>
+            </button>
+          </form>
+          <div id="propostaFeedback"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="imovel.js"></script>
+</body>
+</html>

@@ -8,7 +8,8 @@ from datetime import date, datetime
 from app.core.phone import normalizar_telefone_angola
 from app.models.models import (
     GeneroEnum, TipoUtilizadorEnum, TipoVendedorEnum,
-    TipoLojaEnum, StatusVerificacaoEnum
+    TipoLojaEnum, StatusVerificacaoEnum,
+    TipoImovelEnum, FinalidadeImovelEnum, StatusPropostaImovelEnum
 )
 
 
@@ -453,6 +454,74 @@ class PedidoPromocaoResponseSchema(BaseModel):
     observacoes_admin: Optional[str] = None
     criado_em: datetime
     atualizado_em: datetime
+
+    class Config:
+        from_attributes = True
+
+# ─────────────────────── IMÓVEIS ───────────────────────
+
+class ImagemImovelResponseSchema(BaseModel):
+    id: int
+    url: str
+    principal: bool
+    ordem: int
+
+    class Config:
+        from_attributes = True
+
+class ImovelCreateSchema(BaseModel):
+    titulo: str
+    descricao: Optional[str] = None
+    preco: float
+    moeda: Optional[str] = "AOA"
+    finalidade: FinalidadeImovelEnum
+    tipo_imovel: TipoImovelEnum
+    tipologia: Optional[str] = None
+    quartos: Optional[int] = None
+    casas_de_banho: Optional[int] = None
+    area_m2: Optional[float] = None
+    provincia: Optional[str] = None
+    municipio: Optional[str] = None
+    bairro: Optional[str] = None
+    endereco_completo: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+
+class ImovelResponseSchema(ImovelCreateSchema):
+    id: int
+    vendedor_id: int
+    ativo: bool
+    destaque: bool
+    avaliacao_media: float
+    total_avaliacoes: int
+    criado_em: datetime
+    atualizado_em: datetime
+    imagens: list[ImagemImovelResponseSchema] = []
+    
+    # Detalhes do vendedor integrados (opcional para o frontend)
+    vendedor_nome: Optional[str] = None
+    vendedor_telefone: Optional[str] = None
+    vendedor_latitude: Optional[float] = None
+    vendedor_longitude: Optional[float] = None
+
+    class Config:
+        from_attributes = True
+
+class PropostaImovelCreateSchema(BaseModel):
+    mensagem: str
+    valor_proposto: Optional[float] = None
+
+class PropostaImovelResponseSchema(PropostaImovelCreateSchema):
+    id: int
+    imovel_id: int
+    comprador_id: int
+    status: StatusPropostaImovelEnum
+    criado_em: datetime
+    atualizado_em: datetime
+    
+    # Info auxiliar
+    comprador_nome: Optional[str] = None
+    comprador_telefone: Optional[str] = None
 
     class Config:
         from_attributes = True
