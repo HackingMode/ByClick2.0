@@ -91,6 +91,16 @@ def ver_produto(produto_id: int, db: Session = Depends(get_db)):
     produto = db.query(Produto).filter(Produto.id == produto_id, Produto.ativo == True).first()
     if not produto:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
+        
+    vendedor = produto.vendedor
+    if vendedor and vendedor.utilizador:
+        setattr(produto, "vendedor_nome", vendedor.nome_loja)
+        setattr(produto, "vendedor_telefone", vendedor.utilizador.numero_telefone)
+        if vendedor.utilizador.endereco:
+            setattr(produto, "vendedor_latitude", vendedor.utilizador.endereco.latitude)
+            setattr(produto, "vendedor_longitude", vendedor.utilizador.endereco.longitude)
+        setattr(produto, "vendedor_desde", vendedor.utilizador.criado_em)
+        
     return produto
 
 

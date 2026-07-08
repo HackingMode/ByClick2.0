@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="../css/produto.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
 <body>
 
@@ -103,6 +104,12 @@
         </div>
         <a href="#" id="btnVerLoja" class="btn btn-sm btn-ghost" style="color: var(--terra); border-color: var(--terra);">Ver Loja</a>
       </div>
+
+      <!-- Store Location Map -->
+      <div class="store-location" id="storeLocationContainer" style="display:none; margin-top: 20px;">
+        <h3>Localização da Loja</h3>
+        <div id="storeMap" style="height: 200px; border-radius: 8px; border: 1px solid #ccc; margin-top: 10px; z-index: 1;"></div>
+      </div>
     </div>
   </div>
 </main>
@@ -113,6 +120,7 @@
 
 <script src="../js/api.js"></script>
 <script src="../js/toast.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="../js/carrinho.js"></script>
 <script src="../js/produto.js"></script>
 </body>

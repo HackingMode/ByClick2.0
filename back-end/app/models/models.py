@@ -167,6 +167,8 @@ class Endereco(Base):
     bairro = Column(String(150), nullable=True)
     endereco_completo = Column(Text, nullable=True)   
     nif = Column(String(20), nullable=True, unique=True) 
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
 
     criado_em = Column(DateTime, default=datetime.utcnow)
     atualizado_em = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -538,6 +538,8 @@ function coletarDadosVendedor() {
     municipio: valorPorId('vendMunicipio') || null,
     bairro: valorPorId('vendBairro') || null,
     endereco_completo: valorPorId('vendRua') || null,
+    latitude: parseFloat(valorPorId('vendLatitude')) || null,
+    longitude: parseFloat(valorPorId('vendLongitude')) || null,
     numero_bi: valorPorId('vendBi'),
     nif: valorPorId('vendNif') || null,
     data_emissao: valorPorId('vendDataEmissao'),
@@ -565,6 +567,8 @@ function coletarDadosEmpresa() {
     data_criacao: valorPorId('companyCreationDate') || null,
     provincia: valorPorId('companyProvince'),
     municipio: valorPorId('companyMunicipality'),
+    latitude: parseFloat(valorPorId('companyLatitude')) || null,
+    longitude: parseFloat(valorPorId('companyLongitude')) || null,
     website: valorPorId('companyWebsite') || null,
     telefone: valorPorId('companyPhone'),
     email: valorPorId('companyEmail'),
@@ -848,7 +852,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function carregarProvincias() {
   try {
-    const response = await fetch('http://localhost:8000/api/v1/localidades/provincias');
+    const response = await fetch(`${API_BASE_URL}/localidades/provincias`);
     const provincias = await response.json();
     return provincias;
   } catch (error) {
@@ -859,7 +863,7 @@ async function carregarProvincias() {
 
 async function carregarMunicipios(provinciaId) {
   try {
-    const response = await fetch(`http://localhost:8000/api/v1/localidades/provincias/${provinciaId}/municipios`);
+    const response = await fetch(`${API_BASE_URL}/localidades/provincias/${provinciaId}/municipios`);
     const municipios = await response.json();
     return municipios;
   } catch (error) {
@@ -919,5 +923,82 @@ document.addEventListener('DOMContentLoaded', function() {
     popularSelectProvincias('compProvincia', 'compMunicipio');
   } else if (pathname.includes('cadastro_empresa')) {
     popularSelectProvincias('companyProvince', 'companyMunicipality');
+  }
+});
+
+// Map Initialization variables
+let vendedorMap, empresaMap;
+
+function initLeafletMap(mapId, latId, lngId, defaultLat = -8.839988, defaultLng = 13.289437) {
+  const mapElement = document.getElementById(mapId);
+  if (!mapElement || typeof L === 'undefined') return null;
+
+  const map = L.map(mapId).setView([defaultLat, defaultLng], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  const marker = L.marker([defaultLat, defaultLng], {draggable: true}).addTo(map);
+  
+  marker.on('dragend', function(event){
+    const position = marker.getLatLng();
+    document.getElementById(latId).value = position.lat;
+    document.getElementById(lngId).value = position.lng;
+  });
+
+  return { map, marker };
+}
+
+function obterMinhaLocalizacao(mapObj, latId, lngId) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        mapObj.map.setView([lat, lng], 15);
+        mapObj.marker.setLatLng([lat, lng]);
+        document.getElementById(latId).value = lat;
+        document.getElementById(lngId).value = lng;
+        mostrarToast('Localização obtida com sucesso!', 'success');
+      },
+      (error) => {
+        mostrarToast('Não foi possível obter a sua localização.', 'error');
+      }
+    );
+  } else {
+    mostrarToast('Geolocalização não suportada por este navegador.', 'error');
+  }
+}
+
+function obterMinhaLocalizacaoVendedor() {
+  if (!vendedorMap) {
+    const mapInstances = initLeafletMap('vendedorMap', 'vendLatitude', 'vendLongitude');
+    if (mapInstances) vendedorMap = mapInstances;
+  }
+  if (vendedorMap) obterMinhaLocalizacao(vendedorMap, 'vendLatitude', 'vendLongitude');
+}
+
+function obterMinhaLocalizacaoEmpresa() {
+  if (!empresaMap) {
+    const mapInstances = initLeafletMap('empresaMap', 'companyLatitude', 'companyLongitude');
+    if (mapInstances) empresaMap = mapInstances;
+  }
+  if (empresaMap) obterMinhaLocalizacao(empresaMap, 'companyLatitude', 'companyLongitude');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const pathname = window.location.pathname;
+  if (pathname.includes('cadastro_vendedor')) {
+    setTimeout(() => {
+      const mapInstances = initLeafletMap('vendedorMap', 'vendLatitude', 'vendLongitude');
+      if (mapInstances) vendedorMap = mapInstances;
+    }, 500);
+  }
+  if (pathname.includes('cadastro_empresa')) {
+    setTimeout(() => {
+      const mapInstances = initLeafletMap('empresaMap', 'companyLatitude', 'companyLongitude');
+      if (mapInstances) empresaMap = mapInstances;
+    }, 500);
   }
 });

@@ -146,6 +146,8 @@ def criar_endereco(db: Session, utilizador_id: int, dados):
     bairro = getattr(dados, "bairro", None)
     endereco_completo = getattr(dados, "endereco_completo", None)
     nif = getattr(dados, "nif", None)
+    latitude = getattr(dados, "latitude", None)
+    longitude = getattr(dados, "longitude", None)
 
     if not any([provincia, municipio, bairro, endereco_completo, nif]):
         return
@@ -166,6 +168,8 @@ def criar_endereco(db: Session, utilizador_id: int, dados):
         bairro=bairro,
         endereco_completo=endereco_completo,
         nif=nif,
+        latitude=latitude,
+        longitude=longitude,
     ))
 
 

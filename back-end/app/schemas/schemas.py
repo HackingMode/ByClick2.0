@@ -30,6 +30,8 @@ class RegistoBaseSchema(BaseModel):
     municipio: Optional[str] = None
     bairro: Optional[str] = None
     endereco_completo: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     nif: Optional[str] = None
     foto_perfil: Optional[str] = None
 
@@ -87,6 +89,8 @@ class RegistoEmpresaSchema(BaseModel):
     data_criacao: Optional[date] = None
     provincia: str
     municipio: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     website: Optional[str] = None
     telefone: str
     email: EmailStr
@@ -169,13 +173,6 @@ class VerificarCodigoSchema(BaseModel):
     tipo: str  # "email", "telefone"
 
 
-class UtilizadorUpdateSchema(BaseModel):
-    nome_completo: Optional[str] = None
-    numero_telefone: Optional[str] = None
-    provincia: Optional[str] = None
-    municipio: Optional[str] = None
-    bairro: Optional[str] = None
-
 
 # ─────────────────────── ENDEREÇO ───────────────────────
 
@@ -184,6 +181,8 @@ class EnderecoBaseSchema(BaseModel):
     municipio: str
     bairro: Optional[str] = None
     endereco_completo: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     nif: Optional[str] = None
 
 
@@ -245,6 +244,8 @@ class UtilizadorUpdateSchema(BaseModel):
     provincia: Optional[str] = None
     municipio: Optional[str] = None
     bairro: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     foto_perfil: Optional[str] = None
 
 
@@ -315,6 +316,12 @@ class ProdutoResponseSchema(ProdutoCreateSchema):
     avaliacao_media: float
     criado_em: datetime
     imagens: list[ImagemProdutoResponseSchema] = []
+
+    vendedor_nome: Optional[str] = None
+    vendedor_telefone: Optional[str] = None
+    vendedor_latitude: Optional[float] = None
+    vendedor_longitude: Optional[float] = None
+    vendedor_desde: Optional[datetime] = None
 
     class Config:
         from_attributes = True

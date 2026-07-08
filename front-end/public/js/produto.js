@@ -122,6 +122,26 @@ function renderizarProduto(p) {
     btnVerLoja.href = `../loja/?id=${p.vendedor_id}`;
   }
 
+  // Map Initialization
+  const mapContainer = document.getElementById('storeLocationContainer');
+  if (mapContainer && p.vendedor_latitude && p.vendedor_longitude) {
+    mapContainer.style.display = 'block';
+    // Initialize map with a short delay to ensure DOM is ready
+    setTimeout(() => {
+      if (typeof L !== 'undefined') {
+        const lat = p.vendedor_latitude;
+        const lng = p.vendedor_longitude;
+        const map = L.map('storeMap').setView([lat, lng], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '© OpenStreetMap'
+        }).addTo(map);
+        L.marker([lat, lng]).addTo(map)
+          .bindPopup(`<b>${p.vendedor_nome || 'Loja'}</b><br>Aqui está a nossa localização.`).openPopup();
+      }
+    }, 300);
+  }
+
   const buyBtn = document.getElementById('btnComprar');
   const buyNowBtn = document.getElementById('btnComprarAgora');
   
@@ -185,6 +205,10 @@ function renderizarProdutoDemo(id) {
   const demo = demos[id] || { nome: 'Produto Demo', preco: 50000, descricao: 'Descrição do produto de demonstração.', provincia: 'Luanda', condicao: 'novo' };
   demo.id = id;
   demo.criado_em = new Date().toISOString();
+  // Coordinates for demonstration
+  demo.vendedor_latitude = -8.839988;
+  demo.vendedor_longitude = 13.289437;
+  demo.vendedor_nome = 'Demo Store';
   renderizarProduto(demo);
 }
 

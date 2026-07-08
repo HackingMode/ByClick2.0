@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <body>
   <div class="container">
     <!-- Painel lateral com o contexto do cadastro de vendedor. -->
@@ -99,6 +99,15 @@
             <div class="input-group">
               <label>Rua</label>
               <input type="text" id="vendRua">
+            </div>
+
+            <div class="input-group full">
+              <label>Localização no Mapa (Opcional)</label>
+              <div id="vendedorMap" style="height: 250px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 10px; z-index: 1;"></div>
+              <button type="button" class="btn back-btn" onclick="obterMinhaLocalizacaoVendedor()" style="margin-top: 5px; width: fit-content;">Usar Minha Localização Atual</button>
+              <input type="hidden" id="vendLatitude">
+              <input type="hidden" id="vendLongitude">
+              <p style="font-size: 12px; color: #666; margin-top: 5px;">Arraste o marcador ou clique no botão acima para definir a localização exata da sua loja.</p>
             </div>
 
             <div class="input-group">
@@ -223,6 +232,7 @@
 
   <!-- Scripts essenciais para validacao e submissao -->
   <script src="../../js/toast.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="../../js/api.js"></script>
   <script src="../../js/cadastros.js"></script>
 </body>
