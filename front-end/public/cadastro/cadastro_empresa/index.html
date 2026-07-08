@@ -86,19 +86,15 @@
             <div class="input-group">
               <label for="companyProvince">Provincia</label>
               <select id="companyProvince" name="companyProvince" required>
-                <option value="">Selecione</option>
-                <option>Luanda</option>
-                <option>Benguela</option>
-                <option>Huambo</option>
-                <option>Cabinda</option>
-                <option>Namibe</option>
-                <option>Huila</option>
+                <option value="">A carregar províncias...</option>
               </select>
             </div>
 
             <div class="input-group">
               <label for="companyMunicipality">Municipio / Cidade</label>
-              <input id="companyMunicipality" name="companyMunicipality" type="text" placeholder="Ex.: Talatona" required>
+              <select id="companyMunicipality" name="companyMunicipality" required disabled>
+                <option value="">Selecione uma província primeiro</option>
+              </select>
             </div>
 
             <div class="input-group">
