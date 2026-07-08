@@ -90,7 +90,29 @@ async function carregarProdutos() {
     const searchTerm = document.getElementById('searchInput')?.value.trim() || '';
     let url = `/explorar/pesquisa?`;
     if (searchTerm) url += `q=${encodeURIComponent(searchTerm)}&`;
-    if (tipoAtivo !== 'all') url += `tipo=${tipoAtivo}`;
+    if (tipoAtivo !== 'all') url += `tipo=${tipoAtivo}&`;
+
+    // Tentar obter localização
+    let lat = null, lon = null;
+    const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+    if (userData.endereco && userData.endereco.latitude) {
+        lat = userData.endereco.latitude;
+        lon = userData.endereco.longitude;
+    } else if ("geolocation" in navigator) {
+        try {
+            const pos = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
+            });
+            lat = pos.coords.latitude;
+            lon = pos.coords.longitude;
+        } catch (e) {
+            console.log("Geolocalização não disponível ou negada.");
+        }
+    }
+
+    if (lat && lon) {
+        url += `lat=${lat}&lon=${lon}&`;
+    }
 
     const response = await apiCall('GET', url);
     todosOsProdutos = response || [];
@@ -142,8 +164,11 @@ function aplicarFiltros() {
   switch (sort) {
     case 'preco_asc': produtosFiltrados.sort((a, b) => (a.preco || 0) - (b.preco || 0)); break;
     case 'preco_desc': produtosFiltrados.sort((a, b) => (b.preco || 0) - (a.preco || 0)); break;
-    case 'avaliacao': produtosFiltrados.sort((a, b) => (b.avaliacao || 0) - (a.avaliacao || 0)); break;
-    default: produtosFiltrados.sort((a, b) => new Date(b.criado_em || 0) - new Date(a.criado_em || 0));
+    case 'avaliacao': produtosFiltrados.sort((a, b) => (b.avaliacao_media || 0) - (a.avaliacao_media || 0)); break;
+    case 'distancia': produtosFiltrados.sort((a, b) => (a.distancia_km || Infinity) - (b.distancia_km || Infinity)); break;
+    default: 
+      // Manter a ordem original da API (que já vem ordenada por distância/avaliação)
+      break;
   }
 
   // Update count
@@ -242,9 +267,12 @@ function renderizarProdutos(produtos) {
           <h3>${p.nome || 'Oferta sem nome'}</h3>
           <span class="prod-card__price">${precoText}</span>
           ${subtext}
-          <div class="prod-card__location" style="margin-top: 10px;">
-            <i class="fa-solid fa-star" style="color: #fbbf24;"></i>
-            ${(p.avaliacao_media || 0).toFixed(1)}
+          <div class="prod-card__location" style="margin-top: 10px; display: flex; gap: 15px; align-items: center; color: var(--gray-600); font-size: 0.9rem;">
+            <span>
+                <i class="fa-solid fa-star" style="color: #fbbf24;"></i>
+                ${(p.avaliacao_media || 0).toFixed(1)}
+            </span>
+            ${p.distancia_km != null ? `<span><i class="fa-solid fa-location-dot"></i> ${(p.distancia_km).toFixed(1)} km</span>` : ''}
           </div>
         </div>
       </a>

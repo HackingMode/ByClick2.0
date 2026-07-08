@@ -118,7 +118,31 @@ async function carregarDestaques() {
   if (!grid || !loading) return;
 
   try {
-    const produtos = await apiCall('GET', '/explorar/pesquisa?limit=4');
+    let url = '/explorar/pesquisa?limit=4&';
+
+    // Tentar obter localização
+    let lat = null, lon = null;
+    const userData = JSON.parse(localStorage.getItem('usuario') || '{}');
+    if (userData.endereco && userData.endereco.latitude) {
+        lat = userData.endereco.latitude;
+        lon = userData.endereco.longitude;
+    } else if ("geolocation" in navigator) {
+        try {
+            const pos = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
+            });
+            lat = pos.coords.latitude;
+            lon = pos.coords.longitude;
+        } catch (e) {
+            console.log("Geolocalização não disponível ou negada.");
+        }
+    }
+
+    if (lat && lon) {
+        url += `lat=${lat}&lon=${lon}&`;
+    }
+
+    const produtos = await apiCall('GET', url);
     
     loading.style.display = 'none';
 
@@ -155,7 +179,10 @@ async function carregarDestaques() {
           <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
             <h3 style="font-size: 1.1rem; margin-bottom: 8px;">${p.nome}</h3>
             <div style="margin-top: auto; font-weight: 700; color: var(--terra); font-size: 1.2rem;">${precoText}</div>
-            <div style="margin-top: 8px; font-size: 0.9rem; color: var(--ink-soft);"><i class="fa-solid fa-star" style="color: #fbbf24;"></i> ${(p.avaliacao_media || 0).toFixed(1)}</div>
+            <div style="margin-top: 8px; font-size: 0.9rem; color: var(--ink-soft); display: flex; gap: 15px; align-items: center;">
+              <span><i class="fa-solid fa-star" style="color: #fbbf24;"></i> ${(p.avaliacao_media || 0).toFixed(1)}</span>
+              ${p.distancia_km != null ? `<span><i class="fa-solid fa-location-dot"></i> ${(p.distancia_km).toFixed(1)} km</span>` : ''}
+            </div>
           </div>
         </a>
       `;
