@@ -963,11 +963,11 @@ function obterMinhaLocalizacao(mapObj, latId, lngId) {
         mostrarToast('Localização obtida com sucesso!', 'success');
       },
       (error) => {
-        mostrarToast('Não foi possível obter a sua localização.', 'error');
+        mostrarToast('Não foi possível obter a sua localização. Por favor, arraste o marcador.', 'error');
       }
     );
   } else {
-    mostrarToast('Geolocalização não suportada por este navegador.', 'error');
+    mostrarToast('Geolocalização não suportada. Por favor, arraste o marcador.', 'error');
   }
 }
 

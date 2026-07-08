@@ -112,6 +112,7 @@ class RegistoEmpresaSchema(BaseModel):
     confirmar_senha: str
     nome_utilizador: Optional[str] = None
     tipo_loja: TipoLojaEnum = TipoLojaEnum.ambos
+    foto_perfil: Optional[str] = None
 
     @field_validator("email")
     @classmethod

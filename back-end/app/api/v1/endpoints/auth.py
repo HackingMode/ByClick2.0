@@ -7,6 +7,8 @@ import os
 import random
 import re
 import string
+import time
+import glob
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -66,12 +68,23 @@ def salvar_foto_perfil(base64_str: str, tipo_utilizador: str, utilizador_id: int
     # Save relatively in back-end/imagens/<tipo_utilizador>/<utilizador_id>
     path = os.path.join("imagens", tipo_utilizador, str(utilizador_id))
     os.makedirs(path, exist_ok=True)
-    file_path = os.path.join(path, f"perfil.{ext}")
+    
+    # Remover fotos de perfil antigas para não ocupar espaço
+    for old_file in glob.glob(os.path.join(path, "perfil_*.*")):
+        try:
+            os.remove(old_file)
+        except Exception:
+            pass
+
+    # Gerar um nome de ficheiro único usando timestamp para evitar cache do browser
+    timestamp = int(time.time())
+    nome_ficheiro = f"perfil_{timestamp}.{ext}"
+    file_path = os.path.join(path, nome_ficheiro)
     
     with open(file_path, "wb") as fh:
         fh.write(base64.b64decode(b64_data))
         
-    return f"http://localhost:8000/imagens/{tipo_utilizador}/{utilizador_id}/perfil.{ext}"
+    return f"http://localhost:8000/imagens/{tipo_utilizador}/{utilizador_id}/{nome_ficheiro}"
 
 
 def gerar_nome_utilizador_empresa(db: Session, nome_empresa: str) -> str:
