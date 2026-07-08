@@ -2,7 +2,9 @@
  * API Client para ByClick.
  */
 
-const API_BASE_URL = 'https://byclick2-0.onrender.com/api/v1';
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8000/api/v1'
+  : 'https://byclick2-0.onrender.com/api/v1';
 
 function normalizarTelefone(telefone) {
   const digitos = String(telefone || '').replace(/\D/g, '').replace(/^00/, '');

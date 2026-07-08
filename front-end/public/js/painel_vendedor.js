@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
       data: {
         labels: obterUltimos9Dias(),
         datasets: [{
-          data: [18000, 42000, 35000, 65000, 98500, 80000, 120000, 155000, 190000],
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
           borderColor: '#00c853',
           backgroundColor: grad,
           borderWidth: 2.5,
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
         scales: {
           x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } },
           y: {
-            beginAtZero: true, max: 220000,
+            beginAtZero: true,
             grid: { color: '#f3f4f6' },
             ticks: {
               color: '#9ca3af', font: { size: 11 },
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function () {
       data: {
         labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'],
         datasets: [{
-          data: [1, 2, 1, 3, 2, 4, 3],
+          data: [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: 'rgba(59,130,246,0.6)',
           borderRadius: 4,
           borderSkipped: false
@@ -499,9 +499,9 @@ document.addEventListener('DOMContentLoaded', function () {
     charts.categories = new Chart(catCtx.getContext('2d'), {
       type: 'doughnut',
       data: {
-        labels: ['Audio', 'Wearables', 'Periféricos'],
+        labels: ['A carregar...'],
         datasets: [{
-          data: [38, 32, 30],
+          data: [1],
           backgroundColor: ['#00c853', '#a855f7', '#3b82f6'],
           borderWidth: 2,
           borderColor: '#fff'

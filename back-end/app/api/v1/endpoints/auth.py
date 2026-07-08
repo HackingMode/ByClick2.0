@@ -16,6 +16,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints.deps import get_utilizador_atual
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.email import enviar_otp_recuperacao
 from app.core.phone import normalizar_telefone_angola, parece_telefone, variantes_telefone_angola
@@ -84,7 +85,7 @@ def salvar_foto_perfil(base64_str: str, tipo_utilizador: str, utilizador_id: int
     with open(file_path, "wb") as fh:
         fh.write(base64.b64decode(b64_data))
         
-    return f"http://localhost:8000/imagens/{tipo_utilizador}/{utilizador_id}/{nome_ficheiro}"
+    return f"{settings.BASE_URL}/imagens/{tipo_utilizador}/{utilizador_id}/{nome_ficheiro}"
 
 
 def gerar_nome_utilizador_empresa(db: Session, nome_empresa: str) -> str:

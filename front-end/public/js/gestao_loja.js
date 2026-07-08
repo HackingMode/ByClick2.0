@@ -4,6 +4,35 @@
  */
 
 // ==============================
+// UTILITÁRIOS
+// ==============================
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+async function carregarCategoriasSelects(selectId) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    if (select.options.length > 1) return; // Já carregado
+
+    try {
+        const categorias = await apiCall('GET', '/categorias/');
+        select.innerHTML = '<option value="">Selecione uma categoria...</option>';
+        categorias.forEach(c => {
+            select.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+        });
+    } catch (e) {
+        select.innerHTML = '<option value="">Erro ao carregar categorias</option>';
+    }
+}
+
+// ==============================
 // PRODUTOS
 // ==============================
 
@@ -71,6 +100,11 @@ async function submeterNovoProduto() {
         categoria_id: parseInt(form.categoria_id.value),
         ativo: true
     };
+
+    const fileInput = document.getElementById('imgProduto');
+    if (fileInput && fileInput.files.length > 0) {
+        payload.imagem_base64 = await toBase64(fileInput.files[0]);
+    }
 
     try {
         await apiCall('POST', '/produtos/', payload);
@@ -173,6 +207,11 @@ async function submeterNovoServico() {
         ativo: true
     };
 
+    const fileInput = document.getElementById('imgServico');
+    if (fileInput && fileInput.files.length > 0) {
+        payload.imagem_base64 = await toBase64(fileInput.files[0]);
+    }
+
     try {
         await apiCall('POST', '/servicos/', payload);
         showToast('Serviço criado com sucesso!', 'success');
@@ -208,7 +247,11 @@ function abrirModalEditarServico(id) {
 // ==============================
 function abrirModal(id) {
     const m = document.getElementById(id);
-    if(m) m.classList.add('active');
+    if(m) {
+        m.classList.add('active');
+        if (id === 'modalProduto') carregarCategoriasSelects('catProdutoSelect');
+        if (id === 'modalServico') carregarCategoriasSelects('catServicoSelect');
+    }
 }
 function fecharModal(id) {
     const m = document.getElementById(id);

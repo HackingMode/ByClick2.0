@@ -15,6 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnFinalizar').addEventListener('click', submeterPedido);
 });
 
+const TAXAS_POR_PROVINCIA = {
+  'Luanda': 1500, 'Bengo': 3000, 'Benguela': 4000, 'Bié': 5000,
+  'Cabinda': 6000, 'Cunene': 5500, 'Huambo': 4500, 'Huíla': 5000,
+  'Cuando Cubango': 7000, 'Cuanza Norte': 3500, 'Cuanza Sul': 4000,
+  'Lunda Norte': 7000, 'Lunda Sul': 7000, 'Malanje': 4500,
+  'Moxico': 7500, 'Namibe': 5500, 'Uíge': 4000, 'Zaire': 5000,
+};
+
 async function carregarProvincias() {
     try {
         const provincias = await apiCall('GET', '/localidades/provincias');
@@ -32,6 +40,7 @@ async function carregarProvincias() {
             if (!provId) {
                 selectMun.innerHTML = '<option value="">Selecione a província primeiro</option>';
                 selectMun.disabled = true;
+                calcularResumo();
                 return;
             }
 
@@ -49,6 +58,7 @@ async function carregarProvincias() {
                 console.error("Erro ao carregar municípios", err);
                 selectMun.innerHTML = '<option value="">Erro ao carregar</option>';
             }
+            calcularResumo();
         });
     } catch (error) {
         console.error("Erro ao carregar províncias", error);
@@ -96,8 +106,22 @@ function carregarItensCheckout() {
     container.innerHTML = html;
 
     const subtotal = totalCarrinho();
-    // Exemplo: taxa base se houver produtos, senão 0
-    const taxaEntrega = temProdutos ? 2000 : 0; 
+    
+    // Obter província selecionada para taxa dinâmica
+    const provSelect = document.getElementById('provincia');
+    let provOpt = null;
+    let provNome = '';
+    if (provSelect && provSelect.options.length > 0 && provSelect.selectedIndex >= 0) {
+        provOpt = provSelect.options[provSelect.selectedIndex];
+        provNome = provOpt ? provOpt.getAttribute('data-nome') : '';
+    }
+    
+    // Taxa base = 0. Se tem produtos, verifica a província.
+    let taxaEntrega = 0;
+    if (temProdutos) {
+        taxaEntrega = (provNome && TAXAS_POR_PROVINCIA[provNome]) ? TAXAS_POR_PROVINCIA[provNome] : 2000;
+    }
+    
     const grandTotal = subtotal + taxaEntrega;
 
     document.getElementById('subtotal').textContent = formatarPreco(subtotal);

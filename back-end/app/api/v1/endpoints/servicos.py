@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.models.models import Servico, Utilizador, TipoLojaEnum, ImagemServico
 from app.schemas.schemas import ServicoCreateSchema, ServicoResponseSchema
@@ -28,7 +29,7 @@ def salvar_imagem_servico(base64_str: str, servico_id: int) -> str:
     with open(file_path, "wb") as fh:
         fh.write(base64.b64decode(b64_data))
         
-    return f"http://localhost:8000/imagens/servicos/{servico_id}/capa.{ext}"
+    return f"{settings.BASE_URL}/imagens/servicos/{servico_id}/capa.{ext}"
 
 
 @router.post("/", response_model=ServicoResponseSchema, status_code=201)

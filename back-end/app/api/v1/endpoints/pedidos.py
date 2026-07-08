@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.api.v1.endpoints.deps import get_db, get_utilizador_atual as get_current_user
+from app.core.config import settings
 from app.models.models import (
     Utilizador, Pedido, ItemPedido, Produto,
     PedidoServico, Servico, StatusPedidoEnum, Pagamento, PagamentoServico
@@ -283,7 +284,7 @@ def salvar_comprovativo_pagamento(base64_str: str, pedido_id: int) -> str:
     with open(file_path, "wb") as f:
         f.write(base64.b64decode(encoded))
         
-    return f"http://localhost:8000/{dir_path}/{file_name}"
+    return f"{settings.BASE_URL}/{dir_path}/{file_name}"
 
 from pydantic import BaseModel
 

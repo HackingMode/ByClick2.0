@@ -326,9 +326,9 @@ document.addEventListener('DOMContentLoaded', function () {
       type: 'line',
       data: {
         labels: obterUltimos9Dias(),
-        datasets: [{ data: [35000,52000,48000,72000,85000,95000,110000,128000,145000], borderColor: '#00c853', backgroundColor: grad, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#00c853', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.4 }]
+        datasets: [{ data: [0,0,0,0,0,0,0,0,0], borderColor: '#00c853', backgroundColor: grad, borderWidth: 2.5, pointBackgroundColor: '#fff', pointBorderColor: '#00c853', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, fill: true, tension: 0.4 }]
       },
-      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#111', titleColor: '#aaa', bodyColor: '#fff', padding: 10, displayColors: false, callbacks: { label: ctx => `Receita: ${ctx.raw.toLocaleString('pt-AO')} Kz` } } }, scales: { x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } }, y: { beginAtZero: true, max: 200000, grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', font: { size: 11 }, callback: v => v >= 1000 ? (v/1000)+'K' : v } } } }
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#111', titleColor: '#aaa', bodyColor: '#fff', padding: 10, displayColors: false, callbacks: { label: ctx => `Receita: ${ctx.raw.toLocaleString('pt-AO')} Kz` } } }, scales: { x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } }, y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { color: '#9ca3af', font: { size: 11 }, callback: v => v >= 1000 ? (v/1000)+'K' : v } } } }
     });
   }
 
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const ordCtx = document.getElementById('ordersChart');
   if (ordCtx) {
     charts.orders = new Chart(ordCtx.getContext('2d'), {
-      type: 'bar', data: { labels: ['S1','S2','S3','S4','S5','S6','S7'], datasets: [{ data: [2,3,2,4,3,5,4], backgroundColor: 'rgba(59,130,246,0.6)', borderRadius: 4, borderSkipped: false }] },
+      type: 'bar', data: { labels: ['S1','S2','S3','S4','S5','S6','S7'], datasets: [{ data: [0,0,0,0,0,0,0], backgroundColor: 'rgba(59,130,246,0.6)', borderRadius: 4, borderSkipped: false }] },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { x: { display: false }, y: { display: false, beginAtZero: true } } }
     });
   }
@@ -345,7 +345,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const catCtx = document.getElementById('catChart');
   if (catCtx) {
     charts.categories = new Chart(catCtx.getContext('2d'), {
-      type: 'doughnut', data: { labels: ['Tecnologia','Serviços','Consultoria','Varejo','Outros'], datasets: [{ data: [28,22,20,18,12], backgroundColor: ['#00c853','#a855f7','#3b82f6','#f59e0b','#ef4444'], borderWidth: 2, borderColor: '#fff' }] },
+      type: 'doughnut', data: { labels: ['A carregar...'], datasets: [{ data: [1], backgroundColor: ['#00c853','#a855f7','#3b82f6','#f59e0b','#ef4444'], borderWidth: 2, borderColor: '#fff' }] },
       options: { responsive: true, maintainAspectRatio: false, cutout: '68%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.label}: ${c.raw}%` } } } }
     });
   }
