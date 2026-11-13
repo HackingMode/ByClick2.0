@@ -2,9 +2,9 @@
  * API Client para ByClick.
  */
 
-const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+const API_BASE_URL = window.BYCLICK_API_BASE_URL || ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? 'http://localhost:8000/api/v1'
-  : 'https://byclick2-0.onrender.com/api/v1';
+  : `${window.location.origin}/api/v1`);
 
 function normalizarTelefone(telefone) {
   const digitos = String(telefone || '').replace(/\D/g, '').replace(/^00/, '');
@@ -461,7 +461,7 @@ function validarIdentificador(identificador) {
 }
 
 
-// ─────────────────────── CATEGORIAS ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CATEGORIAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function obterCategorias(tipo = null) {
   try {
@@ -475,7 +475,7 @@ async function obterCategorias(tipo = null) {
 }
 
 
-// ─────────────────────── PEDIDOS COMPRADOR ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ PEDIDOS COMPRADOR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function obterMeusPedidosComprador(limit = 20) {
   try {
@@ -487,7 +487,7 @@ async function obterMeusPedidosComprador(limit = 20) {
 }
 
 
-// ─────────────────────── AVALIAÇÕES ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ AVALIAÃ‡Ã•ES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function criarAvaliacao(dados) {
   try {
@@ -514,7 +514,7 @@ async function obterAvaliacoes(filtros = {}) {
 }
 
 
-// ─────────────────────── CRIAR/EDITAR PRODUTOS E SERVIÇOS ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CRIAR/EDITAR PRODUTOS E SERVIÃ‡OS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function criarProduto(dados) {
   try {
@@ -570,7 +570,7 @@ async function eliminarServico(servicoId) {
   }
 }
 
-// ─────────────────────── UI UTILS ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ UI UTILS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function showConfirmModal(title, message, onConfirm, btnText = 'Confirmar', iconClass = 'fa-solid fa-arrow-right-from-bracket') {
   const overlay = document.createElement('div');
@@ -686,7 +686,7 @@ function showConfirmModal(title, message, onConfirm, btnText = 'Confirmar', icon
   });
 }
 
-// ─────────────────────── NOVO: HEADERS & FORMATOS ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NOVO: HEADERS & FORMATOS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getToken() {
   return localStorage.getItem('access_token');
@@ -707,7 +707,7 @@ function formatarPreco(valor) {
   return new Intl.NumberFormat('pt-AO').format(valor || 0) + ' Kz';
 }
 
-// ─────────────────────── NOVO: CARRINHO LOCALSTORAGE ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NOVO: CARRINHO LOCALSTORAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function getCarrinho() {
   return JSON.parse(localStorage.getItem('byclick_carrinho') || '{"itens":[]}');
@@ -715,7 +715,7 @@ function getCarrinho() {
 
 function salvarCarrinho(carrinho) {
   localStorage.setItem('byclick_carrinho', JSON.stringify(carrinho));
-  // Dispara evento global para atualizar ícones de carrinho na navbar
+  // Dispara evento global para atualizar Ã­cones de carrinho na navbar
   window.dispatchEvent(new Event('carrinhoAtualizado'));
 }
 
@@ -741,7 +741,7 @@ function totalCarrinho() {
   return getCarrinho().itens.reduce((acc, i) => acc + ((i.preco || 0) * (i.quantidade || 1)), 0);
 }
 
-// ─────────────────────── IMOVEIS (REAL ESTATE) ───────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ IMOVEIS (REAL ESTATE) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 async function listarImoveis(filtros = {}) {
   try {

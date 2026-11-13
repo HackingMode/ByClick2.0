@@ -330,3 +330,12 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_categorias_id'), table_name='categorias')
     op.drop_table('categorias')
     # ### end Alembic commands ###
+    from sqlalchemy.dialects.postgresql import ENUM
+    ENUM(name="categoriastatusenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="generoenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="tipoutilizadorenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="statusverificacaoenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="statuspedidoenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="statuspagamentoenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="tipovendedorenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="tipolojaenum").drop(op.get_bind(), checkfirst=True)

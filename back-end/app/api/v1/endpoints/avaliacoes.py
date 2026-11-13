@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from app.api.v1.endpoints.deps import get_utilizador_atual
 from app.core.database import get_db
-from app.models.models import Avaliacao, Utilizador, PerfilVendedor, Pedido, PedidoServico
+from app.models.models import Avaliacao, Utilizador, PerfilVendedor, Pedido, PedidoServico, ItemPedido, Produto, Servico, StatusPedidoEnum
 
 router = APIRouter(prefix="/avaliacoes", tags=["Avaliacoes"])
 
@@ -53,6 +53,27 @@ def criar_avaliacao(
     # Verificar que não está a avaliar a si próprio
     if vendedor.utilizador_id == current_user.id:
         raise HTTPException(status_code=400, detail="Não pode avaliar a si próprio.")
+
+    if dados.produto_id is not None and dados.servico_id is not None:
+        raise HTTPException(422, "Escolha produto ou serviço")
+    products = db.query(ItemPedido).join(Pedido).filter(
+        Pedido.comprador_id == current_user.id,
+        Pedido.status == StatusPedidoEnum.entregue,
+        ItemPedido.vendedor_id == dados.vendedor_id,
+    )
+    services = db.query(PedidoServico).join(Servico).filter(
+        PedidoServico.comprador_id == current_user.id,
+        PedidoServico.status == StatusPedidoEnum.entregue,
+        Servico.vendedor_id == dados.vendedor_id,
+    )
+    if dados.produto_id is not None:
+        purchased = products.filter(ItemPedido.produto_id == dados.produto_id).first()
+    elif dados.servico_id is not None:
+        purchased = services.filter(PedidoServico.servico_id == dados.servico_id).first()
+    else:
+        purchased = products.first() or services.first()
+    if not purchased:
+        raise HTTPException(403, "Apenas compras entregues podem ser avaliadas")
 
     # Verificar duplicidade
     existing = db.query(Avaliacao).filter(

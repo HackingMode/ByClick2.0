@@ -4,12 +4,14 @@ Kitanda - Backend API
 
 import os
 from fastapi import FastAPI
+from pathlib import Path
+from app.core.config import settings, BASE_DIR
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.v1.endpoints import auth, vendedor, empresa, produtos, comprador, servicos, explorar, pedidos, categorias, avaliacoes, localidades, notificacoes, admin, imoveis
 
-os.makedirs("imagens", exist_ok=True)
+os.makedirs(BASE_DIR / "imagens", exist_ok=True)
 
 app = FastAPI(
     title="Kitanda API",
@@ -22,13 +24,13 @@ app = FastAPI(
 # CORS - permitir o frontend ligar
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # em produção: colocar o domínio do frontend
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
-app.mount("/imagens", StaticFiles(directory="imagens"), name="imagens")
+app.mount("/imagens", StaticFiles(directory=BASE_DIR / "imagens"), name="imagens")
 
 # Registar routers
 app.include_router(auth.router, prefix="/api/v1")
@@ -54,13 +56,3 @@ def root():
 @app.get("/health", tags=["Root"])
 def health_check():
     return {"status": "ok"}
-
-
-@app.get("/seed-db", tags=["Root"])
-def seed_database():
-    try:
-        from seed_render import main as run_seed
-        run_seed()
-        return {"mensagem": "Base de dados populada e senhas redefinidas com sucesso! Já podes iniciar sessão com a password123"}
-    except Exception as e:
-        return {"erro": str(e), "mensagem": "Falha ao gerar os dados."}

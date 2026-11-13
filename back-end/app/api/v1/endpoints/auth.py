@@ -1,17 +1,19 @@
+from app.core.images import save_image
 """
 Endpoints de autenticacao - registo, login e verificacao.
 """
 
 import base64
 import os
-import random
+import secrets
 import re
 import string
 import time
 import glob
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from app.core.rate_limit import check_rate_limit
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -53,39 +55,11 @@ router = APIRouter(prefix="/auth", tags=["Autenticacao"])
 
 
 def gerar_codigo_otp(tamanho: int = 6) -> str:
-    return "".join(random.choices(string.digits, k=tamanho))
+    return "".join((secrets.choice(string.digits) for _ in range(tamanho)))
 
 
 def salvar_foto_perfil(base64_str: str, tipo_utilizador: str, utilizador_id: int) -> str:
-    if "," in base64_str:
-        header, b64_data = base64_str.split(",", 1)
-        ext = header.split("/")[1].split(";")[0]
-        if ext == "jpeg":
-            ext = "jpg"
-    else:
-        b64_data = base64_str
-        ext = "jpg"
-    
-    # Save relatively in back-end/imagens/<tipo_utilizador>/<utilizador_id>
-    path = os.path.join("imagens", tipo_utilizador, str(utilizador_id))
-    os.makedirs(path, exist_ok=True)
-    
-    # Remover fotos de perfil antigas para não ocupar espaço
-    for old_file in glob.glob(os.path.join(path, "perfil_*.*")):
-        try:
-            os.remove(old_file)
-        except Exception:
-            pass
-
-    # Gerar um nome de ficheiro único usando timestamp para evitar cache do browser
-    timestamp = int(time.time())
-    nome_ficheiro = f"perfil_{timestamp}.{ext}"
-    file_path = os.path.join(path, nome_ficheiro)
-    
-    with open(file_path, "wb") as fh:
-        fh.write(base64.b64decode(b64_data))
-        
-    return f"{settings.BASE_URL}/imagens/{tipo_utilizador}/{utilizador_id}/{nome_ficheiro}"
+    return save_image(base64_str, f"{tipo_utilizador}/{utilizador_id}", "perfil")
 
 
 def gerar_nome_utilizador_empresa(db: Session, nome_empresa: str) -> str:
@@ -382,8 +356,9 @@ def registar_empresa(dados: RegistoEmpresaSchema, db: Session = Depends(get_db))
 
 
 @router.post("/login", response_model=TokenSchema)
-def login(dados: LoginSchema, db: Session = Depends(get_db)):
+def login(request: Request, dados: LoginSchema, db: Session = Depends(get_db)):
     """Login com email/telefone e senha."""
+    check_rate_limit(request, "login", limit=10, seconds=300)
 
     identificador = dados.identificador.strip().lower()
     telefone_normalizado = None
@@ -425,8 +400,9 @@ def login(dados: LoginSchema, db: Session = Depends(get_db)):
 
 
 @router.post("/verificar-codigo")
-def verificar_codigo(dados: VerificarCodigoSchema, db: Session = Depends(get_db)):
+def verificar_codigo(request: Request, dados: VerificarCodigoSchema, db: Session = Depends(get_db)):
     """Verificar codigo OTP de email ou telefone."""
+    check_rate_limit(request, "verificar_codigo", limit=10, seconds=300)
 
     codigo = (
         db.query(CodigoVerificacao)
@@ -462,8 +438,9 @@ def obter_utilizador_atual_endpoint(utilizador: Utilizador = Depends(get_utiliza
 
 
 @router.post("/recuperar-senha")
-def recuperar_senha(dados: RecuperarSenhaSchema, db: Session = Depends(get_db)):
-    """Envia código OTP (imprime no terminal) para recuperação de senha."""
+def recuperar_senha(request: Request, dados: RecuperarSenhaSchema, db: Session = Depends(get_db)):
+    """Envia cÃ³digo OTP (imprime no terminal) para recuperaÃ§Ã£o de senha."""
+    check_rate_limit(request, "recuperar_senha", limit=10, seconds=300)
     identificador = dados.identificador.strip().lower()
     telefone_normalizado = None
 
@@ -481,8 +458,8 @@ def recuperar_senha(dados: RecuperarSenhaSchema, db: Session = Depends(get_db)):
     utilizador = db.query(Utilizador).filter(or_(*filtros)).first()
 
     if not utilizador:
-        # Por questoes de segurança, retornamos sucesso sempre.
-        return {"mensagem": "Se a conta existir, foi enviado um código de recuperação."}
+        # Por questoes de seguranÃ§a, retornamos sucesso sempre.
+        return {"mensagem": "Se a conta existir, foi enviado um cÃ³digo de recuperaÃ§Ã£o."}
 
     codigo_otp = gerar_codigo_otp()
     
@@ -500,23 +477,16 @@ def recuperar_senha(dados: RecuperarSenhaSchema, db: Session = Depends(get_db)):
     ))
     db.commit()
 
-    # Enviar email se o identificador for um email
-    if "@" in utilizador.email:
-        sucesso_email = enviar_otp_recuperacao(utilizador.email, codigo_otp)
-        if sucesso_email:
-            print(f"\n[EMAIL ENVIADO] Código OTP {codigo_otp} para {utilizador.email}\n")
-        else:
-            print(f"\n[FALLBACK TERMINAL] Código de recuperação (OTP) gerado: {codigo_otp}")
-            print("Configure o servidor SMTP no ficheiro .env para enviar e-mails reais.\n")
-    else:
-        print(f"\n[TERMINAL] SMS Simulator - OTP: {codigo_otp}\n")
+    # Never expose recovery codes or personal data in logs.
+    enviar_otp_recuperacao(utilizador.email, codigo_otp)
 
-    return {"mensagem": "Se a conta existir, foi enviado um código de recuperação."}
+    return {"mensagem": "Se a conta existir, foi enviado um cÃ³digo de recuperaÃ§Ã£o."}
 
 
 @router.post("/redefinir-senha")
-def redefinir_senha(dados: RedefinirSenhaSchema, db: Session = Depends(get_db)):
-    """Redefine a senha através do código OTP."""
+def redefinir_senha(request: Request, dados: RedefinirSenhaSchema, db: Session = Depends(get_db)):
+    """Redefine a senha atravÃ©s do cÃ³digo OTP."""
+    check_rate_limit(request, "redefinir_senha", limit=10, seconds=300)
     identificador = dados.identificador.strip().lower()
     telefone_normalizado = None
 
@@ -534,7 +504,7 @@ def redefinir_senha(dados: RedefinirSenhaSchema, db: Session = Depends(get_db)):
     utilizador = db.query(Utilizador).filter(or_(*filtros)).first()
 
     if not utilizador:
-        raise HTTPException(status_code=400, detail="Código inválido ou expirado")
+        raise HTTPException(status_code=400, detail="CÃ³digo invÃ¡lido ou expirado")
 
     codigo_db = (
         db.query(CodigoVerificacao)
@@ -549,7 +519,7 @@ def redefinir_senha(dados: RedefinirSenhaSchema, db: Session = Depends(get_db)):
     )
 
     if not codigo_db:
-        raise HTTPException(status_code=400, detail="Código inválido ou expirado")
+        raise HTTPException(status_code=400, detail="CÃ³digo invÃ¡lido ou expirado")
 
     # Atualiza a senha
     utilizador.senha_hash = hash_password(dados.nova_senha)
@@ -567,7 +537,7 @@ def mudar_senha(
 ):
     """Muda a palavra-passe do utilizador autenticado."""
     if not verify_password(dados.senha_atual, utilizador.senha_hash):
-        raise HTTPException(status_code=400, detail="A palavra-passe atual está incorreta")
+        raise HTTPException(status_code=400, detail="A palavra-passe atual estÃ¡ incorreta")
 
     utilizador.senha_hash = hash_password(dados.nova_senha)
     db.commit()

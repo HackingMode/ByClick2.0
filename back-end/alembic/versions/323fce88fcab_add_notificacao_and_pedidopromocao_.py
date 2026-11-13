@@ -53,3 +53,6 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_notificacoes_id'), table_name='notificacoes')
     op.drop_table('notificacoes')
     # ### end Alembic commands ###
+    from sqlalchemy.dialects.postgresql import ENUM
+    ENUM(name="statuspedidopromocaoenum").drop(op.get_bind(), checkfirst=True)
+    ENUM(name="tiponotificacaoenum").drop(op.get_bind(), checkfirst=True)

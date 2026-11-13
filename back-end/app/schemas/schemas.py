@@ -2,8 +2,8 @@
 Schemas Pydantic - Validação de dados de entrada e saída da API.
 """
 
-from pydantic import BaseModel, ConfigDict, EmailStr, field_validator, model_validator
-from typing import Optional
+from pydantic import Field, BaseModel, ConfigDict, EmailStr, field_validator, model_validator
+from typing import Optional, Literal
 from datetime import date, datetime
 from app.core.phone import normalizar_telefone_angola
 from app.models.models import (
@@ -172,7 +172,7 @@ class TokenSchema(BaseModel):
 class VerificarCodigoSchema(BaseModel):
     utilizador_id: int
     codigo: str
-    tipo: str  # "email", "telefone"
+    tipo: Literal["email", "telefone"]
 
 
 
@@ -288,9 +288,9 @@ class PerfilVendedorUpdateSchema(BaseModel):
 class ProdutoCreateSchema(BaseModel):
     nome: str
     descricao: Optional[str] = None
-    preco: float
-    preco_promocional: Optional[float] = None
-    stock: int = 0
+    preco: float = Field(gt=0, allow_inf_nan=False)
+    preco_promocional: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
+    stock: int = Field(default=0, ge=0)
     categoria_id: Optional[int] = None
     sku: Optional[str] = None
     imagem: Optional[str] = None
@@ -334,7 +334,7 @@ class ProdutoResponseSchema(ProdutoCreateSchema):
 class ServicoCreateSchema(BaseModel):
     nome: str
     descricao: Optional[str] = None
-    preco_base: float
+    preco_base: float = Field(gt=0, allow_inf_nan=False)
     duracao_estimada: Optional[str] = None
     disponivel_online: bool = False
     disponivel_presencial: bool = True
@@ -365,7 +365,7 @@ class ServicoResponseSchema(ServicoCreateSchema):
 
 class PedidoItemCreateSchema(BaseModel):
     produto_id: int
-    quantidade: int
+    quantidade: int = Field(gt=0, le=100000)
 
 class PedidoCreateSchema(BaseModel):
     itens: list[PedidoItemCreateSchema]
@@ -473,7 +473,7 @@ class ImagemImovelResponseSchema(BaseModel):
 class ImovelCreateSchema(BaseModel):
     titulo: str
     descricao: Optional[str] = None
-    preco: float
+    preco: float = Field(gt=0, allow_inf_nan=False)
     moeda: Optional[str] = "AOA"
     finalidade: FinalidadeImovelEnum
     tipo_imovel: TipoImovelEnum
@@ -510,7 +510,7 @@ class ImovelResponseSchema(ImovelCreateSchema):
 
 class PropostaImovelCreateSchema(BaseModel):
     mensagem: str
-    valor_proposto: Optional[float] = None
+    valor_proposto: Optional[float] = Field(default=None, gt=0, allow_inf_nan=False)
 
 class PropostaImovelResponseSchema(PropostaImovelCreateSchema):
     id: int

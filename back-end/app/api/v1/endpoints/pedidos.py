@@ -1,4 +1,6 @@
+from app.core.images import save_image
 import uuid
+from decimal import Decimal
 from typing import Any, List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -98,7 +100,8 @@ def criar_pedido_produto(
     novo_pedido = Pedido(
         comprador_id=current_user.id,
         numero_pedido=f"P-{uuid.uuid4().hex[:8].upper()}",
-        valor_total=0.0,
+        valor_total=Decimal("0"),
+        valor_subtotal=Decimal("0"),
         endereco_entrega_provincia=dados.endereco_entrega_provincia,
         endereco_entrega_municipio=dados.endereco_entrega_municipio,
         endereco_entrega_bairro=dados.endereco_entrega_bairro,
@@ -107,17 +110,17 @@ def criar_pedido_produto(
     db.add(novo_pedido)
     db.flush()
 
-    valor_total = 0.0
+    valor_total = Decimal("0")
 
-    for item in dados.itens:
-        produto = db.query(Produto).filter(Produto.id == item.produto_id).first()
+    for item in sorted(dados.itens, key=lambda item: item.produto_id):
+        produto = db.query(Produto).filter(Produto.id == item.produto_id, Produto.ativo == True).with_for_update().first()
         if not produto:
             raise HTTPException(status_code=404, detail=f"Produto com ID {item.produto_id} não encontrado.")
         if produto.stock < item.quantidade:
             raise HTTPException(status_code=400, detail=f"Stock insuficiente para o produto {produto.nome}.")
 
-        preco_usado = produto.preco_promocional if produto.preco_promocional else produto.preco
-        subtotal = float(preco_usado) * item.quantidade
+        preco_usado = produto.preco_promocional if produto.preco_promocional is not None else produto.preco
+        subtotal = preco_usado * item.quantidade
         valor_total += subtotal
 
         # Reduzir stock
@@ -135,6 +138,7 @@ def criar_pedido_produto(
         db.add(item_pedido)
 
     novo_pedido.valor_total = valor_total
+    novo_pedido.valor_subtotal = valor_total
 
     # Criar Pagamento associado
     pagamento = Pagamento(
@@ -172,7 +176,7 @@ def criar_pedido_servico(
     """
     Contrata um novo serviço.
     """
-    servico = db.query(Servico).filter(Servico.id == dados.servico_id).first()
+    servico = db.query(Servico).filter(Servico.id == dados.servico_id, Servico.ativo == True).first()
     if not servico:
         raise HTTPException(status_code=404, detail="Serviço não encontrado.")
 
@@ -227,7 +231,7 @@ def atualizar_status_pedido(
     # Verifica se o current_user é o vendedor de pelo menos um dos itens deste pedido.
     # Em um marketplace multi-vendedor real, o pedido deve ser dividido por vendedor.
     # Assumimos que o vendedor pode atualizar o status geral se for dono de um item.
-    is_seller = any(item.vendedor.utilizador_id == current_user.id for item in pedido.itens)
+    is_seller = bool(pedido.itens) and all(item.vendedor.utilizador_id == current_user.id for item in pedido.itens)
     if not is_seller and current_user.tipo_utilizador.value != "admin":
         raise HTTPException(status_code=403, detail="Não tem permissões para atualizar este pedido.")
 
@@ -267,24 +271,8 @@ def atualizar_status_pedido_servico(
 
 
 def salvar_comprovativo_pagamento(base64_str: str, pedido_id: int) -> str:
-    """Guarda a imagem recebida em base64 e retorna o url do comprovativo."""
-    if "," in base64_str:
-        header, encoded = base64_str.split(",", 1)
-        extensao = header.split(";")[0].split("/")[1]
-    else:
-        encoded = base64_str
-        extensao = "jpg"
-        
-    dir_path = f"imagens/pagamentos/{pedido_id}"
-    os.makedirs(dir_path, exist_ok=True)
-    
-    file_name = f"comprovativo.{extensao}"
-    file_path = os.path.join(dir_path, file_name)
-    
-    with open(file_path, "wb") as f:
-        f.write(base64.b64decode(encoded))
-        
-    return f"{settings.BASE_URL}/{dir_path}/{file_name}"
+    return save_image(base64_str, f"pagamentos/{pedido_id}", "comprovativo")
+
 
 from pydantic import BaseModel
 

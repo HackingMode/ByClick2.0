@@ -1,3 +1,4 @@
+from app.core.images import save_image
 import base64
 import os
 from fastapi import APIRouter, Depends, HTTPException
@@ -13,23 +14,8 @@ from app.api.v1.endpoints.deps import get_utilizador_atual
 router = APIRouter(prefix="/produtos", tags=["Produtos"])
 
 def salvar_imagem_produto(base64_str: str, produto_id: int) -> str:
-    if "," in base64_str:
-        header, b64_data = base64_str.split(",", 1)
-        ext = header.split("/")[1].split(";")[0]
-        if ext == "jpeg":
-            ext = "jpg"
-    else:
-        b64_data = base64_str
-        ext = "jpg"
-    
-    path = os.path.join("imagens", "produtos", str(produto_id))
-    os.makedirs(path, exist_ok=True)
-    file_path = os.path.join(path, f"capa.{ext}")
-    
-    with open(file_path, "wb") as fh:
-        fh.write(base64.b64decode(b64_data))
-        
-    return f"{settings.BASE_URL}/imagens/produtos/{produto_id}/capa.{ext}"
+    return save_image(base64_str, f"produtos/{produto_id}", "capa")
+
 
 @router.post("/", response_model=ProdutoResponseSchema, status_code=201)
 def criar_produto(

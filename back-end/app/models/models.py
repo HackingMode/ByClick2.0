@@ -451,6 +451,7 @@ class ItemPedido(Base):
 
     pedido = relationship("Pedido", back_populates="itens")
     produto = relationship("Produto", back_populates="itens_pedido")
+    vendedor = relationship("PerfilVendedor")
 
 
 # ─────────────────────────── PEDIDO SERVIÇO ───────────────────────────

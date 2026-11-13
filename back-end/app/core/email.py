@@ -1,14 +1,14 @@
-import os
+from app.core.config import settings
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 def send_email(destinatario: str, assunto: str, corpo_html: str):
-    smtp_server = os.getenv("SMTP_SERVER")
-    smtp_port = os.getenv("SMTP_PORT")
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("SMTP_PASSWORD")
-    email_from = os.getenv("EMAIL_FROM")
+    smtp_server = settings.SMTP_SERVER
+    smtp_port = settings.SMTP_PORT
+    smtp_user = settings.SMTP_USER
+    smtp_pass = settings.SMTP_PASSWORD
+    email_from = settings.EMAIL_FROM
 
     if not all([smtp_server, smtp_port, smtp_user, smtp_pass, email_from]):
         print("AVISO: Credenciais SMTP não configuradas no .env. Email não enviado.")
@@ -23,7 +23,7 @@ def send_email(destinatario: str, assunto: str, corpo_html: str):
     msg.attach(part)
 
     try:
-        server = smtplib.SMTP(smtp_server, int(smtp_port))
+        server = smtplib.SMTP(smtp_server, int(smtp_port), timeout=15)
         server.starttls()
         server.login(smtp_user, smtp_pass)
         server.sendmail(email_from, destinatario, msg.as_string())

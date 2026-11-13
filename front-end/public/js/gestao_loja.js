@@ -103,7 +103,7 @@ async function submeterNovoProduto() {
 
     const fileInput = document.getElementById('imgProduto');
     if (fileInput && fileInput.files.length > 0) {
-        payload.imagem_base64 = await toBase64(fileInput.files[0]);
+        payload.imagem = await toBase64(fileInput.files[0]);
     }
 
     try {
@@ -209,7 +209,7 @@ async function submeterNovoServico() {
 
     const fileInput = document.getElementById('imgServico');
     if (fileInput && fileInput.files.length > 0) {
-        payload.imagem_base64 = await toBase64(fileInput.files[0]);
+        payload.imagem = await toBase64(fileInput.files[0]);
     }
 
     try {

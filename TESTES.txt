@@ -1,0 +1,44 @@
+test_upgrade_downgrade_reupgrade_and_chat_preservation (test_postgresql.PostgreSQLMigrationTest.test_upgrade_downgrade_reupgrade_and_chat_preservation) ... skipped 'TEST_DATABASE_URL not configured'
+test_checkout_totals_stock_and_status (test_regression.BackendRegression.test_checkout_totals_stock_and_status) ... C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\work\source\ByClick2.0-main\back-end\venv\Lib\site-packages\sqlalchemy\sql\schema.py:3585: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\outputs\ByClick2.0-corrigido\back-end\app\core\security.py:20: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  expire = datetime.utcnow() + (
+C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\work\source\ByClick2.0-main\back-end\venv\Lib\site-packages\jose\jwt.py:311: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = timegm(datetime.utcnow().utctimetuple())
+ok
+test_cors (test_regression.BackendRegression.test_cors) ... ok
+test_health_openapi_and_seed_removed (test_regression.BackendRegression.test_health_openapi_and_seed_removed) ... ok
+test_image_validation (test_regression.BackendRegression.test_image_validation) ... ok
+test_login_and_token_separation (test_regression.BackendRegression.test_login_and_token_separation) ... C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\work\source\ByClick2.0-main\back-end\venv\Lib\site-packages\sqlalchemy\sql\schema.py:3585: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\outputs\ByClick2.0-corrigido\back-end\app\core\security.py:20: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  expire = datetime.utcnow() + (
+C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\outputs\ByClick2.0-corrigido\back-end\app\api\v1\endpoints\auth.py:391: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  utilizador.ultimo_login = datetime.utcnow()
+C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\outputs\ByClick2.0-corrigido\back-end\app\core\security.py:29: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  expire = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+C:\Users\Empowersoft\Documents\Codex\2026-11-03\recebi-o-ficheiro-byclick2-0-main\work\source\ByClick2.0-main\back-end\venv\Lib\site-packages\jose\jwt.py:311: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  now = timegm(datetime.utcnow().utctimetuple())
+ok
+test_negative_quantity_and_atomic_failed_checkout (test_regression.BackendRegression.test_negative_quantity_and_atomic_failed_checkout) ... ok
+test_rate_limit (test_regression.BackendRegression.test_rate_limit) ... ok
+test_review_requires_purchase (test_regression.BackendRegression.test_review_requires_purchase) ... ok
+test_services_and_real_estate (test_regression.BackendRegression.test_services_and_real_estate) ... ok
+test_migration_chain_and_metadata (test_regression.MigrationRegression.test_migration_chain_and_metadata) ... INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> a98e3f5c908a, initial_migration
+INFO  [alembic.runtime.migration] Running upgrade a98e3f5c908a -> 0f6548bca26e, Add Provincia and Municipio models
+INFO  [alembic.runtime.migration] Running upgrade 0f6548bca26e -> ea0523db86ad, Add iban and comprovativo_url
+INFO  [alembic.runtime.migration] Running upgrade ea0523db86ad -> 323fce88fcab, Add Notificacao and PedidoPromocao models
+INFO  [alembic.runtime.migration] Running upgrade 323fce88fcab -> 3a474861868f, dummy
+INFO  [alembic.runtime.migration] Running upgrade 3a474861868f -> def0664d357e, Add Imoveis models
+INFO  [alembic.runtime.migration] Running upgrade def0664d357e -> f41c90a62e07, Align shop types with the real estate models without removing existing data.
+INFO  [alembic.runtime.migration] Running upgrade f41c90a62e07 -> 71b26f9c804d, Add address coordinates used by seller listings and registration.
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 7.795s
+
+OK (skipped=1)
