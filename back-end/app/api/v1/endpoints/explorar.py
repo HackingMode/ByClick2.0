@@ -18,6 +18,7 @@ class ExplorarItemSchema(BaseModel):
     avaliacao_media: float
     vendedor_id: int
     imagem_url: Optional[str] = None
+    categoria: Optional[str] = None
     
     # Específico de Serviço
     duracao_estimada: Optional[str] = None
@@ -77,6 +78,7 @@ def pesquisar(
                 avaliacao_media=p.avaliacao_media,
                 vendedor_id=p.vendedor_id,
                 imagem_url=img_url,
+                categoria=p.categoria.nome if p.categoria else None,
                 distancia_km=dist
             ))
 
@@ -105,6 +107,7 @@ def pesquisar(
                 avaliacao_media=s.avaliacao_media,
                 vendedor_id=s.vendedor_id,
                 imagem_url=img_url,
+                categoria=s.categoria.nome if s.categoria else None,
                 duracao_estimada=s.duracao_estimada,
                 distancia_km=dist
             ))

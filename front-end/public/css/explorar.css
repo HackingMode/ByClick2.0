@@ -172,3 +172,38 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-dark);
   .prod-card__img { height: 160px; }
   .container { padding: 0 16px; }
 }
+
+/* Feed: linguagem visual alinhada com a página inicial */
+.page-header { text-align: left; padding: 44px 0 28px; }
+.page-header .container { background: #f1e9df; border: 1px solid #e8ddcf; border-radius: 20px; padding: 38px 42px; }
+.feed-eyebrow { display: block; color: #a33c1c; font-size: .7rem; font-weight: 800; letter-spacing: .13em; margin-bottom: 12px; }
+.page-header h1 { font-size: clamp(1.8rem, 3vw, 2.65rem); letter-spacing: -.045em; }
+.page-header p { color: #65584b; margin-top: 9px; }
+.type-filter { border-bottom: 1px solid var(--border); padding: 0 0 16px; }
+.type-filter__inner { display: flex; gap: 8px; flex-wrap: wrap; }
+.type-filter__inner .cat-pill { background: transparent; border-color: transparent; padding: 7px 14px; }
+.type-filter__inner .cat-pill--active { background: #1a1208; border-color: #1a1208; color: #fff; }
+.results-count { display: flex; flex-direction: column; gap: 5px; }
+.results-count strong { font-size: 1.2rem; color: var(--text-dark); letter-spacing: -.02em; }
+.results-count > span { font-size: .8rem; }
+.filters-bar { padding: 26px 0 20px; }
+.prod-card { box-shadow: 0 3px 16px rgba(42, 27, 13, .035); }
+.prod-card__img { height: 225px; background: #eee8e0; }
+.prod-card__body { padding: 17px 18px 20px; }
+.prod-card__body h3 { font-size: 1rem; min-height: 2.6em; }
+.prod-card__price { font-size: 1.15rem; }
+@media (max-width: 600px) {
+  .navbar { height: auto; padding: 0; }
+  .navbar__inner { flex-wrap: wrap; gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+  .navbar__search { display: flex; order: 3; flex: 1 0 100%; max-width: none; }
+  .navbar__cta .btn-ghost { display: inline-flex; }
+  .navbar__cta { gap: 5px; }
+  .navbar__cta .btn-sm { padding: 7px 9px; }
+  .page-header { padding: 22px 0 16px; }
+  .page-header .container { width: calc(100% - 32px); padding: 26px 22px; }
+  .filters__inner { flex-direction: row; align-items: end; }
+  .prod-card__img { height: 165px; }
+  .prod-card__body { padding: 12px; }
+  .prod-card__body h3 { font-size: .88rem; }
+  .prod-card__price { font-size: .98rem; }
+}

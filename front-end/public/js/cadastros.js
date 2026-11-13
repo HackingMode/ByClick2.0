@@ -726,6 +726,14 @@ function validarFormularioEmpresa() {
   return erros;
 }
 
+function finalizarCadastro(resultado) {
+  const enviado = resultado.data?.email_enviado;
+  mostrarToast(resultado.mensagem || 'Registo efectuado.', enviado ? 'success' : 'warning', 4000);
+  setTimeout(() => {
+    window.location.href = enviado ? `/verificar-email/?id=${encodeURIComponent(resultado.utilizador_id)}` : '/login/';
+  }, enviado ? 1200 : 3500);
+}
+
 async function submeterCadastro(event, botao, config) {
   event.preventDefault();
 
@@ -744,10 +752,7 @@ async function submeterCadastro(event, botao, config) {
     const resultado = await config.registar(config.coletar());
 
     if (resultado.success) {
-      mostrarToast(config.sucesso, 'success');
-      setTimeout(() => {
-        window.location.href = '../../../login/';
-      }, 2000);
+      finalizarCadastro(resultado);
       return;
     }
 
@@ -812,12 +817,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const resultado = await registarComprador(dados);
 
         if (resultado.success) {
-          mostrarToast('Cadastro realizado com sucesso!', 'success');
           mostrarLoading(false);
-          // Redirecionar para login após 2 segundos
-          setTimeout(() => {
-            window.location.href = '../../../login/';
-          }, 2000);
+          finalizarCadastro(resultado);
         } else {
           mostrarLoading(false);
           const mensagem = resultado.error || 'Erro ao registar';

@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="../css/landing_page.css">
   <link rel="stylesheet" href="../css/carrinho.css">
+<link rel="stylesheet" href="../css/byclick-system.css">
 </head>
 <body>
 
@@ -143,7 +144,7 @@ function renderCart() {
         <img src="${item.imagem_url || 'https://placehold.co/120x120/FAF7F2/C84B1F?text=Sem+Foto'}" alt="${item.nome}">
       </div>
       <div class="cart-item__details">
-        <span class="cart-item__type">${item.tipo === 'servico' ? '💼 Serviço' : '📦 Produto'}</span>
+        <span class="cart-item__type">${item.tipo === 'servico' ? '<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 12h18"/></svg> Serviço' : '<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M12 22V12M3 7l9 5 9-5M3 7l9-5 9 5v10l-9 5-9-5zM8 4l9 5"/></svg> Produto'}</span>
         <h3 class="cart-item__name">${item.nome}</h3>
         <p class="cart-item__seller">${item.vendedor_nome || 'Vendedor'}</p>
       </div>

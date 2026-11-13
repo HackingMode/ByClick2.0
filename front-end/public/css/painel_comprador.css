@@ -437,3 +437,12 @@ td b { font-weight: 700; }
 .btn-submit:hover {
     background: #2563eb;
 }
+
+/* Conta do comprador: paleta e superfícies da página inicial */
+.nav-item.active { background: rgba(200,75,31,.15); }
+.welcome-card { background: linear-gradient(120deg, #24180f, #493024); }
+.welcome-card .btn-explore:hover { background: #a03a14; }
+.action-btn { border-color: #e8dfd0; }
+.ab-blue, .ab-green, .ab-yellow, .ab-teal { background: #f8f1e9; color: #493d31; border-color: #e8dfd0; }
+.ab-blue i, .ab-green i, .ab-yellow i, .ab-teal i { color: #c84b1f; }
+.s-envio { color: #a03a14; }

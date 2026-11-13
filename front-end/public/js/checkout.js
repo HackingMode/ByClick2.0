@@ -40,7 +40,7 @@ async function carregarProvincias() {
             if (!provId) {
                 selectMun.innerHTML = '<option value="">Selecione a província primeiro</option>';
                 selectMun.disabled = true;
-                calcularResumo();
+                carregarItensCheckout();
                 return;
             }
 
@@ -58,7 +58,7 @@ async function carregarProvincias() {
                 console.error("Erro ao carregar municípios", err);
                 selectMun.innerHTML = '<option value="">Erro ao carregar</option>';
             }
-            calcularResumo();
+            carregarItensCheckout();
         });
     } catch (error) {
         console.error("Erro ao carregar províncias", error);
@@ -107,26 +107,10 @@ function carregarItensCheckout() {
 
     const subtotal = totalCarrinho();
     
-    // Obter província selecionada para taxa dinâmica
-    const provSelect = document.getElementById('provincia');
-    let provOpt = null;
-    let provNome = '';
-    if (provSelect && provSelect.options.length > 0 && provSelect.selectedIndex >= 0) {
-        provOpt = provSelect.options[provSelect.selectedIndex];
-        provNome = provOpt ? provOpt.getAttribute('data-nome') : '';
-    }
-    
-    // Taxa base = 0. Se tem produtos, verifica a província.
-    let taxaEntrega = 0;
-    if (temProdutos) {
-        taxaEntrega = (provNome && TAXAS_POR_PROVINCIA[provNome]) ? TAXAS_POR_PROVINCIA[provNome] : 2000;
-    }
-    
-    const grandTotal = subtotal + taxaEntrega;
-
+    // A entrega ainda não é calculada pelo servidor; não incluir taxas estimadas no total.
     document.getElementById('subtotal').textContent = formatarPreco(subtotal);
-    document.getElementById('taxaEntrega').textContent = taxaEntrega > 0 ? formatarPreco(taxaEntrega) : 'Grátis';
-    document.getElementById('grandTotal').textContent = formatarPreco(grandTotal);
+    document.getElementById('taxaEntrega').textContent = temProdutos ? 'A combinar' : 'Não aplicável';
+    document.getElementById('grandTotal').textContent = formatarPreco(subtotal);
 }
 
 async function submeterPedido() {
@@ -155,6 +139,7 @@ async function submeterPedido() {
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando...';
 
+    const itensConcluidos = new Set();
     try {
         let sucessoGlobal = true;
         let pedidosCriados = [];
@@ -179,6 +164,7 @@ async function submeterPedido() {
             if (reqProd.ok) {
                 const resProd = await reqProd.json();
                 pedidosCriados.push(resProd);
+                produtos.forEach(p => itensConcluidos.add(`produto:${p.id}`));
             } else {
                 sucessoGlobal = false;
             }
@@ -188,8 +174,9 @@ async function submeterPedido() {
         for (const servico of servicos) {
             const payloadServico = {
                 servico_id: servico.id,
-                data_agendada: new Date(Date.now() + 86400000 * 2).toISOString(),
-                descricao_necessidade: notas,
+                data_agendada: servico.agendamento_data && servico.agendamento_hora
+                    ? `${servico.agendamento_data}T${servico.agendamento_hora}:00` : null,
+                descricao_necessidade: servico.agendamento_desc || notas,
                 metodo_pagamento: metodoPagamento
             };
 
@@ -202,6 +189,7 @@ async function submeterPedido() {
             if (reqServ.ok) {
                 const resServ = await reqServ.json();
                 pedidosCriados.push(resServ);
+                itensConcluidos.add(`servico:${servico.id}`);
             } else {
                 sucessoGlobal = false;
             }
@@ -221,11 +209,16 @@ async function submeterPedido() {
                 }, 2000);
             }
         } else {
-            throw new Error("Falha no processamento de um ou mais itens.");
+            throw new Error('Não foi possível criar o pedido. Tente novamente.');
         }
     } catch (e) {
         console.error(e);
-        showToast('Erro ao processar o pedido. Tente novamente.', 'error');
+        if (itensConcluidos.size) {
+            carrinho.itens = carrinho.itens.filter(item => !itensConcluidos.has(`${item.tipo}:${item.id}`));
+            localStorage.setItem('byclick_carrinho', JSON.stringify(carrinho));
+            carregarItensCheckout();
+        }
+        showToast(itensConcluidos.size ? 'Alguns pedidos foram criados. Os itens restantes continuam no carrinho.' : (e.message || 'Erro ao processar o pedido. Tente novamente.'), 'error');
         btn.disabled = false;
         btn.innerHTML = 'Finalizar Encomenda <i class="fa-solid fa-arrow-right"></i>';
     }

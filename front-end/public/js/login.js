@@ -112,12 +112,16 @@ document.addEventListener('DOMContentLoaded', function() {
           } else if (tipo === 'vendedor') {
             redirecionamento = '../paineis/painel_vendedor/painel_vendedor.html';
           } else if (tipo === 'comprador') {
-            redirecionamento = '../paineis/painel_comprador/painel_comprador.html';
+            redirecionamento = '../explorar/';
           } else if (tipo === 'admin') {
             redirecionamento = '../paineis/painel_admin/painel_admin.html';
           }
         }
 
+        // Retomar o checkout quando o login foi iniciado durante uma compra.
+        if (new URLSearchParams(window.location.search).get('redirect') === '../checkout/') {
+          redirecionamento = '../checkout/';
+        }
         // Redirecionar após 1 segundo
         setTimeout(() => {
           window.location.href = redirecionamento;

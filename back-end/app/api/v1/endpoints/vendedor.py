@@ -12,7 +12,7 @@ from app.core.database import get_db
 from app.models.models import (
     Utilizador, PerfilVendedor, TipoUtilizadorEnum,
     Produto, Pedido, ItemPedido, Servico, PedidoServico,
-    PedidoPromocao, Notificacao, StatusPedidoPromocaoEnum, TipoNotificacaoEnum, Categoria
+    PedidoPromocao, Notificacao, StatusPedidoPromocaoEnum, TipoNotificacaoEnum, Categoria, StatusPagamentoEnum, StatusPedidoEnum
 )
 from app.schemas.schemas import (
     RegistoVendedorSchema, PerfilVendedorResponseSchema, PerfilVendedorUpdateSchema,
@@ -23,6 +23,22 @@ from app.schemas.schemas import UtilizadorUpdateSchema
 from app.api.v1.endpoints.auth import salvar_foto_perfil
 
 router = APIRouter(prefix="/vendedor", tags=["Vendedor"])
+
+
+@router.get('/lojas/{vendedor_id}')
+def loja_publica(vendedor_id: int, db: Session = Depends(get_db)):
+    loja = db.query(PerfilVendedor).filter(PerfilVendedor.id == vendedor_id, PerfilVendedor.ativo == True).first()
+    if not loja:
+        raise HTTPException(status_code=404, detail='Loja não encontrada')
+    endereco = loja.utilizador.endereco if loja.utilizador else None
+    ofertas = []
+    for p in db.query(Produto).filter_by(vendedor_id=loja.id, ativo=True).all():
+        ofertas.append({'id': p.id, 'tipo': 'produto', 'nome': p.nome, 'preco': float(p.preco), 'imagem_url': p.imagens[0].url if p.imagens else None})
+    for s in db.query(Servico).filter_by(vendedor_id=loja.id, ativo=True).all():
+        ofertas.append({'id': s.id, 'tipo': 'servico', 'nome': s.nome, 'preco': float(s.preco_base), 'imagem_url': s.imagens[0].url if s.imagens else None})
+    return {'nome': loja.nome_loja, 'descricao': loja.descricao_loja, 'verificado': loja.verificado,
+            'localizacao': ', '.join(filter(None, [endereco.municipio, endereco.provincia])) if endereco else None,
+            'ofertas': ofertas}
 
 
 @router.post("/registar-loja", response_model=PerfilVendedorResponseSchema, status_code=201)
@@ -136,13 +152,15 @@ def get_my_stats(
     ).scalar() or 0
 
     # Calcular receita do mês (produtos + serviços)
-    receita_produtos = db.query(func.sum(ItemPedido.subtotal)).filter(
+    receita_produtos = db.query(func.sum(ItemPedido.subtotal)).join(Pedido, ItemPedido.pedido_id == Pedido.id).filter(
         ItemPedido.vendedor_id == perfil.id,
+        Pedido.status_pagamento == StatusPagamentoEnum.pago,
         Pedido.criado_em >= primeiro_dia
     ).scalar() or 0
 
-    receita_servicos = db.query(func.sum(PedidoServico.valor_total)).join(Servico).filter(
+    receita_servicos = db.query(func.sum(PedidoServico.valor_acordado)).join(Servico).filter(
         Servico.vendedor_id == perfil.id,
+        PedidoServico.status_pagamento == StatusPagamentoEnum.pago,
         PedidoServico.criado_em >= primeiro_dia
     ).scalar() or 0
 
@@ -171,7 +189,8 @@ def get_my_stats(
             if 0 <= dias_atras <= 8:
                 idx = 8 - dias_atras
                 valor = sum(item.subtotal for item in p.itens if item.vendedor_id == perfil.id)
-                vendas_diarias[idx] += float(valor)
+                if p.status_pagamento == StatusPagamentoEnum.pago:
+                    vendas_diarias[idx] += float(valor)
             if 0 <= dias_atras <= 6:
                 idx = 6 - dias_atras
                 pedidos_diarios[idx] += 1
@@ -181,7 +200,8 @@ def get_my_stats(
             dias_atras = (hoje.date() - s.criado_em.date()).days
             if 0 <= dias_atras <= 8:
                 idx = 8 - dias_atras
-                vendas_diarias[idx] += float(s.valor_total)
+                if s.status_pagamento == StatusPagamentoEnum.pago:
+                    vendas_diarias[idx] += float(s.valor_acordado or 0)
             if 0 <= dias_atras <= 6:
                 idx = 6 - dias_atras
                 pedidos_diarios[idx] += 1
@@ -202,9 +222,12 @@ def get_my_stats(
 
     cat_labels = list(categorias_dict.keys())
     cat_data = list(categorias_dict.values())
-    if not cat_labels:
-        cat_labels = ["Sem categorias"]
-        cat_data = [1]
+    vendas_produtos = db.query(func.count(Pedido.id.distinct())).join(ItemPedido).filter(
+        ItemPedido.vendedor_id == perfil.id, Pedido.status == StatusPedidoEnum.entregue
+    ).scalar() or 0
+    vendas_servicos = db.query(func.count(PedidoServico.id)).join(Servico).filter(
+        Servico.vendedor_id == perfil.id, PedidoServico.status == StatusPedidoEnum.entregue
+    ).scalar() or 0
 
     return {
         "produtos_count": int(produtos_count),
@@ -212,7 +235,7 @@ def get_my_stats(
         "pedidos_mes": int(pedidos_mes) + int(pedidos_servico_mes),
         "receita_mes": float(receita_mes),
         "avaliacao_media": float(perfil.avaliacao_media) if perfil.avaliacao_media else 0.0,
-        "total_vendas": perfil.total_vendas or 0,
+        "total_vendas": int(vendas_produtos + vendas_servicos),
         "grafico_vendas": vendas_diarias,
         "grafico_pedidos": pedidos_diarios,
         "grafico_categorias": {

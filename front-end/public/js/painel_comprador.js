@@ -13,16 +13,23 @@ function verificarAutenticacao() {
   return true;
 }
 
-function atualizarBadges() {
+async function atualizarBadges() {
     const badges = document.querySelectorAll('.topbar-actions .badge');
-    if (badges.length >= 2) {
-        // Notificações (mock)
-        badges[0].textContent = '1';
-        // Carrinho
-        const carrinho = JSON.parse(localStorage.getItem('byclick_carrinho') || '{"itens":[]}');
-        const totalCarrinho = carrinho.itens.reduce((acc, curr) => acc + (curr.quantidade || 1), 0);
-        badges[1].textContent = totalCarrinho;
-    }
+    const lista = document.getElementById('buyerNotifications');
+    const carrinho = JSON.parse(localStorage.getItem('byclick_carrinho') || '{"itens":[]}');
+    if (badges[1]) badges[1].textContent = carrinho.itens.reduce((acc, item) => acc + (item.quantidade || 1), 0);
+    try {
+        const notificacoes = await apiCall('GET', '/notificacoes/');
+        if (badges[0]) badges[0].textContent = notificacoes.filter(n => !n.lida).length;
+        if (!lista) return;
+        lista.replaceChildren();
+        if (!notificacoes.length) { lista.textContent = 'Ainda não há notificações.'; return; }
+        for (const n of notificacoes.slice(0, 3)) {
+            const item = document.createElement('div'); item.className = 'notif-item';
+            const title = document.createElement('div'); title.className = 'notif-text'; title.textContent = n.titulo;
+            item.append(title); lista.append(item);
+        }
+    } catch (_) { if (lista) lista.textContent = 'Não foi possível carregar as notificações.'; }
 }
 
 // ===== MODAL PERFIL =====
@@ -36,8 +43,9 @@ function setupModalPerfil() {
 
     btnEdit.addEventListener('click', async () => {
         try {
-            const user = await obterMeuPerfil();
-            if (user) {
+            const result = await obterMeuPerfil();
+            if (result.success && result.data) {
+                const user = result.data;
                 document.getElementById('editNome').value = user.nome_completo || '';
                 document.getElementById('editTelefone').value = user.numero_telefone || '';
                 if (user.endereco) {
@@ -45,7 +53,7 @@ function setupModalPerfil() {
                     document.getElementById('editMunicipio').value = user.endereco.municipio || '';
                     document.getElementById('editBairro').value = user.endereco.bairro || '';
                 }
-                document.getElementById('previewFotoEdit').src = user.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.nome_completo || 'User')}&background=0D8ABC&color=fff`;
+                document.getElementById('previewFotoEdit').src = user.foto_perfil_url || avatarByClick(user.nome_completo);
                 document.getElementById('editFotoPerfil').value = '';
                 modal.classList.add('active');
             }
@@ -154,7 +162,7 @@ function atualizarPerfilUsuario(usuario) {
   const primeiroNome = nome.split(' ')[0];
 
   // Foto de perfil default
-  const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(nome) + "&background=0D8ABC&color=fff&size=150";
+  const defaultAvatar = avatarByClick(nome);
   const avatarSrc = usuario.foto_perfil_url || defaultAvatar;
 
   // Sidebar
@@ -165,7 +173,7 @@ function atualizarPerfilUsuario(usuario) {
 
   // Greeting
   const greetEl = document.querySelector('[data-greeting]');
-  if (greetEl) greetEl.textContent = `Olá, ${primeiroNome}! 👋`;
+  if (greetEl) greetEl.textContent = `Olá, ${primeiroNome}!`;
 
   // Profile card
   const profNameEl = document.querySelector('[data-profile-name]');

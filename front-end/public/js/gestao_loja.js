@@ -202,7 +202,8 @@ async function submeterNovoServico() {
         descricao: form.descricao.value,
         preco_base: parseFloat(form.preco_base.value),
         duracao_estimada: form.duracao_estimada.value,
-        disponibilidade: form.disponibilidade.value,
+        disponivel_online: ['online', 'ambos'].includes(form.disponibilidade.value),
+        disponivel_presencial: ['presencial', 'ambos'].includes(form.disponibilidade.value),
         categoria_id: parseInt(form.categoria_id.value),
         ativo: true
     };
@@ -213,10 +214,12 @@ async function submeterNovoServico() {
     }
 
     try {
-        await apiCall('POST', '/servicos/', payload);
-        showToast('Serviço criado com sucesso!', 'success');
+        const editId = form.dataset.editId;
+        await apiCall(editId ? 'PUT' : 'POST', editId ? `/servicos/${editId}` : '/servicos/', payload);
+        showToast(editId ? 'Serviço actualizado com sucesso!' : 'Serviço criado com sucesso!', 'success');
         fecharModal('modalServico');
         form.reset();
+        delete form.dataset.editId;
         carregarMeusServicos();
     } catch (error) {
         showToast(error.message || 'Erro ao criar serviço', 'error');
@@ -238,8 +241,22 @@ async function apagarServico(id) {
     }
 }
 
-function abrirModalEditarServico(id) {
-    showToast("A funcionalidade de edição detalhada está em desenvolvimento", "info");
+async function abrirModalEditarServico(id) {
+    try {
+        const servico = await apiCall('GET', `/servicos/${id}`);
+        const form = document.getElementById('formAddServico');
+        await carregarCategoriasSelects('catServicoSelect');
+        form.reset();
+        form.dataset.editId = id;
+        form.nome.value = servico.nome || '';
+        form.descricao.value = servico.descricao || '';
+        form.preco_base.value = servico.preco_base;
+        form.duracao_estimada.value = servico.duracao_estimada || '';
+        form.categoria_id.value = servico.categoria_id || '';
+        form.disponibilidade.value = servico.disponivel_online && servico.disponivel_presencial ? 'ambos' : servico.disponivel_online ? 'online' : 'presencial';
+        document.querySelector('#modalServico .modal-title').textContent = 'Editar serviço';
+        abrirModal('modalServico');
+    } catch (e) { showToast(e.message || 'Não foi possível carregar o serviço.', 'error'); }
 }
 
 // ==============================
@@ -256,6 +273,12 @@ function abrirModal(id) {
 function fecharModal(id) {
     const m = document.getElementById(id);
     if(m) m.classList.remove('active');
+    if (id === 'modalServico') {
+        const form = document.getElementById('formAddServico');
+        if (form) { form.reset(); delete form.dataset.editId; }
+        const title = m?.querySelector('.modal-title');
+        if (title) title.textContent = 'Adicionar Novo Serviço';
+    }
 }
 
 // ==============================

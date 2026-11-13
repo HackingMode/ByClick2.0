@@ -75,6 +75,98 @@ class BackendRegression(unittest.TestCase):
         for token, expected in [(tokens['access_token'],200), (tokens['refresh_token'],401), (create_access_token({}),401), (create_access_token({'sub':'abc'}),401)]:
             self.assertEqual(self.client.get('/api/v1/auth/me',headers={'Authorization':'Bearer '+token}).status_code,expected)
 
+    def test_registration_email_code_and_delivery_failure(self):
+        payload = {'nome_completo':'Novo comprador', 'nome_utilizador':'novo', 'email':'novo@example.com', 'numero_telefone':'244923456786', 'senha':'password123', 'confirmar_senha':'password123'}
+        with patch('app.api.v1.endpoints.auth.enviar_otp_verificacao', return_value=True) as envio:
+            r = self.client.post('/api/v1/auth/registar-comprador', json=payload)
+        self.assertEqual(r.status_code, 201, r.text)
+        self.assertTrue(r.json()['email_enviado'])
+        codigo = envio.call_args.args[1]
+        self.assertEqual(envio.call_args.args[0], payload['email'])
+        r = self.client.post('/api/v1/auth/verificar-codigo', json={'utilizador_id':r.json()['utilizador_id'], 'codigo':codigo, 'tipo':'email'})
+        self.assertEqual(r.status_code, 200, r.text)
+        payload.update(nome_utilizador='sememail', email='sememail@example.com', numero_telefone='244923456785')
+        with patch('app.api.v1.endpoints.auth.enviar_otp_verificacao', return_value=False):
+            r = self.client.post('/api/v1/auth/registar-comprador', json=payload)
+        self.assertEqual(r.status_code, 201, r.text)
+        self.assertFalse(r.json()['email_enviado'])
+        self.assertIn('indisponível', r.json()['mensagem'])
+
+    def test_seller_registration_with_identity_and_address(self):
+        payload = {'nome_completo':'Vendedor Novo', 'nome_utilizador':'vendedor_novo', 'email':'vendedor-novo@example.com', 'numero_telefone':'244923456784', 'senha':'password123', 'confirmar_senha':'password123', 'numero_bi':'123456789LA123', 'data_emissao':'2020-01-01', 'data_validade':'2030-01-01', 'provincia':'Luanda', 'municipio':'Luanda', 'bairro':'Centro'}
+        with patch('app.api.v1.endpoints.auth.enviar_otp_verificacao', return_value=False):
+            response = self.client.post('/api/v1/auth/registar-vendedor', json=payload)
+        self.assertEqual(response.status_code, 201, response.text)
+        self.assertFalse(response.json()['email_enviado'])
+        with self.sessions() as db:
+            user = db.get(Utilizador, response.json()['utilizador_id'])
+            self.assertEqual(user.perfil_vendedor.nome_loja, 'vendedor_novo')
+            self.assertEqual(user.documento_bi.numero_bi, payload['numero_bi'])
+            self.assertEqual(user.endereco.municipio, 'Luanda')
+
+    def test_payment_receipt_requires_authorization(self):
+        r = self.client.post('/api/v1/pedidos/produtos', headers=self.headers, json={'itens':[{'produto_id':1,'quantidade':1}]})
+        self.assertEqual(r.status_code, 201, r.text)
+        order_id = r.json()['pedido_id']
+        image = BytesIO()
+        Image.new('RGB', (1, 1), 'red').save(image, format='PNG')
+        data = base64.b64encode(image.getvalue()).decode()
+        r = self.client.post(f'/api/v1/pedidos/{order_id}/comprovativo', headers=self.headers, json={'imagem_base64':data})
+        self.assertEqual(r.status_code, 200, r.text)
+        from urllib.parse import urlparse
+        path = urlparse(r.json()['url']).path
+        self.assertEqual(self.client.get(path).status_code, 401)
+        self.assertEqual(self.client.get(path, headers=self.headers).status_code, 200)
+        self.assertEqual(self.client.get(path, headers=self.seller_headers).status_code, 200)
+        with self.sessions() as db:
+            other = Utilizador(nome_completo='Outra pessoa', nome_utilizador='other', email='other@example.com', numero_telefone='244923456787', senha_hash=hash_password('password123'))
+            db.add(other); db.commit(); other_id = other.id
+        token = create_access_token({'sub':str(other_id)})
+        self.assertEqual(self.client.get(path, headers={'Authorization':'Bearer '+token}).status_code, 403)
+
+    def test_service_schedule_is_preserved(self):
+        r = self.client.post('/api/v1/pedidos/servicos', headers=self.headers, json={'servico_id':1, 'data_agendada':'2027-02-20T10:30:00', 'descricao_necessidade':'Visita à loja'})
+        self.assertEqual(r.status_code, 201, r.text)
+        with self.sessions() as db:
+            order = db.get(PedidoServico, r.json()['pedido_id'])
+            self.assertEqual(order.data_agendada.isoformat(), '2027-02-20T10:30:00')
+            self.assertEqual(order.descricao_necessidade, 'Visita à loja')
+            self.assertEqual(float(order.valor_acordado), 100.0)
+
+    def test_public_store_and_service_details(self):
+        r = self.client.get('/api/v1/vendedor/lojas/1')
+        self.assertEqual(r.status_code, 200, r.text)
+        self.assertEqual(r.json()['nome'], 'Loja')
+        self.assertEqual({i['tipo'] for i in r.json()['ofertas']}, {'produto', 'servico'})
+        self.assertNotIn('iban', r.json())
+        self.assertEqual(self.client.get('/api/v1/vendedor/lojas/999').status_code, 404)
+        r = self.client.get('/api/v1/servicos/1')
+        self.assertEqual(r.json()['vendedor_nome'], 'Loja')
+        self.assertEqual(r.json()['vendedor_telefone'], '244923456788')
+
+    def test_seller_dashboard_counts_only_paid_revenue(self):
+        order = self.client.post('/api/v1/pedidos/produtos', headers=self.headers, json={'itens':[{'produto_id':1,'quantidade':2}]})
+        self.assertEqual(order.status_code, 201, order.text)
+        service = self.client.post('/api/v1/pedidos/servicos', headers=self.headers, json={'servico_id':1})
+        self.assertEqual(service.status_code, 201, service.text)
+        url = '/api/v1/vendedor/minhas-estatisticas/dashboard'
+        response = self.client.get(url, headers=self.seller_headers)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['produtos_count'], 1)
+        self.assertEqual(response.json()['servicos_count'], 1)
+        self.assertEqual(response.json()['receita_mes'], 0)
+        self.assertEqual(response.json()['pedidos_mes'], 2)
+        with self.sessions() as db:
+            item = db.get(Pedido, order.json()['pedido_id'])
+            item.status_pagamento = StatusPagamentoEnum.pago
+            item.status = StatusPedidoEnum.entregue
+            db.commit()
+        response = self.client.get(url, headers=self.seller_headers)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['receita_mes'], 25.0)
+        self.assertEqual(response.json()['total_vendas'], 1)
+        self.assertEqual(sum(response.json()['grafico_vendas']), 25.0)
+
     def test_checkout_totals_stock_and_status(self):
         r=self.client.post('/api/v1/pedidos/produtos',headers=self.headers,json={'itens':[{'produto_id':1,'quantidade':2}]})
         self.assertEqual(r.status_code,201,r.text)

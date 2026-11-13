@@ -353,6 +353,9 @@ class ImagemServicoResponseSchema(BaseModel):
 class ServicoResponseSchema(ServicoCreateSchema):
     id: int
     vendedor_id: int
+    vendedor_nome: Optional[str] = None
+    vendedor_telefone: Optional[str] = None
+    vendedor_desde: Optional[datetime] = None
     ativo: bool
     avaliacao_media: float
     criado_em: datetime

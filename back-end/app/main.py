@@ -3,7 +3,12 @@ Kitanda - Backend API
 """
 
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import FileResponse
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.api.v1.endpoints.deps import get_utilizador_atual
+from app.models.models import Pedido, PedidoServico, Utilizador, TipoUtilizadorEnum
 from pathlib import Path
 from app.core.config import settings, BASE_DIR
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +34,32 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
+
+@app.get('/imagens/pagamentos/{arquivo:path}', include_in_schema=False)
+def comprovativo_privado(arquivo: str, db: Session = Depends(get_db), utilizador: Utilizador = Depends(get_utilizador_atual)):
+    partes = arquivo.split('/')
+    if len(partes) != 2 or not partes[1] or partes[1] in {'.', '..'}:
+        raise HTTPException(404, 'Comprovativo não encontrado')
+    identificador, nome = partes
+    is_servico = identificador.startswith('serv_')
+    numero = identificador[5:] if is_servico else identificador
+    if not numero.isdigit():
+        raise HTTPException(404, 'Comprovativo não encontrado')
+    pedido = db.get(PedidoServico if is_servico else Pedido, int(numero))
+    if not pedido or not pedido.pagamento or not pedido.pagamento.comprovativo_url:
+        raise HTTPException(404, 'Comprovativo não encontrado')
+    if pedido.pagamento.comprovativo_url.rsplit('/', 1)[-1] != nome:
+        raise HTTPException(404, 'Comprovativo não encontrado')
+    vendedores = [pedido.servico.vendedor] if is_servico else [item.vendedor for item in pedido.itens]
+    autorizado = (utilizador.tipo_utilizador == TipoUtilizadorEnum.admin or pedido.comprador_id == utilizador.id or
+                  any(v and v.utilizador_id == utilizador.id for v in vendedores))
+    if not autorizado:
+        raise HTTPException(403, 'Sem permissão para este comprovativo')
+    caminho = (BASE_DIR / 'imagens' / 'pagamentos' / identificador / nome).resolve()
+    raiz = (BASE_DIR / 'imagens' / 'pagamentos').resolve()
+    if not caminho.is_relative_to(raiz) or not caminho.is_file():
+        raise HTTPException(404, 'Comprovativo não encontrado')
+    return FileResponse(caminho, headers={'Cache-Control': 'private, no-store'})
 
 app.mount("/imagens", StaticFiles(directory=BASE_DIR / "imagens"), name="imagens")
 

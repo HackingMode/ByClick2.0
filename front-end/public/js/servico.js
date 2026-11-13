@@ -50,10 +50,9 @@ async function carregarServico(id) {
     renderizarServico(servico);
   } catch (erro) {
     console.error('Erro ao carregar serviço:', erro);
-    // Fallback demo
-    if (loading) loading.style.display = 'none';
-    if (content) content.style.display = 'grid';
-    renderizarServicoDemo(id);
+    if (content) content.style.display = 'none';
+    if (loading) loading.style.display = 'block';
+    mostrarErro(erro.status === 404 ? 'Serviço não encontrado.' : 'Não foi possível carregar o serviço. Tente novamente.');
   }
 }
 
@@ -161,7 +160,7 @@ function renderizarServico(p) {
           id: p.id,
           tipo: 'servico',
           nome: p.nome,
-          preco: p.preco_promocional || p.preco,
+          preco: p.preco_base,
           imagem_url: p.imagem_url || (p.imagens && p.imagens.length > 0 ? p.imagens[0].url : ''),
           vendedor_nome: p.vendedor_nome || 'Vendedor ByClick',
           vendedor_id: p.vendedor_id,

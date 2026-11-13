@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session
 from app.api.v1.endpoints.deps import get_utilizador_atual
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.email import enviar_otp_recuperacao
+from app.core.email import enviar_otp_recuperacao, enviar_otp_verificacao
 from app.core.phone import normalizar_telefone_angola, parece_telefone, variantes_telefone_angola
 from app.core.security import (
     create_access_token,
@@ -194,12 +194,14 @@ def criar_perfil_vendedor(
 
 
 def criar_codigo_verificacao(db: Session, utilizador_id: int):
+    codigo = gerar_codigo_otp()
     db.add(CodigoVerificacao(
         utilizador_id=utilizador_id,
-        codigo=gerar_codigo_otp(),
+        codigo=codigo,
         tipo="email",
         expira_em=datetime.utcnow() + timedelta(minutes=30),
     ))
+    return codigo
 
 
 def resposta_registo(utilizador: Utilizador, mensagem: str, **extra):
@@ -254,7 +256,7 @@ def registar_comprador(dados: RegistoCompradorSchema, db: Session = Depends(get_
             tipo_utilizador=TipoUtilizadorEnum.comprador,
         )
         criar_endereco(db, utilizador.id, dados)
-        criar_codigo_verificacao(db, utilizador.id)
+        codigo = criar_codigo_verificacao(db, utilizador.id)
         if dados.foto_perfil:
             utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "comprador", utilizador.id)
         db.commit()
@@ -263,9 +265,11 @@ def registar_comprador(dados: RegistoCompradorSchema, db: Session = Depends(get_
         db.rollback()
         raise
 
+    enviado = enviar_otp_verificacao(utilizador.email, codigo)
     return resposta_registo(
         utilizador,
-        "Registo de comprador efetuado com sucesso. Verifique o seu email.",
+        'Registo efectuado. Verifica o teu e-mail.' if enviado else 'Registo efectuado. A verificação de e-mail está temporariamente indisponível.',
+        email_enviado=enviado,
     )
 
 
@@ -297,7 +301,7 @@ def registar_vendedor(dados: RegistoContaVendedorSchema, db: Session = Depends(g
             tipo_vendedor=TipoVendedorEnum.individual,
             tipo_loja=dados.tipo_loja,
         )
-        criar_codigo_verificacao(db, utilizador.id)
+        codigo = criar_codigo_verificacao(db, utilizador.id)
         if dados.foto_perfil:
             utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "vendedor", utilizador.id)
         db.commit()
@@ -306,9 +310,11 @@ def registar_vendedor(dados: RegistoContaVendedorSchema, db: Session = Depends(g
         db.rollback()
         raise
 
+    enviado = enviar_otp_verificacao(utilizador.email, codigo)
     return resposta_registo(
         utilizador,
-        "Registo de vendedor efetuado com sucesso. Verifique o seu email.",
+        'Registo efectuado. Verifica o teu e-mail.' if enviado else 'Registo efectuado. A verificação de e-mail está temporariamente indisponível.',
+        email_enviado=enviado,
         nome_loja=nome_loja,
     )
 
@@ -338,7 +344,7 @@ def registar_empresa(dados: RegistoEmpresaSchema, db: Session = Depends(get_db))
             tipo_vendedor=TipoVendedorEnum.empresa,
             tipo_loja=dados.tipo_loja,
         )
-        criar_codigo_verificacao(db, utilizador.id)
+        codigo = criar_codigo_verificacao(db, utilizador.id)
         if dados.foto_perfil:
             utilizador.foto_perfil_url = salvar_foto_perfil(dados.foto_perfil, "empresa", utilizador.id)
         db.commit()
@@ -347,9 +353,11 @@ def registar_empresa(dados: RegistoEmpresaSchema, db: Session = Depends(get_db))
         db.rollback()
         raise
 
+    enviado = enviar_otp_verificacao(utilizador.email, codigo)
     return resposta_registo(
         utilizador,
-        "Registo de empresa efetuado com sucesso. Verifique o seu email.",
+        'Registo efectuado. Verifica o teu e-mail.' if enviado else 'Registo efectuado. A verificação de e-mail está temporariamente indisponível.',
+        email_enviado=enviado,
         nome_loja=dados.nome_empresa,
         nome_utilizador=nome_utilizador,
     )

@@ -61,12 +61,12 @@ function atualizarPerfilUsuario(usuario) {
   const nome = usuario.nome_completo || usuario.nome_utilizador || 'Administrador';
   const primeiroNome = nome.split(' ')[0];
 
-  const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(nome) + "&background=C84B1F&color=fff&size=150";
+  const defaultAvatar = avatarByClick(nome);
   const avatarSrc = usuario.foto_perfil_url || defaultAvatar;
 
   if (nomeEl) nomeEl.textContent = nome;
   if (fotoEl) fotoEl.src = avatarSrc;
-  if (greetEl) greetEl.textContent = `Bem-vindo, ${primeiroNome}! 👋`;
+  if (greetEl) greetEl.textContent = `Bem-vindo, ${primeiroNome}!`;
 }
 
 function atualizarDadosEmpresa(empresa) {
@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function () {
               document.getElementById('userEmail').value = u.email || '';
               document.getElementById('userTelefone').value = u.numero_telefone || '';
               if (imgPreview) {
-                  imgPreview.src = u.foto_perfil_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.nome_completo)}&background=C84B1F&color=fff`;
+                  imgPreview.src = u.foto_perfil_url || avatarByClick(u.nome_completo);
               }
               if (u.perfil_vendedor) {
                   document.getElementById('lojaNome').value = u.perfil_vendedor.nome_loja || '';

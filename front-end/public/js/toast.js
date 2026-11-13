@@ -97,16 +97,19 @@ function mostrarToast(mensagem, tipo = 'info', duracao = 3000) {
 
   // Adicionar ícone
   const iconos = {
-    success: '✓',
-    error: '✕',
-    info: 'ℹ',
-    warning: '⚠'
+    success: '<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M20 6 9 17l-5-5"/></svg>',
+    error: '<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+    info: '<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 11v5m0-8h.01"/></svg>',
+    warning: '<svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M12 3 2 21h20L12 3zM12 9v4m0 4h.01"/></svg>'
   };
 
-  toast.innerHTML = `
-    <span style="font-size: 18px; flex-shrink: 0;">${iconos[tipo] || '•'}</span>
-    <span style="flex: 1;">${mensagem}</span>
-  `;
+  const icon = document.createElement('span');
+  icon.style.cssText = 'flex-shrink:0;display:flex';
+  icon.innerHTML = iconos[tipo] || iconos.info;
+  const text = document.createElement('span');
+  text.style.flex = '1';
+  text.textContent = String(mensagem);
+  toast.append(icon, text);
 
   container.appendChild(toast);
 
@@ -117,6 +120,10 @@ function mostrarToast(mensagem, tipo = 'info', duracao = 3000) {
       toast.remove();
     }, 300);
   }, duracao);
+}
+
+function showToast(mensagem, tipo = 'info', duracao = 3000) {
+  return mostrarToast(mensagem, tipo, duracao);
 }
 
 function mostrarLoading(mostrar) {

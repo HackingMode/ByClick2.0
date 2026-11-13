@@ -50,10 +50,9 @@ async function carregarProduto(id) {
     renderizarProduto(produto);
   } catch (erro) {
     console.error('Erro ao carregar produto:', erro);
-    // Fallback demo
-    if (loading) loading.style.display = 'none';
-    if (content) content.style.display = 'grid';
-    renderizarProdutoDemo(id);
+    if (content) content.style.display = 'none';
+    if (loading) loading.style.display = 'block';
+    mostrarErro(erro.status === 404 ? 'Produto não encontrado.' : 'Não foi possível carregar o produto. Tente novamente.');
   }
 }
 

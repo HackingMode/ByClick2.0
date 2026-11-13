@@ -176,7 +176,7 @@ nav { flex: 1; padding: 14px 0; }
 /* ===== STATS GRID ===== */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
     margin-bottom: 26px;
 }

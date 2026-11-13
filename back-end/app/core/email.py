@@ -49,3 +49,11 @@ def enviar_otp_recuperacao(email_destinatario: str, codigo_otp: str):
     </html>
     """
     return send_email(email_destinatario, assunto, corpo)
+
+
+def enviar_otp_verificacao(email_destinatario: str, codigo_otp: str):
+    return send_email(
+        email_destinatario,
+        'Confirma o teu e-mail — ByClick',
+        f'<h2>Bem-vindo ao ByClick</h2><p>O teu código de verificação é <strong>{codigo_otp}</strong>.</p><p>O código expira em 30 minutos.</p>',
+    )

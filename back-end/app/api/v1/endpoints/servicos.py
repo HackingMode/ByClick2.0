@@ -82,6 +82,10 @@ def ver_servico(servico_id: int, db: Session = Depends(get_db)):
     servico = db.query(Servico).filter(Servico.id == servico_id, Servico.ativo == True).first()
     if not servico:
         raise HTTPException(status_code=404, detail="Serviço não encontrado")
+    if servico.vendedor and servico.vendedor.utilizador:
+        servico.vendedor_nome = servico.vendedor.nome_loja
+        servico.vendedor_telefone = servico.vendedor.utilizador.numero_telefone
+        servico.vendedor_desde = servico.vendedor.utilizador.criado_em
     return servico
 
 
@@ -104,8 +108,12 @@ def editar_servico(
     if not servico:
         raise HTTPException(status_code=404, detail="Serviço não encontrado ou sem permissão")
 
-    for key, value in dados.model_dump(exclude_unset=True).items():
+    for key, value in dados.model_dump(exclude_unset=True, exclude={'imagem'}).items():
         setattr(servico, key, value)
+    if dados.imagem:
+        img_url = salvar_imagem_servico(dados.imagem, servico.id)
+        db.query(ImagemServico).filter(ImagemServico.servico_id == servico.id).delete()
+        db.add(ImagemServico(servico_id=servico.id, url=img_url, principal=True))
 
     db.commit()
     db.refresh(servico)

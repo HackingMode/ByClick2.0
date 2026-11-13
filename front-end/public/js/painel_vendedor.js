@@ -16,16 +16,23 @@ function verificarAutenticacao() {
   return true;
 }
 
-function atualizarBadges() {
-    const badges = document.querySelectorAll('.topbar-actions .badge');
-    if (badges.length >= 2) {
-        // Notificações (mock)
-        badges[0].textContent = '1';
-        // Mensagens/Carrinho (mock/carrinho)
-        const carrinho = JSON.parse(localStorage.getItem('byclick_carrinho') || '{"itens":[]}');
-        const totalCarrinho = carrinho.itens.reduce((acc, curr) => acc + (curr.quantidade || 1), 0);
-        badges[1].textContent = totalCarrinho;
+async function atualizarBadges() {
+  const badge = document.querySelector('[data-notif-count]');
+  const list = document.getElementById('notifList');
+  try {
+    const notificacoes = await apiCall('GET', '/notificacoes/');
+    if (badge) badge.textContent = notificacoes.filter(n => !n.lida).length;
+    if (!list) return;
+    list.replaceChildren();
+    if (!notificacoes.length) { list.textContent = 'Ainda não há notificações.'; return; }
+    for (const n of notificacoes.slice(0, 3)) {
+      const item = document.createElement('div'); item.className = 'notif-item';
+      const info = document.createElement('div');
+      const title = document.createElement('div'); title.className = 'notif-text'; title.textContent = n.titulo;
+      const date = document.createElement('span'); date.className = 'notif-time'; date.textContent = new Date(n.criado_em).toLocaleDateString('pt-AO');
+      info.append(title, date); item.append(info); list.append(item);
     }
+  } catch (_) { if (list) list.textContent = 'Não foi possível carregar as notificações.'; }
 }
 
 // ===== DATA LOADING =====
@@ -76,13 +83,13 @@ function atualizarPerfilUsuario(usuario) {
   const nome = usuario.nome_completo || usuario.nome_utilizador || 'Vendedor';
   const primeiroNome = nome.split(' ')[0];
 
-  const defaultAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(nome) + "&background=C84B1F&color=fff&size=150";
+  const defaultAvatar = avatarByClick(nome);
   const avatarSrc = usuario.foto_perfil_url || defaultAvatar;
 
   if (nomeEl) nomeEl.textContent = nome;
   if (fotoEl) fotoEl.src = avatarSrc;
   if (tipoEl) tipoEl.textContent = 'Vendedor Individual';
-  if (greetEl) greetEl.textContent = `Olá, ${primeiroNome}! 👋`;
+  if (greetEl) greetEl.textContent = `Olá, ${primeiroNome}!`;
 }
 
 function atualizarDadosLoja(loja) {
@@ -415,8 +422,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const salesCtx = document.getElementById('salesChart');
   if (salesCtx) {
     const grad = salesCtx.getContext('2d').createLinearGradient(0, 0, 0, 260);
-    grad.addColorStop(0, 'rgba(0,200,83,0.35)');
-    grad.addColorStop(1, 'rgba(0,200,83,0.01)');
+    grad.addColorStop(0, 'rgba(200,75,31,0.25)');
+    grad.addColorStop(1, 'rgba(200,75,31,0.01)');
 
     charts.sales = new Chart(salesCtx.getContext('2d'), {
       type: 'line',
@@ -424,11 +431,11 @@ document.addEventListener('DOMContentLoaded', function () {
         labels: obterUltimos9Dias(),
         datasets: [{
           data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-          borderColor: '#00c853',
+          borderColor: '#c84b1f',
           backgroundColor: grad,
           borderWidth: 2.5,
           pointBackgroundColor: '#fff',
-          pointBorderColor: '#00c853',
+          pointBorderColor: '#c84b1f',
           pointBorderWidth: 2,
           pointRadius: 4,
           pointHoverRadius: 6,
@@ -477,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
         labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7'],
         datasets: [{
           data: [0, 0, 0, 0, 0, 0, 0],
-          backgroundColor: 'rgba(59,130,246,0.6)',
+          backgroundColor: 'rgba(200,75,31,0.6)',
           borderRadius: 4,
           borderSkipped: false
         }]
@@ -502,7 +509,7 @@ document.addEventListener('DOMContentLoaded', function () {
         labels: ['A carregar...'],
         datasets: [{
           data: [1],
-          backgroundColor: ['#00c853', '#a855f7', '#3b82f6'],
+          backgroundColor: ['#c84b1f', '#b48661', '#6f5948', '#e5b987', '#917666'],
           borderWidth: 2,
           borderColor: '#fff'
         }]
@@ -563,6 +570,8 @@ async function submeterNovoProduto() {
   try {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+    data.stock = Number(data.estoque);
+    delete data.estoque;
 
     // Se houver imagem, processar para base64
     const fileInput = document.getElementById('imgProduto');
@@ -584,7 +593,7 @@ async function submeterNovoProduto() {
       carregarDadosPainel(); // atualizar stats
     }
   } catch (error) {
-    showToast('Erro ao criar produto.', 'error');
+    showToast(error.message || 'Erro ao criar produto.', 'error');
   } finally {
     btn.disabled = false;
     btn.textContent = 'Salvar Produto';
@@ -636,7 +645,8 @@ async function submeterNovoServico() {
     descricao: form.descricao.value,
     preco_base: parseFloat(form.preco_base.value),
     duracao_estimada: form.duracao_estimada.value,
-    disponibilidade: form.disponibilidade.value,
+    disponivel_online: ['online', 'ambos'].includes(form.disponibilidade.value),
+    disponivel_presencial: ['presencial', 'ambos'].includes(form.disponibilidade.value),
     categoria_id: parseInt(form.categoria_id.value)
   };
 
@@ -660,6 +670,6 @@ async function submeterNovoServico() {
       carregarDadosPainel();
     }
   } catch (e) {
-    showToast('Erro ao adicionar serviço', 'error');
+    showToast(e.message || 'Erro ao adicionar serviço', 'error');
   }
 }

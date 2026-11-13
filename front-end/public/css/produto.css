@@ -121,5 +121,9 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-dark);
 }
 @media (max-width: 480px) {
   .container { padding: 0 16px; }
+  .navbar { padding: 0; }
+  .navbar__inner { gap: 8px; }
+  .navbar__cta { gap: 4px; }
+  .navbar__cta .btn-sm { padding: 7px 9px; }
   .gallery-thumbs img { width: 56px; height: 56px; }
 }

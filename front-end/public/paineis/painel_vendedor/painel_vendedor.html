@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../../css/painel_vendedor.css">
+<link rel="stylesheet" href="../../css/byclick-system.css">
 </head>
 <body>
 
@@ -49,8 +50,6 @@
         <div class="topbar-actions">
             <div class="icon-btn" onclick="window.location.href='notificacoes.html'" style="cursor:pointer;"><i class="fa-regular fa-bell"></i><span class="badge" data-notif-count>0</span></div>
             <div class="topbar-divider"></div>
-            <div class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge" data-msg-count>0</span></div>
-            <div class="topbar-divider"></div>
             <div class="icon-btn" data-refresh-btn style="cursor:pointer;" title="Atualizar dados"><i class="fa-solid fa-rotate-right"></i></div>
         </div>
     </header>
@@ -59,7 +58,7 @@
         <!-- Header -->
         <div class="header-section">
             <div class="greeting">
-                <h1 data-greeting>Olá! 👋</h1>
+                <h1 data-greeting>Olá!</h1>
                 <p>Aqui está o resumo da sua loja hoje.</p>
             </div>
             <div class="date-badge"><i class="fa-regular fa-calendar"></i> <span data-current-date></span></div>
@@ -94,14 +93,14 @@
             <div class="stat-card">
                 <div class="stat-icon icon-orange"><i class="fa-solid fa-sack-dollar"></i></div>
                 <div class="stat-info">
-                    <div class="label">Vendas (Mês)</div>
+                    <div class="label">Pagamentos (mês)</div>
                     <div class="value" style="font-size:1.1rem;" data-revenue>— Kz</div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon icon-purple"><i class="fa-solid fa-chart-simple"></i></div>
                 <div class="stat-info">
-                    <div class="label">Total Vendas</div>
+                    <div class="label">Pedidos concluídos</div>
                     <div class="value" data-total-sales>—</div>
                     <div class="sub">Acumulado</div>
                 </div>
@@ -111,7 +110,7 @@
                 <div class="stat-info">
                     <div class="label">Avaliação Média</div>
                     <div class="value" data-rating>—</div>
-                    <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></div>
+                    <div class="sub">Classificação da loja</div>
                 </div>
             </div>
         </div>
@@ -123,11 +122,7 @@
                 <div class="panel">
                     <div class="panel-header">
                         <h3 class="panel-title"><i class="fa-solid fa-sliders"></i> Desempenho de Vendas</h3>
-                        <div class="chart-tabs">
-                            <button class="chart-tab">Semana</button>
-                            <button class="chart-tab active">Mês</button>
-                            <button class="chart-tab">Ano</button>
-                        </div>
+                        <span class="chart-period">Últimos 9 dias</span>
                     </div>
                     <div class="chart-container">
                         <canvas id="salesChart"></canvas>
@@ -139,7 +134,7 @@
                             <div class="mini-chart-container"><canvas id="ordersChart"></canvas></div>
                         </div>
                         <div class="mini-chart-card">
-                            <div class="mc-label">Categorias mais vendidas</div>
+                            <div class="mc-label">Categorias dos anúncios</div>
                             <div class="mc-value" style="color: var(--purple);" data-categories-count>— Categorias</div>
                             <div class="mini-chart-container"><canvas id="catChart"></canvas></div>
                         </div>
@@ -214,15 +209,7 @@
                         <h3 class="panel-title"><i class="fa-solid fa-bell"></i> Notificações</h3>
                         <a href="notificacoes.html" class="btn-link">Ver todas</a>
                     </div>
-                    <div class="notif-list" id="notifList">
-                        <div class="notif-item">
-                            <div class="notif-icon" style="background: var(--primary);"><i class="fa-solid fa-info-circle"></i></div>
-                            <div>
-                                <div class="notif-text">Bem-vindo ao seu painel ByClick! 🎉</div>
-                                <span class="notif-time">Agora</span>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="notif-list" id="notifList"><p>A carregar notificações...</p></div>
                 </div>
             </div>
         </div>
@@ -333,8 +320,8 @@
                     <input type="text" class="form-control" name="duracao_estimada">
                 </div>
                 <div class="form-group">
-                    <label>Disponibilidade (ex: online, presencial)</label>
-                    <input type="text" class="form-control" name="disponibilidade">
+                    <label>Modalidade</label>
+                    <select class="form-control" name="disponibilidade"><option value="presencial">Presencial</option><option value="online">Online</option><option value="ambos">Online e presencial</option></select>
                 </div>
                 <div class="form-group">
                     <label>Categoria</label>

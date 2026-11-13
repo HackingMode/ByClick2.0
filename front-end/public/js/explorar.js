@@ -10,6 +10,7 @@ const itensPorPagina = 12;
 let categoriaAtiva = 'all';
 let tipoAtivo = 'all';
 let searchTimeout = null;
+let ultimaPesquisa = 0;
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async function() {
@@ -26,6 +27,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     carregarProdutos(); // Refetch from API might be better if doing backend filter, but we filter client side for now
   });
 
+  const categoriaInicial = new URLSearchParams(window.location.search).get('categoria');
+  if (categoriaInicial) {
+    const botaoInicial = [...document.querySelectorAll('#categoriesBar .cat-pill')].find(el => el.dataset.cat === categoriaInicial);
+    if (botaoInicial) {
+      categoriaAtiva = categoriaInicial;
+      document.querySelectorAll('#categoriesBar .cat-pill').forEach(el => el.classList.toggle('cat-pill--active', el === botaoInicial));
+    }
+  }
+
   // Type filter pills
   document.getElementById('typeFilterBar')?.addEventListener('click', function(e) {
     const pill = e.target.closest('.cat-pill');
@@ -39,9 +49,10 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Search input with debounce
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
+    searchInput.value = new URLSearchParams(window.location.search).get('q') || '';
     searchInput.addEventListener('input', function() {
       clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => aplicarFiltros(), 300);
+      searchTimeout = setTimeout(() => carregarProdutos(), 300);
     });
   }
 
@@ -82,6 +93,7 @@ function atualizarNavbarAuth() {
 }
 
 async function carregarProdutos() {
+  const pesquisaAtual = ++ultimaPesquisa;
   const grid = document.getElementById('productsGrid');
   const loading = document.getElementById('loadingState');
   const empty = document.getElementById('emptyState');
@@ -115,6 +127,7 @@ async function carregarProdutos() {
     }
 
     const response = await apiCall('GET', url);
+    if (pesquisaAtual !== ultimaPesquisa) return;
     todosOsProdutos = response || [];
 
     if (loading) loading.style.display = 'none';
@@ -125,6 +138,7 @@ async function carregarProdutos() {
 
     aplicarFiltros();
   } catch (erro) {
+    if (pesquisaAtual !== ultimaPesquisa) return;
     console.error('Erro ao carregar produtos:', erro);
     if (loading) loading.style.display = 'none';
     if (empty) empty.style.display = 'block';
@@ -145,7 +159,7 @@ function aplicarFiltros() {
   // Category filter
   if (categoriaAtiva !== 'all') {
     produtosFiltrados = produtosFiltrados.filter(p =>
-      (p.categoria || '').toLowerCase() === categoriaAtiva ||
+      (p.categoria || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') === categoriaAtiva ||
       (p.tipo_produto || '').toLowerCase() === categoriaAtiva ||
       (p.tipo === 'servico' && categoriaAtiva === 'servicos')
     );

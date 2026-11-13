@@ -6,6 +6,12 @@ const API_BASE_URL = window.BYCLICK_API_BASE_URL || ((window.location.hostname =
   ? 'http://localhost:8000/api/v1'
   : `${window.location.origin}/api/v1`);
 
+function avatarByClick(nome) {
+  const initials = String(nome || 'Utilizador').trim().split(/\s+/).slice(0, 2).map(p => Array.from(p)[0] || '').join('').replace(/[^\p{L}\p{N}]/gu, '').toUpperCase() || 'U';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" fill="#e8d4c9"/><text x="60" y="70" text-anchor="middle" font-family="Arial,sans-serif" font-size="38" font-weight="600" fill="#843c28">${initials}</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
 function normalizarTelefone(telefone) {
   const digitos = String(telefone || '').replace(/\D/g, '').replace(/^00/, '');
 
@@ -67,12 +73,19 @@ async function apiCall(method, endpoint, data = null) {
 
   try {
     const response = await fetch(url, options);
-    const result = await response.json();
+    const body = await response.text();
+    let result = null;
+    if (body) {
+      try { result = JSON.parse(body); }
+      catch (_) {
+        throw { status: response.status, message: response.ok ? 'Resposta inválida do servidor' : `Erro do servidor (${response.status}). Tente novamente.` };
+      }
+    }
 
     if (!response.ok) {
       throw {
         status: response.status,
-        message: result.detail || 'Erro na requisicao',
+        message: result?.detail || `Erro na requisição (${response.status})`,
         data: result
       };
     }
@@ -111,14 +124,6 @@ async function registarComprador(dados) {
 
     const response = await apiCall('POST', '/auth/registar-comprador', payload);
 
-    if (typeof showToast === 'function') {
-      showToast('Cadastro realizado com sucesso! Redirecionando...', 'success');
-    }
-
-    setTimeout(() => {
-      window.location.href = '../../login/?novo=true&tipo=comprador';
-    }, 2000);
-
     return {
       success: true,
       data: response,
@@ -155,14 +160,6 @@ async function registarVendedor(dados) {
     };
 
     const response = await apiCall('POST', '/auth/registar-vendedor', payload);
-
-    if (typeof showToast === 'function') {
-      showToast('Cadastro de vendedor realizado com sucesso! Redirecionando...', 'success');
-    }
-
-    setTimeout(() => {
-      window.location.href = '../../login/?novo=true&tipo=vendedor';
-    }, 2000);
 
     return {
       success: true,
@@ -208,14 +205,6 @@ async function registarEmpresa(dados) {
     };
 
     const response = await apiCall('POST', '/auth/registar-empresa', payload);
-
-    if (typeof showToast === 'function') {
-      showToast('Cadastro de empresa realizado com sucesso! Redirecionando...', 'success');
-    }
-
-    setTimeout(() => {
-      window.location.href = '../../login/?novo=true&tipo=empresa';
-    }, 2000);
 
     return {
       success: true,
